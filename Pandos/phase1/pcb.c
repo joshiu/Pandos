@@ -2,4 +2,12 @@
 #include "../h/types.h"
 #include "../h/pcb.h"
 
-HIDDEN pcbt*pcbFreeh
+void freePcb(pcbt*p){
+
+}
+pcb_t *allocPcb(){
+
+}
+initPcbs(){
+    
+}

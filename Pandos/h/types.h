@@ -14,6 +14,24 @@ typedef signed int cpu_t;
 
 typedef unsigned int memaddr;
 
+/*process control block type*/
+typedef struct pcbt{
+	/*process queue fields*/
+struct pcbt				*pnext,		/*pointer to next entry*/
+						*pprev,     /*pointer to prev entry*/
+/*process tree fields*/
+						*pprnt,     /*pointer to parent*/
+						*pchild,    /*pointer to 1st child*/
+						*psib;      /*pointer to sibling*/
+/*process status information*/
+state_t             ps;         /*processor state*/
+cpu_t               ptime;      /*cpu time used by proc*/
+int					*psemAdd;   /*pointer to sema4 on*/
+								/*which process blocked*/
+/*support layer information*/
+support_t			*psupportStruct; 
+								/*ptr to support struct*/
+}pcbt;
 
 /* Device Register */
 typedef struct {
