@@ -76,7 +76,15 @@ int emptyChild(pcb_t*p){
 }
 //This method makes the pcb pointed to by p a child of the parent
 void insertChild(pcb_t*prnt, pcb_t*p){
-    
+    if(emptyChild(prnt) == TRUE){ //if no other children, point at new child
+        prnt -> p;
+        p -> prnt;
+    } //if their are children: parent points to new child and new child points to sibling + parent. 
+    prnt -> p_child; //how do you get this to be siblings?? halp
+    p -> p_child;
+    p_child -> p;
+    prnt -> p_child;
+    p -> prnt;
 }
 //This method removes the first child returns NULL if no children, otherwise returns pointer to this removed child
 pcb_t* removeChild(pcb_t*p){
