@@ -42,7 +42,16 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
 }
 //This method removes the element at the front of the queue
 pcb_t*removeProcQ(pcb_t**tp){
-
+    if(emptyProcQ(tp)==TRUE){//if there is nothing
+        return(NULL);
+    }
+    if(tp->p_next == tp){ //if we point to ourseleves
+    mkEmptyProcQ();
+    }
+    //if we have more than one thing
+    (tp->p_prev) -> (tp->p_next);//second last item points to head
+    (tp->p_next) -> (tp->p_prev);//head points to second last
+    tp = tp->p_prev;//make the second last the new tail
 }
 //Points to something and that gets removed
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
