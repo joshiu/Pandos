@@ -42,7 +42,7 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
 }
 //This method removes the element at the front of the queue
 pcb_t*removeProcQ(pcb_t**tp){
-
+    
 }
 //
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
