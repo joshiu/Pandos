@@ -12,7 +12,7 @@ void freePcb(pcb_t*p){
 pcb_t* allocPcb(){
 
 }
-//
+//intilize Pcb list
 void initPcbs(){
     pcbFree_h = NULL;
     static pcb_t foo[MAXPROC];
@@ -20,7 +20,7 @@ void initPcbs(){
         freePcb(&(foo[i]));
     }
 }
-//
+//Makes list empty :) like my soul
 pcb_t* mkEmptyProcQ(){
     return (NULL);
 }
@@ -44,11 +44,11 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
 pcb_t*removeProcQ(pcb_t**tp){
 
 }
-//
+//Points to something and that gets removed
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
 
 }
-//
+//Gives head from Queue, or returns null if empty
 pcb_t*headProcQ(pcb_t*tp){
     if(emptyProcQ(tp))
     return(NULL);
