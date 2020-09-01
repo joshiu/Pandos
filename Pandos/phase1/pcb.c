@@ -52,10 +52,16 @@ pcb_t*removeProcQ(pcb_t**tp){
     (tp->p_prev) -> (tp->p_next);//second last item points to head
     (tp->p_next) -> (tp->p_prev);//head points to second last
     tp = tp->p_prev;//make the second last the new tail
+    //get rid of the tail (add a return as well)
 }
 //Points to something and that gets removed
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
-
+    if(tp == p){
+        removeProcQ(*tp);
+    }
+    (p->p_prev) -> (p->p_next); //have the previous one point to the next one
+    (p->p_next) -> (p->p_previous); //have the next point to the previous
+    //get rid of the thing (add a return)
 }
 //Gives head from Queue, or returns null if empty
 pcb_t*headProcQ(pcb_t*tp){
@@ -70,7 +76,7 @@ int emptyChild(pcb_t*p){
 }
 //This method makes the pcb pointed to by p a child of the parent
 void insertChild(pcb_t*prnt, pcb_t*p){
-    p_child + p_prnt; //dont pay attention to this shit
+    
 }
 //This method removes the first child returns NULL if no children, otherwise returns pointer to this removed child
 pcb_t* removeChild(pcb_t*p){
