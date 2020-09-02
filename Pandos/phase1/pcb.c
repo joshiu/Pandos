@@ -10,7 +10,10 @@ void freePcb(pcb_t*p){
 
 //Gives needed Pcb, then removes Pcb from the list (taken)
 pcb_t* allocPcb(){
-
+    if(){//if the pcbFree list is empty, return NULL
+        return NULL;
+    }//otherwise remove element from pcb list, then return a pointer to the removed element
+    //remember that pcbs are reused, so make sure no value is in the pcb when its relocated, so if relocated -> remove all in list?
 }
 //intilize Pcb list
 void initPcbs(){
@@ -106,5 +109,6 @@ pcb_t* removeChild(pcb_t*p){//where does this point to parent or child?
 }
 //This method makes a child an orphan, and will become a subtree if it has children
 pcb_t*outChild(pcb_t*p){
+
 
 }
