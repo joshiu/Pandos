@@ -1,7 +1,7 @@
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/pcb.h"
-pcb_PTR pcbFree_h;
+HIDDEN pcb_PTR pcbFree_h;
 
 //This method inserts pointed to by p onto the freePCB list
 void freePcb(pcb_t*p){
