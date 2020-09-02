@@ -20,7 +20,17 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 }
 
 pcb_PTR removeBlocked (int *semAdd){
-
+    //get descriptior -> semdtrail
+    semd = semdTrail -> s_next
+    if(inactiveSemd){ //to do: write inactive
+        return NULL
+    }
+    temp = removeProcQ(&semAdd -> sprocQ)
+    temp -> p_Add
+    remove(&semAdd -> s_proQ, p)
+    return (FALSE);
+    //insert, same as remove
+    //out same as remove (return p)
 }
 
 pcb_PTR outBlocked (pcb_PTR p){
