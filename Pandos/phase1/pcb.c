@@ -87,10 +87,22 @@ void insertChild(pcb_t*prnt, pcb_t*p){
     p -> prnt;
 }
 //This method removes the first child returns NULL if no children, otherwise returns pointer to this removed child
-pcb_t* removeChild(pcb_t*p){
-    if(emptyChild(p))
-        return(NULL);
-    return(pcb_t - *p_child);
+pcb_t* removeChild(pcb_t*p){//where does this point to parent or child?
+    if(emptyChild(p)){
+        return (NULL);
+    }
+    if(){//there is one child
+    //delete the child and parent pointers
+    }
+    //more than 1 child
+    p->p_child;
+    //delete the previous pointer that pointed from parent to child
+    p->p_sib;
+    //delete pointer that points back
+    //save the new child location (so tail pointer)
+    p->p_prnt;
+    //have the parent point to the new pointer
+
 }
 //This method makes a child an orphan, and will become a subtree if it has children
 pcb_t*outChild(pcb_t*p){
