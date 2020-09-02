@@ -28,7 +28,12 @@ pcb_PTR outBlocked (pcb_PTR p){
 }
 
 pcb_PTR headBlocked (int *semAdd){
-
+    semAdd = findDesc semAdd
+    semAdd = semAdd -> s_next
+    if(inactiveSemd(semAdd, semAdd)){
+        return NULL
+    }
+    return headProcQ (semAdd -> s.s_ProcQ)
 }
 
 void initASL (){
@@ -43,3 +48,6 @@ void initASL (){
     mkEmptyProcQ(s_ProcQ)
     //to do: go to end and set null then reun make empty and set to null
 }
+
+//to do: where to add findDesc? -> pesudo code in Umang's notes
+//also add comments >:c
