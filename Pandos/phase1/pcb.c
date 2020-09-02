@@ -5,7 +5,7 @@ HIDDEN pcb_PTR pcbFree_h;
 
 //This method inserts pointed to by p onto the freePCB list
 void freePcb(pcb_t*p){
-
+    insertProcQ(pcbFree_h,p);
 }
 
 //Gives needed Pcb, then removes Pcb from the list (taken)
@@ -17,10 +17,10 @@ pcb_t* allocPcb(){
 }
 //intilize Pcb list
 void initPcbs(){
-    pcbFree_h = NULL;
+    pcbFree_h = mkEmptyProcQ();
     static pcb_t foo[MAXPROC];
     for(int i = 0; i<MAXPROC; i++){
-        freePcb(&(foo[i]));
+        insertProcQ(&pcbFree_h,&foo[i]);
     }
 }
 //Makes list empty :) like my soul
