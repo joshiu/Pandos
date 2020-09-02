@@ -2,6 +2,18 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 
+
+//local functions
+HIDDEN semd_PTR actSemd (semd_PTR, int *semAdd);
+HIDDEN void freeSemd (semd_PTR);
+HIDDEN int inactiveSemd (semdPTR, int semAdd);
+HIDDEN semdPTR findDesc (int *semAdd);
+//end of local funnctions
+
+//globals
+
+//end of globals
+
 int insertBlocked (int *semAdd, pcb_PTR p){
 
 }
