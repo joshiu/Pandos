@@ -1,6 +1,7 @@
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/asl.h"
+#include "../h/pcb.h"
 
 
 //local functions
@@ -31,5 +32,14 @@ pcb_PTR headBlocked (int *semAdd){
 }
 
 void initASL (){
+    static semd [MAXPROC+2]
+    semdFree_h = & semdTable[0]
+    //go thru and initialize ptr
+    semdTable[i-1].s_next = & semTable[i]
+    set[MAXPROC-1].s.next = NULL
 
+    //dummy nodes (?)
+    semd_h ->s.semAdd = 0
+    mkEmptyProcQ(s_ProcQ)
+    //to do: go to end and set null then reun make empty and set to null
 }
