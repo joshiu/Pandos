@@ -14,7 +14,6 @@ pcb_t* allocPcb(){
         return NULL;
     }//otherwise remove element from pcb list, then return a pointer to the removed element
     //remember that pcbs are reused, so make sure no value is in the pcb when its relocated, so -> set proprieties to NULL
-    removeProcQ(*tp);
 }
 
 //intilize Pcb list
@@ -26,7 +25,7 @@ void initPcbs(){
     }
 }
 
-//Makes list empty :) like my soul
+//Makes an empty list 
 pcb_t* mkEmptyProcQ(){
     return (NULL);
 }
@@ -38,24 +37,29 @@ int emptyProcQ(pcb_t*tp){
 
 //This method inserts an element at the front of the queue
 void insertProcQ(pcb_t**tp, pcb_t*p){
-    if(emptyProcQ(tp) == TRUE){
-        tp= p;
-        //find a way to make it point back to itself
+    pcb_t *head;
+    if(emptyProcQ(tp)){
+        (*tp)-> p_next = p; //the head points to what p points to
+        (*tp) ->p_prev =p;
+        (*tp) = p;//the tail is whatever p point to
     }
-    p-> (tp->p_next); //p needs to point to the head (tp-> p_next)
-    (tp->p_next) -> p; //tp-> p_next needs to point back to p
-    tp->p; //have the old tail point to new tail
-    p->tp; //have the new tail point back
-    tp = p; //assign tp to the new tail
+    (*tp) -> p_next = head;
+    p->p_next = head;
+    head -> p_prev = p;
+    (*tp) -> p_next = p;
+    p -> p_prev = (*tp);
+    (*tp) = p;
 }
 
 //This method removes the element at the front of the queue
 pcb_t*removeProcQ(pcb_t**tp){
-    if(emptyProcQ(tp)==TRUE){//if there is nothing
+    if(emptyProcQ(tp)){//if there is nothing
         return(NULL);
     }
-    if(tp->p_next == tp){ //if we point to ourseleves
-    mkEmptyProcQ();
+    if((*tp)->p_next == (*tp)){
+        (*tp) -> p_next = NULL;
+        (*tp) -> p_prev = NULL;
+        (*tp) = NULL;
     }
     //if we have more than one thing
     (tp->p_prev) -> (tp->p_next);//second last item points to head
@@ -76,9 +80,9 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
 
 //Gives head from Queue, or returns null if empty
 pcb_t*headProcQ(pcb_t*tp){
-    if(emptyProcQ(tp))
-    return(NULL);
-
+    if(emptyProcQ(tp)){
+        return(NULL);
+    }
     return(tp->p_next);
 }
 
