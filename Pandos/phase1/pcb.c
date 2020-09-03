@@ -98,6 +98,7 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
         forwardTo ->p_prev = backwardTo;
         head->p_next=NULL;
         head ->p_prev =NULL;
+        return; //idk
     }
     return(NULL); //p is not on the list, so NULL
 }
@@ -151,6 +152,26 @@ pcb_t* removeChild(pcb_t*p){//pointer points to parent?'
 
 //This method makes a child an orphan, and will become a subtree if it has children
 pcb_t*outChild(pcb_t*p){//pointer points to child
-
-
+    if(p->p_prnt ==NULL){
+        return NULL;
+    }
+    pcb_t *parent = p->p_prnt;
+    if(p->p_prnt != parent->p_child){//if I point to my parent and my parent doesn't point back
+        if(p->p_sib_next ==NULL){
+            p->p_prnt=NULL;
+            pcb_t *prevSib = p->p_sib_prev;
+            prevSib ->p_sib_next = NULL;
+            p->p_sib_prev = NULL;
+            return; //idk
+        }
+        p->p_prnt = NULL;
+        pcb_t *prevSib = p->p_sib_prev;
+        pcb_t *nextSib = p->p_sib_next;
+        prevSib ->p_sib_next = nextSib;
+        nextSib ->p_sib_prev = prevSib;
+        p->p_sib_next =NULL;
+        p->p_sib_prev =NULL;
+        return; //idk
+    }
+    return(removeChild(parent)); //child is first child, so use this method
 }
