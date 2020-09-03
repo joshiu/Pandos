@@ -10,7 +10,7 @@ void freePcb(pcb_t*p){
 
 //Gives needed Pcb, then removes Pcb from the list (taken)
 pcb_t* allocPcb(){
-    if(emptyProcQ(tp) == TRUE){//if the pcbFree list is empty, return NULL
+    if(emptyProcQ(*tp) == TRUE){//if the pcbFree list is empty, return NULL
         return NULL;
     }//otherwise remove element from pcb list, then return a pointer to the removed element
     //remember that pcbs are reused, so make sure no value is in the pcb when its relocated, so -> set proprieties to NULL
@@ -62,16 +62,35 @@ pcb_t*removeProcQ(pcb_t**tp){
         (*tp) = NULL;
     }
     //if we have more than one thing
-    (tp->p_prev) -> (tp->p_next);//second last item points to head
-    (tp->p_next) -> (tp->p_prev);//head points to second last
-    tp = tp->p_prev;//make the second last the new tail
-    //get rid of the tail (add a return as well)
+    pcb_t *head = (*tp)->p_next;
+    pcb_t *newHead = head ->p_next;
+    head->p_prev = NULL; //get rid of pointer to tail
+    (*tp) -> p_next = newHead; //tail points to new head
+    newHead ->p_prev = (*tp);//new head points back to tail
+    head ->p_next =NULL;//get rid of pointer to new head
+    //what does this return?
 }
 
 //Points to something and that gets removed
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
-    if(tp == p){
+    pcb_t *head = (*tp)->p_next;//dummy pointer for head
+    if(emptyProcQ(*tp)){
+        return NULL;
+    }
+    if(head = p){
         removeProcQ(*tp);
+    }
+    for(int i =0; i<MAXPROC; i++){
+        if(head != p ){
+            head ->p_next = head;
+            continue;
+        }
+        pcb_t *forwardTo = head ->p_next;
+        pcb_t *backwardTo = head ->p_prev;
+        backwardTo ->p_next = forwardTo;
+        forwardTo ->p_prev = backwardTo;
+        nextTo ->p_prev = head;
+        head ->p_next = nextTo;
     }
     (p->p_prev) -> (p->p_next); //have the previous one point to the next one
     (p->p_next) -> (p->p_previous); //have the next point to the previous

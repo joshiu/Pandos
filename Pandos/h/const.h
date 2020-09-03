@@ -12,7 +12,6 @@
 #define WORDLEN			  4				  /* word size in bytes	*/
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
-#define semd_PTR          semd_t*
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000
 #define RAMBASESIZE		0x10000004

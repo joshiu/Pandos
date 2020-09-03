@@ -8,7 +8,7 @@
 HIDDEN semd_PTR actSemd (semd_PTR, int *semAdd);
 HIDDEN void freeSemd (semd_PTR);
 HIDDEN int inactiveSemd (semdPTR, int semAdd);
-HIDDEN semdPTR findDesc (int *semAdd);
+HIDDEN semd_PTR findDesc (int *semAdd);
 //end of local funnctions
 
 //globals
