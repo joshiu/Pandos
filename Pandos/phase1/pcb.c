@@ -1,6 +1,7 @@
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/pcb.h"
+#include "../h/asl.h"
 HIDDEN pcb_PTR pcbFree_h;
 
 //This method inserts pointed to by p onto the freePCB list
@@ -10,10 +11,16 @@ void freePcb(pcb_t*p){
 
 //Gives needed Pcb, then removes Pcb from the list (taken)
 pcb_t* allocPcb(){
-    if(emptyProcQ(*tp) == TRUE){//if the pcbFree list is empty, return NULL
+    if(pcbFree_h == NULL){//if the pcbFree list is empty, return NULL
         return NULL;
-    }//otherwise remove element from pcb list, then return a pointer to the removed element
-    //remember that pcbs are reused, so make sure no value is in the pcb when its relocated, so -> set proprieties to NULL
+    }
+    else{
+        pcb_t *p =NULL;
+        p->p_next =NULL;
+        p->p_prev =NULL;
+        p->p_semAdd =NULL;
+    }
+  return; //find out what to return?
 }
 
 //intilize Pcb list
@@ -89,12 +96,10 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
         pcb_t *backwardTo = head ->p_prev;
         backwardTo ->p_next = forwardTo;
         forwardTo ->p_prev = backwardTo;
-        nextTo ->p_prev = head;
-        head ->p_next = nextTo;
+        head->p_next=NULL;
+        head ->p_prev =NULL;
     }
-    (p->p_prev) -> (p->p_next); //have the previous one point to the next one
-    (p->p_next) -> (p->p_previous); //have the next point to the previous
-    //get rid of the thing (add a return)
+    return(NULL); //p is not on the list, so NULL
 }
 
 //Gives head from Queue, or returns null if empty
@@ -112,38 +117,40 @@ int emptyChild(pcb_t*p){
 
 //This method makes the pcb pointed to by p a child of the parent
 void insertChild(pcb_t*prnt, pcb_t*p){
-    if(emptyChild(prnt) == TRUE){ //if no other children, point at new child
-        prnt -> p;
-        p -> prnt;
+    if(emptyChild(prnt)){ //if no other children, point at new child
+        prnt ->p_child = p;
+        p -> p_prnt = prnt;
     } //if their are children: parent points to new child and new child points to sibling + parent. 
-    prnt -> p_child; //how do you get this to be siblings?? halp
-    p -> p_child;
-    p_child -> p;
-    prnt -> p_child;
-    p -> prnt;
+    pcb_t *currentChild = prnt->p_child;
+    p->p_sib_next = currentChild;
+    currentChild ->p_sib_prev = p;
+    prnt ->p_child = p;
+    p->p_prnt = prnt;
 }
 
 //This method removes the first child returns NULL if no children, otherwise returns pointer to this removed child
-pcb_t* removeChild(pcb_t*p){//where does this point to parent or child?
+pcb_t* removeChild(pcb_t*p){//pointer points to parent?'
+    pcb_t *removeFirst = p->p_child;
     if(emptyChild(p)){
         return (NULL);
     }
-    if(){//there is one child
-    //delete the child and parent pointers
+    if((p->p_child)->p_sib_next ==NULL){//there is one child
+        removeFirst ->p_prnt= NULL;
+        p->p_child =NULL;
     }
-    //more than 1 child
-    p->p_child;
-    //delete the previous pointer that pointed from parent to child
-    p->p_sib;
-    //delete pointer that points back
-    //save the new child location (so tail pointer)
-    p->p_prnt;
-    //have the parent point to the new pointer
-
+    //more than one child
+    p ->p_child = p; //have p point to the child
+    pcb_t *parent = p->p_prnt;
+    pcb_t *firstSib = p->p_sib_next;
+    firstSib ->p_sib_prev =NULL;//stops next sib from pointing to p
+    parent ->p_child = firstSib; //set parents first child as sib
+    p->p_sib_next =NULL; //make p have no siblings
+    p->p_prnt =NULL; //only issue here is that p is now pointing to the orphanized child and not the parent...
+    return; //idk
 }
 
 //This method makes a child an orphan, and will become a subtree if it has children
-pcb_t*outChild(pcb_t*p){
+pcb_t*outChild(pcb_t*p){//pointer points to child
 
 
 }

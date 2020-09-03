@@ -3,6 +3,13 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 
+/* semaphore descriptor type */
+typedef struct semd_t {
+    struct semd_t *s_next;/* next element on the ASL */
+    int*s_semAdd;/* pointer to the semaphore*/
+    pcb_t *s_procQ; /* tail pointer to a*/
+                    /* process queue*/
+} semd_t;
 
 //local functions
 HIDDEN semd_PTR actSemd (semd_PTR, int *semAdd);
@@ -12,7 +19,8 @@ HIDDEN semd_PTR findDesc (int *semAdd);
 //end of local funnctions
 
 //globals
-
+HIDDEN semdFree_h;
+HIDDEN semd_h;
 //end of globals
 
 int insertBlocked (int *semAdd, pcb_PTR p){
