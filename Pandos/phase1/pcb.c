@@ -4,12 +4,24 @@
 #include "../h/asl.h"
 HIDDEN pcb_PTR pcbFree_h;
 
-//This method inserts pointed to by p onto the freePCB list
+
+/**
+ * This file contains the freePCB list, and methods that helps it maintain and manipulate the queue. 
+ * It also contains the process trees that also organize the pcbs. The methods for this section are used to support 
+ * and manipulate the process trees.
+ * 
+ * 
+ * This code is written by Umang Joshi and Amy Kelley.
+ */
+
+
+//This method inserts pointed to by p onto the freePCB list. This is done uing the insertProcQ method.
 void freePcb(pcb_t*p){
     insertProcQ(pcbFree_h,p);
 }
 
 //Gives needed Pcb, then removes Pcb from the list (taken)
+//If the list is empty then NULL is returned
 pcb_t* allocPcb(){
     if(pcbFree_h == NULL){//if the pcbFree list is empty, return NULL
         return NULL;
@@ -23,13 +35,14 @@ pcb_t* allocPcb(){
   return; //find out what to return?
 }
 
-//intilize Pcb list
+//Initializes Pcb list: it creates a new empty list and contains all elements in the static array MAXPROC in the pcb
 void initPcbs(){
     pcbFree_h = mkEmptyProcQ();
     static pcb_t foo[MAXPROC];
     for(int i = 0; i<MAXPROC; i++){
         insertProcQ(&pcbFree_h,&foo[i]);
     }
+    return; //what do we return??
 }
 
 //Makes an empty list 
@@ -37,7 +50,7 @@ pcb_t* mkEmptyProcQ(){
     return (NULL);
 }
 
-//This method returns true if the tp is empty, otherwise: returns false
+//This method returns true if the tp is empty, otherwise: returns false.
 int emptyProcQ(pcb_t*tp){
     return(tp == NULL);
 }
@@ -45,20 +58,21 @@ int emptyProcQ(pcb_t*tp){
 //This method inserts an element at the front of the queue
 void insertProcQ(pcb_t**tp, pcb_t*p){
     pcb_t *head;
-    if(emptyProcQ(tp)){
+    if(emptyProcQ(tp)){ //if queue is empty...
         (*tp)-> p_next = p; //the head points to what p points to
         (*tp) ->p_prev =p;
         (*tp) = p;//the tail is whatever p point to
     }
-    (*tp) -> p_next = head;
+    (*tp) -> p_next = head; 
     p->p_next = head;
     head -> p_prev = p;
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
     (*tp) = p;
+    return; //what does it return??
 }
 
-//This method removes the element at the front of the queue
+//This method removes the element at the tail of the queue
 pcb_t*removeProcQ(pcb_t**tp){
     if(emptyProcQ(tp)){//if there is nothing
         return(NULL);
@@ -78,13 +92,13 @@ pcb_t*removeProcQ(pcb_t**tp){
     //what does this return?
 }
 
-//Points to something and that gets removed
+//Points to an element in the queue and that element gets removed
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
     pcb_t *head = (*tp)->p_next;//dummy pointer for head
-    if(emptyProcQ(*tp)){
+    if(emptyProcQ(*tp)){ //if the queue is empty return NULL
         return NULL;
     }
-    if(head = p){
+    if(head = p){ //if the head is the pointer then call removeProcQ on tp
         removeProcQ(*tp);
     }
     for(int i =0; i<MAXPROC; i++){
@@ -98,7 +112,7 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
         forwardTo ->p_prev = backwardTo;
         head->p_next=NULL;
         head ->p_prev =NULL;
-        return; //idk
+        return; //what does it return?
     }
     return(NULL); //p is not on the list, so NULL
 }
@@ -110,6 +124,8 @@ pcb_t*headProcQ(pcb_t*tp){
     }
     return(tp->p_next);
 }
+
+//------------------------------------------------------------------------------------------------------//
 
 //This method returns true if the pcb that is pointed to by p has no children, otherwise returns false.
 int emptyChild(pcb_t*p){
