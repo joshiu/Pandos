@@ -156,7 +156,7 @@ pcb_t*outChild(pcb_t*p){//pointer points to child
         return NULL;
     }
     pcb_t *parent = p->p_prnt;
-    if(p->p_prnt != parent->p_child){//if I point to my parent and my parent doesn't point back
+    if(p->p_prnt != parent->p_child){//if I point to my parent and my parent doesn't point back NOT THE FIRST CHILD
         if(p->p_sib_next ==NULL){
             p->p_prnt=NULL;
             pcb_t *prevSib = p->p_sib_prev;
