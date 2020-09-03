@@ -15,6 +15,10 @@ HIDDEN pcb_PTR pcbFree_h;
  */
 
 
+//--------------------------------------------------------------------------------------------------------//
+//-----------------------------------Below: methods for the queue----------------------------------------//
+//------------------------------------------------------------------------------------------------------//
+
 //This method inserts pointed to by p onto the freePCB list. This is done uing the insertProcQ method.
 void freePcb(pcb_t*p){
     insertProcQ(pcbFree_h,p);
@@ -125,7 +129,12 @@ pcb_t*headProcQ(pcb_t*tp){
     return(tp->p_next);
 }
 
+
+//--------------------------------------------------------------------------------------------------------//
+//---------------------------------Below: methods for process trees--------------------------------------//
 //------------------------------------------------------------------------------------------------------//
+
+
 
 //This method returns true if the pcb that is pointed to by p has no children, otherwise returns false.
 int emptyChild(pcb_t*p){
@@ -143,15 +152,16 @@ void insertChild(pcb_t*prnt, pcb_t*p){
     currentChild ->p_sib_prev = p;
     prnt ->p_child = p;
     p->p_prnt = prnt;
+    return; //what do we return?
 }
 
 //This method removes the first child returns NULL if no children, otherwise returns pointer to this removed child
-pcb_t* removeChild(pcb_t*p){//pointer points to parent?'
+pcb_t* removeChild(pcb_t*p){//pointer points to parent?
     pcb_t *removeFirst = p->p_child;
-    if(emptyChild(p)){
+    if(emptyChild(p)){//call emptyChild to see if there are children
         return (NULL);
     }
-    if((p->p_child)->p_sib_next ==NULL){//there is one child
+    if((p->p_child)->p_sib_next ==NULL){//if there is one child
         removeFirst ->p_prnt= NULL;
         p->p_child =NULL;
     }
@@ -163,23 +173,23 @@ pcb_t* removeChild(pcb_t*p){//pointer points to parent?'
     parent ->p_child = firstSib; //set parents first child as sib
     p->p_sib_next =NULL; //make p have no siblings
     p->p_prnt =NULL; //only issue here is that p is now pointing to the orphanized child and not the parent...
-    return; //idk
+    return; //what to return?
 }
 
 //This method makes a child an orphan, and will become a subtree if it has children
 pcb_t*outChild(pcb_t*p){//pointer points to child
-    if(p->p_prnt ==NULL){
+    if(p->p_prnt ==NULL){ //if you don't have a parent then you are already an orphan
         return NULL;
     }
     pcb_t *parent = p->p_prnt;
     if(p->p_prnt != parent->p_child){//if I point to my parent and my parent doesn't point back NOT THE FIRST CHILD
-        if(p->p_sib_next ==NULL){
+        if(p->p_sib_next ==NULL){//you are an end child: remove p from parent and prev sib
             p->p_prnt=NULL;
             pcb_t *prevSib = p->p_sib_prev;
             prevSib ->p_sib_next = NULL;
             p->p_sib_prev = NULL;
-            return; //idk
-        }
+            return; //what to return?
+        }//if you are one of the middle child: remove p from parent, prev and next sib.
         p->p_prnt = NULL;
         pcb_t *prevSib = p->p_sib_prev;
         pcb_t *nextSib = p->p_sib_next;
@@ -187,7 +197,7 @@ pcb_t*outChild(pcb_t*p){//pointer points to child
         nextSib ->p_sib_prev = prevSib;
         p->p_sib_next =NULL;
         p->p_sib_prev =NULL;
-        return; //idk
+        return; //what to return?
     }
     return(removeChild(parent)); //child is first child, so use this method
 }
