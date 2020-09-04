@@ -77,14 +77,14 @@ pcb_PTR headBlocked (int *semAdd){
 //This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
 //on a free list.
 void initASL (){
-    static semd [MAXPROC+2];
+    static semd_t semdTable[MAXPROC+2];
     semdFree_h = &semdTable[0];
     for(int i= 0; i<MAXPROC; i++){
-        semdTable[i-1].s_next = & semTable[i];
+        semdTable[i-1].s_next = & semdTable[i];
     }
-    semTable[MAXPROC-1].s.next = NULL;
+    semdTable[MAXPROC-1].s_next = NULL;
     semd_h->s_semAdd =0;
-    mkEmptyProcQ(s_procQ);    
+    semd_h -> s_procQ = mkEmptyProcQ();    
 }
 
 //to do: where to add findDesc? -> pesudo code in Umang's notes
