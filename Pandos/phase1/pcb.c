@@ -43,9 +43,10 @@ pcb_t* allocPcb(){
 
 /*Initializes Pcb list: it creates a new empty list and contains all elements in the static array MAXPROC in the pcb*/
 void initPcbs(){
+    int i = 0;
     pcbFree_h = mkEmptyProcQ();
     static pcb_t foo[MAXPROC];
-    for(int i = 0; i<MAXPROC; i++){
+    for(i; i<MAXPROC; i++){
         insertProcQ(&pcbFree_h,&foo[i]);
     }
 }
@@ -79,7 +80,7 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
 /*This method removes the element at the head of the queue*/
 pcb_t*removeProcQ(pcb_t**tp){
     pcb_t *pReturn = (*tp)->p_next; /*dummy pointer to the head*/
-    if(emptyProcQ(tp)){/*if there is nothing*/
+    if(emptyProcQ(*tp)){/*if there is nothing*/
         return(NULL);
     }
     if((*tp)->p_next == (*tp)){/*only 1 item in queue*/
@@ -99,14 +100,15 @@ pcb_t*removeProcQ(pcb_t**tp){
 
 /*Points to an element in the queue and that element gets removed*/
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
+    int i =0;
     pcb_t *removeQ = (*tp)->p_next;/*dummy pointer for head*/
     if(emptyProcQ(*tp)){ /*if the queue is empty return NULL*/
         return NULL;
     }
-    if(removeQ = p){ /*if the head is the pointer then call removeProcQ on tp*/
+    if(removeQ == p){ /*if the head is the pointer then call removeProcQ on tp*/
         removeProcQ(*tp);
     }
-    for(int i =0; i<MAXPROC; i++){
+    for(i; i<MAXPROC; i++){
         if(removeQ != p ){
             removeQ ->p_next = removeQ;
             continue;
@@ -183,15 +185,15 @@ pcb_t*outChild(pcb_t*p){/*pointer points to child*/
     pcb_t *parent = p->p_prnt;/*dummy pointer to the parent*/
 
     if(p->p_prnt != parent->p_child){/*if not the first child*/
-        if(p->p_sib_next ==NULL){/*you are an end child (no next sibling)*/
+        if(p->p_sib_next ==NULL){/*you are an end child, so no next sibling*/
             p->p_prnt=NULL;
-            pcb_t *prevSib = p->p_sib_prev;
+            pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
             prevSib ->p_sib_next = NULL;
             p->p_sib_prev = NULL;
             return(p); /*return orphaned child*
-        }/*if you are a middle child (have sib_next and sib_prev)*/
+        }/*if you are a middle child, so have sib_next and sib_prev*/
         p->p_prnt = NULL;
-        pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
+        prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
         pcb_t *nextSib = p->p_sib_next;/*dummy pointer to next sibling*/
         prevSib ->p_sib_next = nextSib;/*point previous to next sibling*/
         nextSib ->p_sib_prev = prevSib;/*point next sibling to previous*/

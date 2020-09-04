@@ -34,26 +34,26 @@ HIDDEN semd_PTR semd_h;
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = findDesc(semAdd);/*dummy pointer that points to address from find*/
     if(temp->s_next->s_semAdd == semAdd){/*if the sem addresses match*/
-        insertProcQ(temp->s_next-> s_procQ, p);
+        insertProcQ(temp->s_next-> s_procQ, p);/*first variable wrong here*/
         return (FALSE); 
     }
     /*if we don't find, remove semdFree*/
     if(semdFree_h==NULL){/*if the free list is empty, there is an error*/
         return NULL;
     }
-    /*remove semd from Free list if available*/
+    /*remove semd from Free list and add to ASL, then and insert pcb into new semd */
     semd_PTR newSemd = semdFree_h;/*get new semd from list*/
-    semdFree_h = newSemd->s_next;/*adjust head to point to new head*/
-    newSemd ->s_next =NULL;/*orphanize*/
+    semdFree_h = newSemd->s_next;
+    newSemd ->s_next =NULL;
     semd_t *actListPrev = findDesc(newSemd->s_semAdd);
-    semd_t *actListNext = actListPrev->s_next;/*address of next one*/
-    actListPrev->s_next = newSemd;/*point prev to new*/
+    semd_t *actListNext = actListPrev->s_next;
+    actListPrev->s_next = newSemd;
     newSemd ->s_next = actListNext;/*point new to next*/
-    insertProcQ(newSemd->s_procQ, p);/*insert pcb into new*/
-    if(semdFree_h==NULL){/*if the free list is empty,after removal*/
+    insertProcQ(newSemd->s_procQ, p);
+    if(semdFree_h==NULL){/*if the free list is empty,after semd removal*/
         return TRUE;
     }
-    return(FALSE);     
+    return(FALSE);/*return false if semdFree not empty*/
 }
 
 
@@ -65,7 +65,7 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 pcb_PTR removeBlocked (int *semAdd){
     semd_PTR tempSemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
     if(tempSemAdd->s_next->s_semAdd == semAdd){
-        pcb_PTR returnP = removeProcQ(tempSemAdd->s_next-> s_procQ);
+        pcb_PTR returnP = removeProcQ(tempSemAdd->s_next-> s_procQ);/*first variable wrong here*/
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if process queue empty, put semd back on free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;
             tempSemAdd ->s_next = tempRemoval->s_next;
@@ -83,7 +83,7 @@ pcb_PTR removeBlocked (int *semAdd){
 pcb_PTR outBlocked (pcb_PTR p){
     semd_PTR tempSemAdd = findDesc(p->p_semAdd);/*dummy pointer that points address from find*/
     if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){
-        pcb_PTR returnP = outProcQ(tempSemAdd->s_next-> s_procQ,p);/* set return value*/
+        pcb_PTR returnP = outProcQ(tempSemAdd->s_next-> s_procQ,p);/*first variable wrong here*/
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if queue empty, return semd to free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;
             tempSemAdd ->s_next = tempRemoval->s_next;
@@ -114,9 +114,10 @@ pcb_PTR headBlocked (int *semAdd){
 //on a free list.
 //not complete*/
 void initASL (){
+    int i = 0;
     static semd_t semdTable[MAXPROC+2];
     semdFree_h = &semdTable[0];
-    for(int i= 0; i<MAXPROC; i++){
+    for(i; i<MAXPROC; i++){
         semdTable[i-1].s_next = & semdTable[i];
     }
     semdTable[MAXPROC-1].s_next = NULL;
