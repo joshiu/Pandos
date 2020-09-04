@@ -37,6 +37,7 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
+    //p-> =NULL;
     p=removeProcQ(pcbFree_h);//set the pointer to point to the removed pcb
     return (p);//return the pointer
 }

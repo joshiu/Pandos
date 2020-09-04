@@ -13,22 +13,22 @@
 
 /* semaphore descriptor type */
 typedef struct semd_t {
-    struct semd_t *s_next;/* next element on the ASL */
-    int*s_semAdd;/* pointer to the semaphore*/
-    pcb_t *s_procQ; /* tail pointer to a*/
-                    /* process queue*/
+    struct semd_t   *s_next;/* next element on the ASL */
+    int             *s_semAdd;/* pointer to the semaphore*/
+    pcb_t           *s_procQ; /* tail pointer to a*/
+                            /* process queue*/
 } semd_t;
 
 //local functions
-HIDDEN semd_PTR actSemd (semd_PTR, int *semAdd);
+HIDDEN semd_PTR actSemd (semd_PTR s, int *semAdd);
 HIDDEN void freeSemd (semd_PTR);
-HIDDEN int inactiveSemd (semdPTR, int semAdd);
+HIDDEN int inactiveSemd (semd_PTR s, int semAdd);
 HIDDEN semd_PTR findDesc (int *semAdd);
 //end of local functions
 
 //globals
-HIDDEN semdFree_h;
-HIDDEN semd_h;
+HIDDEN semd_PTR semdFree_h;
+HIDDEN semd_PTR semd_h;
 //end of globals
 
 //This method searches the active semdList to see if theres the semAdd in it
@@ -46,13 +46,13 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 //processQueue is empty -> Takes out of active list and inserts into the free list
 pcb_PTR removeBlocked (int *semAdd){
     //get descriptior -> semdtrail
-    semd = semdTrail -> s_next
+    semd = semdTrail -> s_next;
     if(inactiveSemd){ //to do: write inactive
-        return NULL
+        return NULL;
     }
-    temp = removeProcQ(&semAdd -> sprocQ)
-    temp -> p_Add
-    remove(&semAdd -> s_proQ, p)
+    temp = removeProcQ(&semAdd -> s_procQ);
+    temp -> p_Add;
+    removeProcQ(&semAdd -> s_proQ, p);
     return (FALSE);
     //insert, same as remove
     //out same as remove (return p)
@@ -66,27 +66,25 @@ pcb_PTR outBlocked (pcb_PTR p){
 //This is a an accessor method is the same as removeBlocked and outBlocked, but instead it calls headProcQ
 //Returns that to the caller
 pcb_PTR headBlocked (int *semAdd){
-    semAdd = findDesc semAdd
-    semAdd = semAdd -> s_next
+    semAdd = findDesc(semAdd);
+    semAdd = semAdd -> s_next;
     if(inactiveSemd(semAdd, semAdd)){
-        return NULL
+        return NULL;
     }
-    return headProcQ (semAdd -> s.s_ProcQ)
+    return headProcQ (semAdd -> s.s_ProcQ);
 }
 
 //This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
 //on a free list.
 void initASL (){
-    static semd [MAXPROC+2]
-    semdFree_h = & semdTable[0]
-    //go thru and initialize ptr
-    semdTable[i-1].s_next = & semTable[i]
-    set[MAXPROC-1].s.next = NULL
-
-    //dummy nodes (?)
-    semd_h ->s.semAdd = 0
-    mkEmptyProcQ(s_ProcQ)
-    //to do: go to end and set null then reun make empty and set to null
+    static semd [MAXPROC+2];
+    semdFree_h = &semdTable[0];
+    for(int i= 0; i<MAXPROC; i++){
+        semdTable[i-1].s_next = & semTable[i];
+    }
+    semTable[MAXPROC-1].s.next = NULL;
+    semd_h->s_semAdd =0;
+    mkEmptyProcQ(s_procQ);    
 }
 
 //to do: where to add findDesc? -> pesudo code in Umang's notes
