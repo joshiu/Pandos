@@ -27,8 +27,8 @@ all: kernel.core.umps
 kernel.core.umps: kernel
 	$(EF) -k kernel
 
-kernel: p1test.o asl.o pcb.o 
-	$(LD) $(LDCOREFLAGS) $(LIBDIR)/crtso.o p1test.o asl.o pcb.o $(LIBDIR)/libumps.o -o kernel 
+kernel: p1test.o pcb.o 
+	$(LD) $(LDCOREFLAGS) $(LIBDIR)/crtso.o p1test.o pcb.o $(LIBDIR)/libumps.o -o kernel 
 
 %.o: %.c $(DEFS)
 	$(CC) $(CFLAGS) $<
