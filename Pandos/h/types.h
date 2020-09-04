@@ -14,9 +14,17 @@ typedef signed int cpu_t;
 
 typedef unsigned int memaddr;
 
-/*process control block type*/
+#define STATEREGNUM	31
+typedef struct state_t {
+	unsigned int	s_entryHI;
+	unsigned int	s_cause;
+	unsigned int	s_status;
+	unsigned int 	s_pc;
+	int	 			s_reg[STATEREGNUM];
 
-state_t             p_s;         /*processor state*/
+} state_t, *state_PTR;
+
+/*process control block type*/
 typedef struct pcb_t{
 	/*process queue fields*/
 struct pcb_t			*p_next,		/*pointer to next entry*/
@@ -27,7 +35,7 @@ struct pcb_t			*p_next,		/*pointer to next entry*/
 						*p_sib_next, /*pointer to next sibling*/
 						*p_sib_prev; /*pointer to previous sibling*/
 /*process status information*/
-
+state_t             p_s;         /*processor state*/
 cpu_t               p_time;      /*cpu time used by proc*/
 int 				*p_semAdd;   /*pointer to sema4 on*/
 								/*which process blocked*/
@@ -77,16 +85,6 @@ typedef struct passupvector {
     unsigned int exception_stackPtr;
 } passupvector_t;
 
-
-#define STATEREGNUM	31
-typedef struct state_t {
-	unsigned int	s_entryHI;
-	unsigned int	s_cause;
-	unsigned int	s_status;
-	unsigned int 	s_pc;
-	int	 			s_reg[STATEREGNUM];
-
-} state_t, *state_PTR;
 
 #define	s_at	s_reg[0]
 #define	s_v0	s_reg[1]
