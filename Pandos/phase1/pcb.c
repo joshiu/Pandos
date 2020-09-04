@@ -19,7 +19,7 @@ HIDDEN pcb_PTR pcbFree_h;
 
 /*This method inserts pointed to by p onto the freePCB list. This is done uing the insertProcQ method.*/
 void freePcb(pcb_t*p){
-    insertProcQ(pcbFree_h,p);
+    insertProcQ(&pcbFree_h,p);
 }
 
 /*Gives needed Pcb, then removes Pcb from the list (taken)
@@ -37,16 +37,16 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
-    p=removeProcQ(pcbFree_h);/*set the pointer to point to the removed pcb*/
+    p=removeProcQ(&pcbFree_h);/*set the pointer to point to the removed pcb*/
     return (p);/*return the pointer*/
 }
 
 /*Initializes Pcb list: it creates a new empty list and contains all elements in the static array MAXPROC in the pcb*/
 void initPcbs(){
-    int i = 0;
+    int i;
     pcbFree_h = mkEmptyProcQ();
     static pcb_t foo[MAXPROC];
-    for(i; i<MAXPROC; i++){
+    for( i=0; i<MAXPROC; i++){
         insertProcQ(&pcbFree_h,&foo[i]);
     }
 }
@@ -64,7 +64,7 @@ int emptyProcQ(pcb_t*tp){
 /*This method inserts an element at the front of the queue*/
 void insertProcQ(pcb_t**tp, pcb_t*p){
     pcb_t *head;
-    if(emptyProcQ(tp)){ /*if queue is empty...*/
+    if(emptyProcQ(*tp)){ /*if queue is empty...*/
         (*tp)-> p_next = p; /*the head points to what p points to*/
         (*tp) ->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
@@ -100,15 +100,15 @@ pcb_t*removeProcQ(pcb_t**tp){
 
 /*Points to an element in the queue and that element gets removed*/
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
-    int i =0;
+    int i;
     pcb_t *removeQ = (*tp)->p_next;/*dummy pointer for head*/
     if(emptyProcQ(*tp)){ /*if the queue is empty return NULL*/
         return NULL;
     }
     if(removeQ == p){ /*if the head is the pointer then call removeProcQ on tp*/
-        removeProcQ(*tp);
+        removeProcQ(tp);
     }
-    for(i; i<MAXPROC; i++){
+    for(i=0; i<MAXPROC; i++){
         if(removeQ != p ){
             removeQ ->p_next = removeQ;
             continue;
@@ -190,10 +190,10 @@ pcb_t*outChild(pcb_t*p){/*pointer points to child*/
             pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
             prevSib ->p_sib_next = NULL;
             p->p_sib_prev = NULL;
-            return(p); /*return orphaned child*
+            return(p); /*return orphaned child*/
         }/*if you are a middle child, so have sib_next and sib_prev*/
         p->p_prnt = NULL;
-        prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
+        pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
         pcb_t *nextSib = p->p_sib_next;/*dummy pointer to next sibling*/
         prevSib ->p_sib_next = nextSib;/*point previous to next sibling*/
         nextSib ->p_sib_prev = prevSib;/*point next sibling to previous*/
