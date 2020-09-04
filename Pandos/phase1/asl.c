@@ -45,17 +45,16 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 //This found also has two cases: the processQueue is not empty -> done
 //processQueue is empty -> Takes out of active list and inserts into the free list
 pcb_PTR removeBlocked (int *semAdd){
-    //get descriptior -> semdtrail
+     -> semdTrail;
     semd = semdTrail -> s_next;
-    if(inactiveSemd){ //to do: write inactive
+    if(inactiveSemd(semd, semAdd)){ //to do: write inactive
         return NULL;
     }
-    temp = removeProcQ(&semAdd -> s_procQ);
-    temp -> p_Add;
-    removeProcQ(&semAdd -> s_proQ, p);
+    semd_t *temp = removeProcQ(&semAdd -> s_procQ);
+    temp -> s_semAdd = semAdd;//this is wrong
+    removeProcQ(&semAdd -> s_proQ, p);//why is this wrong?
     return (FALSE);
-    //insert, same as remove
-    //out same as remove (return p)
+
 }
 
 //This  is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ
@@ -66,16 +65,17 @@ pcb_PTR outBlocked (pcb_PTR p){
 //This is a an accessor method is the same as removeBlocked and outBlocked, but instead it calls headProcQ
 //Returns that to the caller
 pcb_PTR headBlocked (int *semAdd){
-    semAdd = findDesc(semAdd);
-    semAdd = semAdd -> s_next;
+    semd_t *tempsemAdd = findDesc(semAdd);//dummy pointer that stores address from find
+    semAdd = tempsemAdd -> s_next;//set address to the next one because that is our node of interest
     if(inactiveSemd(semAdd, semAdd)){
         return NULL;
     }
-    return headProcQ (semAdd -> s.s_ProcQ);
+    return headProcQ (semAdd->s.s_procQ);//this is wrong
 }
 
 //This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
 //on a free list.
+//not complete
 void initASL (){
     static semd_t semdTable[MAXPROC+2];
     semdFree_h = &semdTable[0];
@@ -86,5 +86,11 @@ void initASL (){
     semd_h->s_semAdd =0;
     semd_h -> s_procQ = mkEmptyProcQ();    
 }
-
-//to do: where to add findDesc? -> pesudo code in Umang's notes
+//idk if totally correct
+//cycles through the ASL and finds the given semAdd
+semd_PTR findDesc(int *semAdd){
+    semd_t *temp; //dummy node
+    while(temp ->s_next-> s_semAdd < semAdd)
+        temp=temp->s_next;//possible memory leak?
+    return temp; 
+}

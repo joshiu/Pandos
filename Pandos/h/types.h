@@ -22,7 +22,7 @@ struct pcb_t			*p_next,		/*pointer to next entry*/
 /*process tree fields*/
 						*p_prnt,     /*pointer to parent*/
 						*p_child,    /*pointer to 1st child*/
-						*p_sib_next; /*pointer to next sibling*/
+						*p_sib_next, /*pointer to next sibling*/
 						*p_sib_prev; /*pointer to previous sibling*/
 /*process status information*/
 state_t             p_s;         /*processor state*/
