@@ -21,8 +21,8 @@ typedef struct semd_t {
 
 //local functions
 HIDDEN semd_PTR actSemd (semd_PTR s, int *semAdd);
-HIDDEN void freeSemd (semd_PTR);
-HIDDEN int inactiveSemd (semd_PTR s, int semAdd);
+HIDDEN void freeSemd (semd_PTR);//not writing this because writing it out each time makes more sense to me right now; will condense later
+HIDDEN int inactiveSemd (semd_PTR s, int semAdd);//not writing this because writing it out each time makes more sense to me right now; will condense later
 HIDDEN semd_PTR findDesc (int *semAdd);
 //end of local functions
 
@@ -36,8 +36,8 @@ HIDDEN semd_PTR semd_h;
 //Or not found -> allocate new node and put it into list then preform found
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = findDesc(semAdd);
-    if(temp == *semAdd){//wefind
-        insertProcQ(temp->s_procQ, p);
+    if(temp->s_next == *semAdd){//wefind
+        insertProcQ(temp->s_next-> s_procQ, p);
         return; //idk
     }
     //if we don't find, remove semdFree
@@ -45,13 +45,15 @@ int insertBlocked (int *semAdd, pcb_PTR p){
         return NULL;
     }
     //remove semd from Free list if available
-    semd_PTR newSemd = semdFree_h;
-    semdFree_h = newSemd->s_next;
-    newSemd ->s_next =NULL;
-    semd_t *actListPrev = findDesc(newSemd);//figure out how tf do this
-    //once i get the address
-    actListPrev->s_next = newSemd;
-    return;//idk
+    semd_PTR newSemd = semdFree_h;//get new semd from list
+    semdFree_h = newSemd->s_next;//adjust head to point to new head
+    newSemd ->s_next =NULL;//orphanize
+    semd_t *actListPrev = findDesc(newSemd);//is this correct?
+    semd_t *actListNext = actListPrev->s_next;//address of next one
+    actListPrev->s_next = newSemd;//point prev to new
+    newSemd ->s_next = actListNext;//point new to next
+    insertProcQ(newSemd->s_procQ, p);//insert pcb into new
+    return; //idk     
 }
 
 
@@ -61,41 +63,53 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 //This found also has two cases: the processQueue is not empty -> done
 //processQueue is empty -> Takes out of active list and inserts into the free list
 pcb_PTR removeBlocked (int *semAdd){
-     -> semdTrail;
-    semd = semdTrail -> s_next;
-    if(inactiveSemd(semd, semAdd)){ //to do: write inactive
-        return NULL;
+    semd_PTR tempSemAdd = findDesc(semAdd);
+    if(tempSemAdd->s_next == *semAdd){
+        removeProcQ(tempSemAdd->s_next-> s_procQ);
+        if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){
+            semd_PTR removal = tempSemAdd ->s_next;// remove next one (current is previous)
+            tempSemAdd ->s_next = removal->s_next;//point prev to next
+            removal->s_next = semdFree_h;//point removed one to freeList
+            semdFree_h = removal;//make removed one the head of the FreeList
+            return; //idk
+        }
+        //not empty then done 
+        return;//idk
     }
-    semd_t *temp = removeProcQ(&semAdd -> s_procQ);
-    temp -> s_semAdd = semAdd;//this is wrong
-    removeProcQ(&semAdd -> s_proQ);//why is this wrong?
-    return (FALSE);
-
+    //if temp and semAdd don't match, then semAdd not in ASL, so error
+    return NULL;
 }
 
 //This  is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ
 pcb_PTR outBlocked (pcb_PTR p){
-         -> semdTrail;
-    semd = semdTrail -> s_next;
-    if(inactiveSemd(semd, semAdd)){ //to do: write inactive
-        return NULL;
+    semd_PTR tempSemAdd = findDesc(p->p_semAdd);
+    if(tempSemAdd->s_next == p->p_semAdd){
+        outProcQ(tempSemAdd->s_next-> s_procQ,p);
+        if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){
+            semd_PTR removal = tempSemAdd ->s_next;// remove next one (current is previous)
+            tempSemAdd ->s_next = removal->s_next;//point prev to next
+            removal->s_next = semdFree_h;//point removed one to freeList
+            semdFree_h = removal;//make removed one the head of the FreeList
+            return; //idk
+        }
+        //not empty then done 
+        return;//idk
     }
-    semd_t *temp = outProcQ(&semAdd -> s_procQ,p);
-    temp -> s_semAdd = semAdd;//this is wrong
-    outProcQ(&semAdd -> s_proQ, p);//why is this wrong?
-    return (p);
-
+    //if temp and semAdd don't match, then semAdd not in ASL, so error
+    return NULL;
 }
 
 //This is a an accessor method is the same as removeBlocked and outBlocked, but instead it calls headProcQ
 //Returns that to the caller
 pcb_PTR headBlocked (int *semAdd){
     semd_t *tempsemAdd = findDesc(semAdd);//dummy pointer that stores address from find
-    semAdd = tempsemAdd -> s_next;//set address to the next one because that is our node of interest
-    if(inactiveSemd(semAdd, semAdd)){
-        return NULL;
+    if(tempsemAdd->s_next ==semAdd){
+        if(emptyProcQ(tempsemAdd->s_next->s_procQ)){
+            return NULL;
+        }
+        return tempsemAdd->s_next->s_procQ->p_next;
     }
-    return headProcQ (semAdd->s.s_procQ);//this is wrong
+    return NULL;
 }
 
 //This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
