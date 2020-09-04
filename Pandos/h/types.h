@@ -14,10 +14,9 @@ typedef signed int cpu_t;
 
 typedef unsigned int memaddr;
 
-state_t             p_s;         /*processor state*/
-
 /*process control block type*/
 typedef struct pcb_t{
+state_t             p_s;         /*processor state*/
 	/*process queue fields*/
 struct pcb_t			*p_next,		/*pointer to next entry*/
 						*p_prev,     /*pointer to prev entry*/
