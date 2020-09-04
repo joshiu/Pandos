@@ -1,11 +1,4 @@
-#include "../h/const.h"
-#include "../h/types.h"
-#include "../h/pcb.h"
-#include "../h/asl.h"
-HIDDEN pcb_PTR pcbFree_h;
-
-
-/**
+/*
  * This file contains the freePCB list, and methods that helps it maintain and manipulate the queue. 
  * It also contains the process trees that also organize the pcbs. The methods for this section are used to support 
  * and manipulate the process trees.
@@ -13,8 +6,13 @@ HIDDEN pcb_PTR pcbFree_h;
  * 
  * This code is written by Umang Joshi and Amy Kelley.
  */
-
-
+#include "../h/const.h"
+#include "../h/types.h"
+#include "../h/pcb.h"
+#include "../h/asl.h"
+/* Global Variables */
+HIDDEN pcb_PTR pcbFree_h;
+/*End of Global Variables*/
 //--------------------------------------------------------------------------------------------------------//
 //-----------------------------------Below: methods for the queue----------------------------------------//
 //------------------------------------------------------------------------------------------------------//
@@ -30,13 +28,17 @@ pcb_t* allocPcb(){
     if(pcbFree_h == NULL){//if the pcbFree list is empty, return NULL
         return NULL;
     }
-    else{
-        pcb_t *p =NULL;
-        p->p_next =NULL;
-        p->p_prev =NULL;
-        p->p_semAdd =NULL;
-    }
-  return; //find out what to return?
+    //initialize all our pointers
+    pcb_t *p =NULL;
+    p->p_next =NULL;
+    p->p_prev =NULL;
+    p->p_semAdd =NULL;
+    p->p_prnt =NULL;
+    p->p_child = NULL;
+    p->p_sib_next = NULL;
+    p->p_sib_prev =NULL;
+    p=removeProcQ(pcbFree_h);//set the pointer to point to the removed pcb
+    return (p);//return the pointer
 }
 
 //Initializes Pcb list: it creates a new empty list and contains all elements in the static array MAXPROC in the pcb
@@ -46,7 +48,6 @@ void initPcbs(){
     for(int i = 0; i<MAXPROC; i++){
         insertProcQ(&pcbFree_h,&foo[i]);
     }
-    return; //what do we return??
 }
 
 //Makes an empty list 
@@ -76,47 +77,48 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
     return; //what does it return??
 }
 
-//This method removes the element at the tail of the queue
+//This method removes the element at the head of the queue
 pcb_t*removeProcQ(pcb_t**tp){
+    pcb_t *pReturn = (*tp)->p_next; //dummy pointer to the head
     if(emptyProcQ(tp)){//if there is nothing
         return(NULL);
     }
-    if((*tp)->p_next == (*tp)){
+    if((*tp)->p_next == (*tp)){//only 1 item in queue
         (*tp) -> p_next = NULL;
         (*tp) -> p_prev = NULL;
         (*tp) = NULL;
+        return (pReturn);
     }
     //if we have more than one thing
-    pcb_t *head = (*tp)->p_next;
-    pcb_t *newHead = head ->p_next;
-    head->p_prev = NULL; //get rid of pointer to tail
+    pcb_t *newHead = pReturn ->p_next;
+    pReturn->p_prev = NULL; //get rid of pointer from head to tail
     (*tp) -> p_next = newHead; //tail points to new head
     newHead ->p_prev = (*tp);//new head points back to tail
-    head ->p_next =NULL;//get rid of pointer to new head
-    //what does this return?
+    pReturn ->p_next =NULL;//get rid of pointer from old head to new head
+    return(pReturn);//return old head
 }
 
 //Points to an element in the queue and that element gets removed
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
-    pcb_t *head = (*tp)->p_next;//dummy pointer for head
+    pcb_t *removeQ = (*tp)->p_next;//dummy pointer for head
     if(emptyProcQ(*tp)){ //if the queue is empty return NULL
         return NULL;
     }
-    if(head = p){ //if the head is the pointer then call removeProcQ on tp
+    if(removeQ = p){ //if the head is the pointer then call removeProcQ on tp
         removeProcQ(*tp);
     }
     for(int i =0; i<MAXPROC; i++){
-        if(head != p ){
-            head ->p_next = head;
+        if(removeQ != p ){
+            removeQ ->p_next = removeQ;
             continue;
         }
-        pcb_t *forwardTo = head ->p_next;
-        pcb_t *backwardTo = head ->p_prev;
-        backwardTo ->p_next = forwardTo;
-        forwardTo ->p_prev = backwardTo;
-        head->p_next=NULL;
-        head ->p_prev =NULL;
-        return; //what does it return?
+        pcb_t *forwardTo = removeQ ->p_next;//dummy pointer to next item
+        pcb_t *backwardTo = removeQ ->p_prev;//dummy pointer to previous item
+        backwardTo ->p_next = forwardTo;//have previous point to next
+        forwardTo ->p_prev = backwardTo;//have next point to previous
+        removeQ->p_next=NULL; //remove pointer to next item
+        removeQ ->p_prev =NULL;//remove pointer to previous item
+        return(removeQ); //return pointer to removed
     }
     return(NULL); //p is not on the list, so NULL
 }
@@ -152,28 +154,26 @@ void insertChild(pcb_t*prnt, pcb_t*p){
     currentChild ->p_sib_prev = p;
     prnt ->p_child = p;
     p->p_prnt = prnt;
-    return; //what do we return?
 }
 
 //This method removes the first child returns NULL if no children, otherwise returns pointer to this removed child
-pcb_t* removeChild(pcb_t*p){//pointer points to parent?
-    pcb_t *removeFirst = p->p_child;
+pcb_t* removeChild(pcb_t*p){//pointer points to parent
+    pcb_t *removeFirst = p->p_child;//dummy pointer that points to child we want to remove
     if(emptyChild(p)){//call emptyChild to see if there are children
         return (NULL);
     }
     if((p->p_child)->p_sib_next ==NULL){//if there is one child
         removeFirst ->p_prnt= NULL;
         p->p_child =NULL;
+        return(removeFirst);
     }
     //more than one child
-    p ->p_child = p; //have p point to the child
-    pcb_t *parent = p->p_prnt;
-    pcb_t *firstSib = p->p_sib_next;
+    pcb_t *firstSib = removeFirst->p_sib_next;//dummy pointer to the next sibling
     firstSib ->p_sib_prev =NULL;//stops next sib from pointing to p
-    parent ->p_child = firstSib; //set parents first child as sib
-    p->p_sib_next =NULL; //make p have no siblings
-    p->p_prnt =NULL; //only issue here is that p is now pointing to the orphanized child and not the parent...
-    return; //what to return?
+    p ->p_child = firstSib; //set parent's first child as sib
+    removeFirst->p_sib_next =NULL; //make former first child have no siblings
+    removeFirst->p_prnt =NULL; //make former first child have no parents
+    return(removeFirst); //return removed child
 }
 
 //This method makes a child an orphan, and will become a subtree if it has children
@@ -181,23 +181,24 @@ pcb_t*outChild(pcb_t*p){//pointer points to child
     if(p->p_prnt ==NULL){ //if you don't have a parent then you are already an orphan
         return NULL;
     }
-    pcb_t *parent = p->p_prnt;
-    if(p->p_prnt != parent->p_child){//if I point to my parent and my parent doesn't point back NOT THE FIRST CHILD
-        if(p->p_sib_next ==NULL){//you are an end child: remove p from parent and prev sib
+    pcb_t *parent = p->p_prnt;//dummy pointer to the parent
+
+    if(p->p_prnt != parent->p_child){//if not the first child
+        if(p->p_sib_next ==NULL){//you are an end child (no next sibling)
             p->p_prnt=NULL;
             pcb_t *prevSib = p->p_sib_prev;
             prevSib ->p_sib_next = NULL;
             p->p_sib_prev = NULL;
-            return; //what to return?
-        }//if you are one of the middle child: remove p from parent, prev and next sib.
+            return(p); //return orphaned child
+        }//if you are a middle child (have sib_next and sib_prev)
         p->p_prnt = NULL;
-        pcb_t *prevSib = p->p_sib_prev;
-        pcb_t *nextSib = p->p_sib_next;
-        prevSib ->p_sib_next = nextSib;
-        nextSib ->p_sib_prev = prevSib;
-        p->p_sib_next =NULL;
+        pcb_t *prevSib = p->p_sib_prev;//dummy pointer to previous sibling
+        pcb_t *nextSib = p->p_sib_next;//dummy pointer to next sibling
+        prevSib ->p_sib_next = nextSib;//point previous to next sibling
+        nextSib ->p_sib_prev = prevSib;//point next sibling to previous
+        p->p_sib_next =NULL;//remove p's sibling relations
         p->p_sib_prev =NULL;
-        return; //what to return?
+        return(p); //return orphaned child
     }
-    return(removeChild(parent)); //child is first child, so use this method
+    return(removeChild(parent)); //child is first child, so use removeChild
 }
