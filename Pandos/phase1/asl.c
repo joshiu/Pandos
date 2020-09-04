@@ -64,10 +64,10 @@ pcb_PTR removeBlocked (int *semAdd){
     if(tempSemAdd->s_next->s_semAdd == semAdd){
         removeProcQ(tempSemAdd->s_next-> s_procQ);
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){
-            semd_PTR removal = tempSemAdd ->s_next;// remove next one (current is previous)
-            tempSemAdd ->s_next = removal->s_next;//point prev to next
-            removal->s_next = semdFree_h;//point removed one to freeList
-            semdFree_h = removal;//make removed one the head of the FreeList
+            semd_PTR tempRemoval = tempSemAdd ->s_next;// remove next one (current is previous)
+            tempSemAdd ->s_next = tempRemoval->s_next;//point prev to next
+            tempRemoval->s_next = semdFree_h;//point removed one to freeList
+            semdFree_h = tempRemoval;//make removed one the head of the FreeList
             return; //idk
         }
         //not empty then done 
@@ -83,10 +83,10 @@ pcb_PTR outBlocked (pcb_PTR p){
     if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){
         outProcQ(tempSemAdd->s_next-> s_procQ,p);
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){
-            semd_PTR removal = tempSemAdd ->s_next;// remove next one (current is previous)
-            tempSemAdd ->s_next = removal->s_next;//point prev to next
-            removal->s_next = semdFree_h;//point removed one to freeList
-            semdFree_h = removal;//make removed one the head of the FreeList
+            semd_PTR tempRemoval = tempSemAdd ->s_next;// remove next one (current is previous)
+            tempSemAdd ->s_next = tempRemoval->s_next;//point prev to next
+            tempRemoval->s_next = semdFree_h;//point removed one to freeList
+            semdFree_h = tempRemoval;//make removed one the head of the FreeList
             return; //idk
         }
         //not empty then done 
