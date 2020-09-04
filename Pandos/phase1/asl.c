@@ -20,9 +20,6 @@ typedef struct semd_t {
 } semd_t;
 
 //local functions
-HIDDEN semd_PTR actSemd (semd_PTR s, int *semAdd);
-HIDDEN void freeSemd (semd_PTR);//not writing this because writing it out each time makes more sense to me right now; will condense later
-HIDDEN int inactiveSemd (semd_PTR s, int semAdd);//not writing this because writing it out each time makes more sense to me right now; will condense later
 HIDDEN semd_PTR findDesc (int *semAdd);
 //end of local functions
 
@@ -36,7 +33,7 @@ HIDDEN semd_PTR semd_h;
 //Or not found -> allocate new node and put it into list then preform found
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = findDesc(semAdd);
-    if(temp->s_next == *semAdd){//wefind
+    if(temp->s_next->s_semAdd == semAdd){//wefind
         insertProcQ(temp->s_next-> s_procQ, p);
         return; //idk
     }
@@ -48,7 +45,7 @@ int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR newSemd = semdFree_h;//get new semd from list
     semdFree_h = newSemd->s_next;//adjust head to point to new head
     newSemd ->s_next =NULL;//orphanize
-    semd_t *actListPrev = findDesc(newSemd);//is this correct?
+    semd_t *actListPrev = findDesc(newSemd->s_semAdd);//is this correct?
     semd_t *actListNext = actListPrev->s_next;//address of next one
     actListPrev->s_next = newSemd;//point prev to new
     newSemd ->s_next = actListNext;//point new to next
@@ -64,7 +61,7 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 //processQueue is empty -> Takes out of active list and inserts into the free list
 pcb_PTR removeBlocked (int *semAdd){
     semd_PTR tempSemAdd = findDesc(semAdd);
-    if(tempSemAdd->s_next == *semAdd){
+    if(tempSemAdd->s_next->s_semAdd == semAdd){
         removeProcQ(tempSemAdd->s_next-> s_procQ);
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){
             semd_PTR removal = tempSemAdd ->s_next;// remove next one (current is previous)
@@ -83,7 +80,7 @@ pcb_PTR removeBlocked (int *semAdd){
 //This  is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ
 pcb_PTR outBlocked (pcb_PTR p){
     semd_PTR tempSemAdd = findDesc(p->p_semAdd);
-    if(tempSemAdd->s_next == p->p_semAdd){
+    if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){
         outProcQ(tempSemAdd->s_next-> s_procQ,p);
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){
             semd_PTR removal = tempSemAdd ->s_next;// remove next one (current is previous)
@@ -103,7 +100,7 @@ pcb_PTR outBlocked (pcb_PTR p){
 //Returns that to the caller
 pcb_PTR headBlocked (int *semAdd){
     semd_t *tempsemAdd = findDesc(semAdd);//dummy pointer that stores address from find
-    if(tempsemAdd->s_next ==semAdd){
+    if(tempsemAdd->s_next->s_semAdd ==semAdd){
         if(emptyProcQ(tempsemAdd->s_next->s_procQ)){
             return NULL;
         }
