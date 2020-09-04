@@ -35,7 +35,23 @@ HIDDEN semd_PTR semd_h;
 //Two cases: found -> calls insertProcQ 
 //Or not found -> allocate new node and put it into list then preform found
 int insertBlocked (int *semAdd, pcb_PTR p){
-
+    semd_PTR temp = findDesc(semAdd);
+    if(temp == *semAdd){//wefind
+        insertProcQ(temp->s_procQ, p);
+        return; //idk
+    }
+    //if we don't find, remove semdFree
+    if(semdFree_h==NULL){//if the free list is empty, there is an error
+        return NULL;
+    }
+    //remove semd from Free list if available
+    semd_PTR newSemd = semdFree_h;
+    semdFree_h = newSemd->s_next;
+    newSemd ->s_next =NULL;
+    semd_t *actListPrev = findDesc(newSemd);//figure out how tf do this
+    //once i get the address
+    actListPrev->s_next = newSemd;
+    return;//idk
 }
 
 
@@ -52,13 +68,22 @@ pcb_PTR removeBlocked (int *semAdd){
     }
     semd_t *temp = removeProcQ(&semAdd -> s_procQ);
     temp -> s_semAdd = semAdd;//this is wrong
-    removeProcQ(&semAdd -> s_proQ, p);//why is this wrong?
+    removeProcQ(&semAdd -> s_proQ);//why is this wrong?
     return (FALSE);
 
 }
 
 //This  is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ
 pcb_PTR outBlocked (pcb_PTR p){
+         -> semdTrail;
+    semd = semdTrail -> s_next;
+    if(inactiveSemd(semd, semAdd)){ //to do: write inactive
+        return NULL;
+    }
+    semd_t *temp = outProcQ(&semAdd -> s_procQ,p);
+    temp -> s_semAdd = semAdd;//this is wrong
+    outProcQ(&semAdd -> s_proQ, p);//why is this wrong?
+    return (p);
 
 }
 
@@ -89,7 +114,7 @@ void initASL (){
 //idk if totally correct
 //cycles through the ASL and finds the given semAdd
 semd_PTR findDesc(int *semAdd){
-    semd_t *temp; //dummy node
+    semd_t *temp = semd_h; //dummy node
     while(temp ->s_next-> s_semAdd < semAdd)
         temp=temp->s_next;//possible memory leak?
     return temp; 

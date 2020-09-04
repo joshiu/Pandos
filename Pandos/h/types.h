@@ -14,8 +14,8 @@ typedef signed int cpu_t;
 
 typedef unsigned int memaddr;
 
-
 state_t             p_s;         /*processor state*/
+
 /*process control block type*/
 typedef struct pcb_t{
 	/*process queue fields*/
@@ -27,6 +27,7 @@ struct pcb_t			*p_next,		/*pointer to next entry*/
 						*p_sib_next, /*pointer to next sibling*/
 						*p_sib_prev; /*pointer to previous sibling*/
 /*process status information*/
+
 cpu_t               p_time;      /*cpu time used by proc*/
 int 				*p_semAdd;   /*pointer to sema4 on*/
 								/*which process blocked*/
