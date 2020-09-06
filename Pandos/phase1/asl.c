@@ -114,12 +114,16 @@ pcb_PTR outBlocked (pcb_PTR p){
  * is empty"
 **/
 pcb_PTR headBlocked (int *semAdd){
-    semd_t *tempsemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
-    if(tempsemAdd->s_next->s_semAdd ==semAdd){
-        if(emptyProcQ(tempsemAdd->s_next->s_procQ)){
+    semd_t *tempSemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
+    if(tempSemAdd->s_next->s_semAdd ==semAdd){
+        if(emptyProcQ(tempSemAdd->s_next->s_procQ)){
+            semd_PTR tempRemoval = tempSemAdd ->s_next;
+            tempSemAdd ->s_next = tempRemoval->s_next;
+            tempRemoval->s_next = semdFree_h;
+            semdFree_h = tempRemoval;
             return NULL;
         }
-        return tempsemAdd->s_next->s_procQ->p_next;
+        return tempSemAdd->s_next->s_procQ->p_next;
     }
     return NULL;
 }
