@@ -6,24 +6,36 @@
  * 
  * This code is written by Umang Joshi and Amy Kelley.
  */
+
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/pcb.h"
 #include "../h/asl.h"
+
 /* Global Variables */
 HIDDEN pcb_PTR pcbFree_h;
 /*End of Global Variables*/
+
 /*--------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------Below: methods for the queue----------------------------------------*/
 /*------------------------------------------------------------------------------------------------------*/
 
-/*This method inserts pointed to by p onto the freePCB list. This is done uing the insertProcQ method.*/
+/**
+ * This method inserts "the element pointed to by p onto the pcbFree list."
+ * This is done uing the insertProcQ method.
+**/
 void freePcb(pcb_t*p){
     insertProcQ(&pcbFree_h,p);
 }
 
-/*Gives needed Pcb, then removes Pcb from the list (taken)
-If the list is empty then NULL is returned*/
+/**
+ * "Remove an element from the pcbFree list, provide initial values for ALL
+ * of the pcbs fields (i.e. NULL and/or 0) and then return a pointer
+ * to the removed element. pcbs get reused, so it is important that
+ * no previous value persist in a pcb when it gets reallocated"
+ * Gives needed Pcb, then removes Pcb from the list
+ * If the list is empty then NULL is returned.
+**/
 pcb_t* allocPcb(){
     if(pcbFree_h == NULL){/*if the pcbFree list is empty, return NULL*/
         return NULL;
@@ -41,7 +53,12 @@ pcb_t* allocPcb(){
     return (p);/*return the pointer*/
 }
 
-/*Initializes Pcb list: it creates a new empty list and contains all elements in the static array MAXPROC in the pcb*/
+/**
+ *"Initialize the pcbFree list to contain all the elements of the
+ *static array of MAXPROC pcbs. This method will be called only
+ *once during data structure initialization"
+ *It creates a new empty list and contains all elements in the static array MAXPROC in the pcb.
+**/
 void initPcbs(){
     int i;
     pcbFree_h = mkEmptyProcQ();
@@ -51,17 +68,27 @@ void initPcbs(){
     }
 }
 
-/*Makes an empty list*/ 
+/**
+ *"This method is used to initialize a variable to be tail pointer to a
+ *process queue. Return a pointer to the tail of an empty process queue; i.e. NULL"
+ *Makes an empty list
+**/
 pcb_t* mkEmptyProcQ(){
     return (NULL);
 }
 
-/*This method returns true if the tp is empty, otherwise: returns false.*/
+/**
+ * This method returns true if the tp is empty, otherwise: returns false.
+**/
 int emptyProcQ(pcb_t*tp){
     return(tp == NULL);
 }
 
-/*This method inserts an element at the front of the queue*/
+/**
+ * "Insert the pcb pointed to by p into the process queue whose tail pointer is pointed to by tp. 
+ * Note the double indirection through tp to allow for the possible updating of the tail pointer as well"
+ * This method inserts an elements at the tail.
+**/
 void insertProcQ(pcb_t**tp, pcb_t*p){
     pcb_t *head;/*dummy node to keep track of head*/
     if(emptyProcQ(*tp)){ /*if queue is empty...*/
@@ -77,7 +104,11 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
     (*tp) = p;
 }
 
-/*This method removes the element at the head of the queue*/
+/**
+ * This method removes the head "from the process queue whose tail-pointer is pointed to by tp. 
+ * Return NULL if the process queue was initially empty; 
+ * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary"
+**/
 pcb_t*removeProcQ(pcb_t**tp){
     pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
     if(emptyProcQ(*tp)){/*if there is nothing*/
@@ -98,7 +129,13 @@ pcb_t*removeProcQ(pcb_t**tp){
     return(head);/*return old head*/
 }
 
-/*Points to an element in the queue and that element gets removed*/
+/**
+ *"Remove the pcb pointed to by p from the process queue whose tailpointer is pointed to by tp. 
+ *Update the process queue’s tail pointer if
+ *necessary. If the desired entry is not in the indicated queue (an error
+ *condition), return NULL; otherwise, return p. "
+ *This method points to any element in the queue and that element gets removed
+**/
 pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
     int i;
     pcb_t *removeQ = (*tp)->p_next;/*dummy pointer for head*/
@@ -124,7 +161,12 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t*p){
     return(NULL); /*p is not on the list, so NULL*/
 }
 
-/*Gives head from Queue, or returns null if empty*/
+/**
+ *"Return a pointer to the first pcb from the process queue whose tail
+ *is pointed to by tp. Do not remove this pcbfrom the process queue.
+ *Return NULL if the process queue is empty"
+ *Gives head from Queue, or returns null if empty
+**/
 pcb_t*headProcQ(pcb_t*tp){
     if(emptyProcQ(tp)){
         return(NULL);
