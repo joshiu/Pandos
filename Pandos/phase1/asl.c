@@ -28,9 +28,11 @@ HIDDEN semd_PTR semdFree_h;
 HIDDEN semd_PTR semd_h;
 /*end of globals*/
 
-/*This method searches the active semdList to see if theres the semAdd in it
-//Two cases: found -> calls insertProcQ 
-//Or not found -> allocate new node and put it into list then preform found*/
+/**
+ * This method searches the active semdList to see if theres the semAdd in it
+ * Two cases: found -> calls insertProcQ 
+ * Or not found -> allocate new node and put it into list then preform findDesc (found)
+**/
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = findDesc(semAdd);/*dummy pointer that points to address from find*/
     if(temp->s_next->s_semAdd == semAdd){/*if the sem addresses match*/
@@ -57,11 +59,13 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 }
 
 
-/*This is a mutator method searches activeSemd List for matching semdAdd provided. 
-//Two cases: not found -> error case
-//Found -> removeProcQ on the process queue that you found in activeSemd list this value is returned
-//This found also has two cases: the processQueue is not empty -> done
-//processQueue is empty -> Takes out of active list and inserts into the free list*/
+/**
+ * This is a mutator method searches activeSemd List for matching semdAdd provided. 
+ * Two cases: not found -> error case
+ * Found -> removeProcQ on the process queue that you found in activeSemd list this value is returned
+ * This found also has two cases: the processQueue is not empty -> done
+ * processQueue is empty -> Takes out of active list and inserts into the free list
+**/
 pcb_PTR removeBlocked (int *semAdd){
     semd_PTR tempSemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
     if(tempSemAdd->s_next->s_semAdd == semAdd){
@@ -79,7 +83,11 @@ pcb_PTR removeBlocked (int *semAdd){
     return NULL;
 }
 
-/*This  is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ*/
+/**
+ * This is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ
+ * "* Remove the pcb pointed to by p from the process queue associated
+ * with p’s semaphore (p → p semAdd) on the ASL"
+**/
 pcb_PTR outBlocked (pcb_PTR p){
     semd_PTR tempSemAdd = findDesc(p->p_semAdd);/*dummy pointer that points address from find*/
     if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){
@@ -97,8 +105,14 @@ pcb_PTR outBlocked (pcb_PTR p){
     return NULL;
 }
 
-/*This is a an accessor method is the same as removeBlocked and outBlocked, but instead it calls headProcQ
-//Returns that to the caller*/
+/**
+ * This is an accessor method is the same as removeBlocked and outBlocked, 
+ * but instead it calls headProcQ. Returns that to the caller.
+ * "Return a pointer to the pcb that is at the head of the process queue
+ * associated with the semaphore semAdd. Return NULL if semAdd is
+ * not found on the ASL or if the process queue associated with semAdd
+ * is empty"
+**/
 pcb_PTR headBlocked (int *semAdd){
     semd_t *tempsemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
     if(tempsemAdd->s_next->s_semAdd ==semAdd){
@@ -110,9 +124,11 @@ pcb_PTR headBlocked (int *semAdd){
     return NULL;
 }
 
-/*This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
-//on a free list.
-//not complete*/
+/**
+ * This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
+ * on a free list not complete. "Initialize the semdFree list to contain all the elements of the array
+ * static semd t semdTable[MAXPROC] This method will be only called once during data structure initialization."
+**/
 void initASL (){
     int i;
     static semd_t semdTable[MAXPROC+2];
@@ -125,7 +141,9 @@ void initASL (){
     semd_h -> s_procQ = mkEmptyProcQ();    
 }
 
-/*cycles through the ASL and finds the closest value to given semAdd*/
+/**
+ * Cycles through the ASL and finds the closest value to given semAdd.
+**/
 semd_PTR findDesc(int *semAdd){
     semd_t *temp = semd_h; /*dummy node pointing to the head*/
     while(temp ->s_next-> s_semAdd < semAdd)
