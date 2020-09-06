@@ -63,10 +63,10 @@ int emptyProcQ(pcb_t*tp){
 
 /*This method inserts an element at the front of the queue*/
 void insertProcQ(pcb_t**tp, pcb_t*p){
-    pcb_t *head;
+    pcb_t *head;/*dummy node to keep track of head*/
     if(emptyProcQ(*tp)){ /*if queue is empty...*/
-        (*tp)-> p_next = p; /*the head points to what p points to*/
-        (*tp) ->p_prev =p;
+        p-> p_next = p; /*the head points to what p points to*/
+        p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
     }
     (*tp) -> p_next = head; 
@@ -79,23 +79,23 @@ void insertProcQ(pcb_t**tp, pcb_t*p){
 
 /*This method removes the element at the head of the queue*/
 pcb_t*removeProcQ(pcb_t**tp){
-    pcb_t *pReturn = (*tp)->p_next; /*dummy pointer to the head*/
+    pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
     if(emptyProcQ(*tp)){/*if there is nothing*/
         return(NULL);
     }
-    if((*tp)->p_next == (*tp)){/*only 1 item in queue*/
+    if(head == (*tp)){/*only 1 item in queue*/
         (*tp) -> p_next = NULL;
         (*tp) -> p_prev = NULL;
         (*tp) = NULL;
-        return (pReturn);
+        return (head);
     }
     /*if we have more than one thing*/
-    pcb_t *newHead = pReturn ->p_next;
-    pReturn->p_prev = NULL; /*get rid of pointer from head to tail*/
+    pcb_t *newHead = head ->p_next;
+    head->p_prev = NULL; /*get rid of pointer from head to tail*/
     (*tp) -> p_next = newHead; /*tail points to new head*/
     newHead ->p_prev = (*tp);/*new head points back to tail*/
-    pReturn ->p_next =NULL;/*get rid of pointer from old head to new head*/
-    return(pReturn);/*return old head*/
+    head ->p_next =NULL;/*get rid of pointer from old head to new head*/
+    return(head);/*return old head*/
 }
 
 /*Points to an element in the queue and that element gets removed*/
@@ -150,7 +150,7 @@ void insertChild(pcb_t*prnt, pcb_t*p){
         prnt ->p_child = p;
         p -> p_prnt = prnt;
     } /*if there are children: parent points to new child and new child points to sibling + parent.*/
-    pcb_t *currentChild = prnt->p_child;
+    pcb_t *currentChild = prnt->p_child;/*dummy pointer to current child*/
     p->p_sib_next = currentChild;
     currentChild ->p_sib_prev = p;
     prnt ->p_child = p;
