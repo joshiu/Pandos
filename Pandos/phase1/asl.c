@@ -117,10 +117,10 @@ pcb_PTR headBlocked (int *semAdd){
     semd_t *tempSemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
     if(tempSemAdd->s_next->s_semAdd ==semAdd){
         if(emptyProcQ(tempSemAdd->s_next->s_procQ)){
-            semd_PTR tempRemoval = tempSemAdd ->s_next;
+            /*semd_PTR tempRemoval = tempSemAdd ->s_next;
             tempSemAdd ->s_next = tempRemoval->s_next;
             tempRemoval->s_next = semdFree_h;
-            semdFree_h = tempRemoval;
+            semdFree_h = tempRemoval;*/ /*Method to put semaphore with no queue back on list, don't know if we need*/
             return NULL;
         }
         return tempSemAdd->s_next->s_procQ->p_next;
