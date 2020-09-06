@@ -12,6 +12,14 @@
 #include "../h/pcb.h"
 #include "../h/asl.h"
 
+/**
+ * Method for debugging for seeing a value or seeing where we are.
+**/
+void debugA(int a){
+    int i;
+    i = 0;
+}
+
 /* Global Variables */
 HIDDEN pcb_PTR pcbFree_h;
 /*End of Global Variables*/
@@ -64,6 +72,7 @@ void initPcbs(){
     pcbFree_h = mkEmptyProcQ();
     static pcb_t foo[MAXPROC];
     for( i=0; i<MAXPROC; i++){
+        debugA(i); /* for debugging initPcb -> see whats the value of i*/
         insertProcQ(&pcbFree_h,&foo[i]);
     }
 }
