@@ -31,7 +31,7 @@ HIDDEN semd_PTR semd_h;
 /**
  * This method searches the active semdList to see if theres the semAdd in it
  * Two cases: found -> calls insertProcQ 
- * Or not found -> allocate new node and put it into list then preform findDesc (found)
+ * Or not found -> allocate new node and put it into the active list then preform found case
 **/
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = findDesc(semAdd);/*dummy pointer that points to address from find*/
@@ -64,7 +64,7 @@ int insertBlocked (int *semAdd, pcb_PTR p){
  * Two cases: not found -> error case
  * Found -> removeProcQ on the process queue that you found in activeSemd list this value is returned
  * This found also has two cases: the processQueue is not empty -> done
- * processQueue is empty -> Takes out of active list and inserts into the free list
+ * processQueue is empty -> Takes node out of active list and inserts into the free list (deallocate)
 **/
 pcb_PTR removeBlocked (int *semAdd){
     semd_PTR tempSemAdd = findDesc(semAdd);/*dummy pointer that points to address from find*/
@@ -85,7 +85,7 @@ pcb_PTR removeBlocked (int *semAdd){
 
 /**
  * This is a mutator method is the same as removeBlocked, but we call outProcQ instead of removeProcQ
- * "* Remove the pcb pointed to by p from the process queue associated
+ * "Remove the pcb pointed to by p from the process queue associated
  * with p’s semaphore (p → p semAdd) on the ASL"
 **/
 pcb_PTR outBlocked (pcb_PTR p){
@@ -131,7 +131,7 @@ pcb_PTR headBlocked (int *semAdd){
 **/
 void initASL (){
     int i;
-    static semd_t semdTable[MAXPROC+2];
+    static semd_t semdTable[MAXPROC+2]; /* dummy nodes are the +2 here */
     semdFree_h = &semdTable[0];
     for(i=0; i<MAXPROC; i++){
         semdTable[i-1].s_next = & semdTable[i];
