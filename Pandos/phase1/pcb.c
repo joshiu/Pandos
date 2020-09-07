@@ -116,7 +116,7 @@ void insertProcQ(pcb_t** tp, pcb_t* p){
  * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary"
 **/
 pcb_t*removeProcQ(pcb_t**tp){
-    pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
+    (*tp)->p_next = pcb_t *head; /*dummy pointer to the head*/
     if(emptyProcQ(*tp)){/*if there is nothing*/
         return(NULL);
     }
