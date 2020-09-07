@@ -98,15 +98,17 @@ int emptyProcQ(pcb_t*tp){
  * This method inserts an elements at the tail.
 **/
 void insertProcQ(pcb_t**tp, pcb_t*p){
-    pcb_t *head;/*dummy node to keep track of head*/
-    if(emptyProcQ(*tp)){ /*if queue is empty...*/
+    if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
     }
-    head = (*tp) -> p_next; 
+    debugA(1);
+    pcb_t *head = (*tp) -> p_next; 
+    debugA(2);
     p->p_next = head;
     head -> p_prev = p;
+    debugA(3);
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
     (*tp) = p;
