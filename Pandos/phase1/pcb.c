@@ -118,7 +118,7 @@ void insertProcQ(pcb_t**tp, pcb_t* p){
 pcb_t*removeProcQ(pcb_t**tp){
     pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
     if(emptyProcQ(*tp)){/*if there is nothing*/
-        return(NULL);
+        return NULL;
     }
     if(head == (*tp)){/*only 1 item in queue*/
         (*tp) -> p_next = NULL;
