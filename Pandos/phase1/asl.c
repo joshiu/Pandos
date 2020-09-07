@@ -142,9 +142,9 @@ void initASL (){
     }
     semdTable[MAXPROC-1].s_next = NULL;
     semd_h->s_semAdd =0;/*head of list points to 0*/
-    semd_h -> s_next ->s_semAdd = 999999;/*tail of list points to near infinity*/
+    semd_h -> s_next ->s_semAdd = MAXINT;/*tail of list points to near infinity*/
     semd_h -> s_procQ = mkEmptyProcQ();/*give head an empty ProcQ*/
-    semd_h->s_next->s_semAdd = mkEmptyProcQ();/*give tail empty ProcQ*/
+    semd_h->s_next->s_procQ = mkEmptyProcQ();/*give tail empty ProcQ*/
 }
 
 /**

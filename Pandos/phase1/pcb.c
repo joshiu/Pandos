@@ -46,29 +46,18 @@ void freePcb(pcb_t*p){
 **/
 pcb_t* allocPcb(){
     if(pcbFree_h == NULL){/*if the pcbFree list is empty, return NULL*/
-        debugA(1);
         return NULL;
     }
     /*initialize all our pointers*/
-    debugA(2);
-    pcb_t *p =NULL;
-    debugA(3);
+    pcb_t *p;
     p->p_next =NULL;
-    debugA(4);
     p->p_prev =NULL;
-    debugA(5);
     p->p_semAdd =NULL;
-    debugA(6);
     p->p_prnt =NULL;
-    debugA(7);
     p->p_child = NULL;
-    debugA(8);
     p->p_sib_next = NULL;
-    debugA(9);
     p->p_sib_prev =NULL;
-    debugA(10);
     p=removeProcQ(&pcbFree_h);/*set the pointer to point to the removed pcb*/
-    debugA(11);
     return (p);/*return the pointer*/
 }
 
