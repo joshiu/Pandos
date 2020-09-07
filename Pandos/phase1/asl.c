@@ -123,7 +123,7 @@ pcb_PTR headBlocked (int *semAdd){
             semdFree_h = tempRemoval;*/ /*Method to put semaphore with no queue back on list, don't know if we need*/
             return NULL;
         }
-        return tempSemAdd->s_next->s_procQ->p_next;
+        return headProcQ(tempSemAdd->s_next->s_procQ);
     }
     return NULL;
 }
@@ -135,14 +135,16 @@ pcb_PTR headBlocked (int *semAdd){
 **/
 void initASL (){
     int i;
-    static semd_t semdTable[MAXPROC+2]; /* dummy nodes are the +2 here */
+    static semd_t semdTable[MAXPROC+2]; /* make a dummy table with +2 entries here */
     semdFree_h = &semdTable[0];
-    for(i=0; i<MAXPROC; i++){
+    for(i=1; i<MAXPROC; i++){
         semdTable[i-1].s_next = & semdTable[i];
     }
     semdTable[MAXPROC-1].s_next = NULL;
-    semd_h->s_semAdd =0;
-    semd_h -> s_procQ = mkEmptyProcQ();    
+    semd_h->s_semAdd =0;/*head of list points to 0*/
+    semd_h -> s_next ->s_semAdd = 999999;/*tail of list points to near infinity*/
+    semd_h -> s_procQ = mkEmptyProcQ();/*give head an empty ProcQ*/
+    semd_h->s_next->s_semAdd = mkEmptyProcQ();/*give tail empty ProcQ*/
 }
 
 /**
