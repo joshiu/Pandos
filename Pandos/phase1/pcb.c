@@ -32,7 +32,7 @@ HIDDEN pcb_PTR pcbFree_h;
  * This method inserts "the element pointed to by p onto the pcbFree list."
  * This is done uing the insertProcQ method.
 **/
-void freePcb(pcb_t*p){
+void freePcb(pcb_t * p){
     insertProcQ(&pcbFree_h,p);
 }
 
@@ -49,7 +49,7 @@ pcb_t* allocPcb(){
         return NULL;
     }
     /*initialize all our pointers*/
-    pcb_t *p;
+    pcb_t *p=removeProcQ(&pcbFree_h);/*set the pointer to point to the removed pcb*/
     p->p_next =NULL;
     p->p_prev =NULL;
     p->p_semAdd =NULL;
@@ -57,7 +57,6 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
-    p=removeProcQ(&pcbFree_h);/*set the pointer to point to the removed pcb*/
     return (p);/*return the pointer*/
 }
 
@@ -97,18 +96,15 @@ int emptyProcQ(pcb_t*tp){
  * Note the double indirection through tp to allow for the possible updating of the tail pointer as well"
  * This method inserts an elements at the tail.
 **/
-void insertProcQ(pcb_t**tp, pcb_t*p){
+void insertProcQ(pcb_t** tp, pcb_t* p){
     if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
     }
-    debugA(1);
     pcb_t *head = (*tp) -> p_next; 
-    debugA(2);
     p->p_next = head;
     head -> p_prev = p;
-    debugA(3);
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
     (*tp) = p;
