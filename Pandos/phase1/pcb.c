@@ -144,32 +144,28 @@ pcb_t*removeProcQ(pcb_t**tp){
 **/
 pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
     int i;
-    pcb_t *removeQ = (*tp);/*dummy pointer for head*/
+    pcb_t *dumTail = (*tp);/*dummy pointer to tail*/
     if(emptyProcQ(*tp)){ /*if the queue is empty return NULL*/
         return NULL;
     }
-    if(removeQ->p_next == p){ /*if the head is the pointer then call removeProcQ on tp*/
+    if(dumTail->p_next == p){ /*if the head is the pointer then call removeProcQ on tp*/
         return removeProcQ(tp);
     }
     for(i=0; i<MAXPROC; i++){
-        if(removeQ != p ){
-            debugA(i);
-            removeQ ->p_next = removeQ;
-            if(i==MAXPROC-1){
-                break;
-            }
+        if(dumTail != p ){
+            debugA(i);/*we are infinte looping here: dumTail never equals p*/
+            dumTail ->p_next = dumTail;
             continue;
-            /* we never get to case where removeQ ==p*/
         }
-        pcb_t *forwardTo = removeQ ->p_next;/*dummy pointer to next item*/
-        pcb_t *backwardTo = removeQ ->p_prev;/*dummy pointer to previous item*/
+        pcb_t *forwardTo = dumTail ->p_next;/*dummy pointer to next item*/
+        pcb_t *backwardTo = dumTail ->p_prev;/*dummy pointer to previous item*/
         debugA(1);
         backwardTo ->p_next = forwardTo;/*have previous point to next*/
         forwardTo ->p_prev = backwardTo;/*have next point to previous*/
-        removeQ->p_next=NULL; /*remove pointer to next item*/
-        removeQ ->p_prev =NULL;/*remove pointer to previous item*/
+        dumTail->p_next=NULL; /*remove pointer to next item*/
+        dumTail ->p_prev =NULL;/*remove pointer to previous item*/
         debugA(1);
-        return(removeQ); /*return pointer to removed*/
+        return(dumTail); /*return pointer to removed*/
     }
     return(NULL); /*p is not on the list, so NULL*/
 }
