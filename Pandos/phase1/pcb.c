@@ -153,7 +153,6 @@ pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
     }
     for(i=0; i<MAXPROC; i++){
         if(dumTail != p){
-            debugA(i, p, dumTail);/*we are infinte looping here: dumTail never equals p*/
             dumTail= dumTail->p_next;/*recursive call that shifts dumTail*/
             continue;
         }
