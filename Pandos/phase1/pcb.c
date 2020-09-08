@@ -142,20 +142,20 @@ pcb_t*removeProcQ(pcb_t**tp){
  *condition), return NULL; otherwise, return p. "
  *This method points to any element in the queue and that element gets removed
 **/
-pcb_t*outProcQ(pcb_t**tp, pcb_t* p){
+pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
     int i;
-    pcb_t *removeQ = (*tp)->p_next;/*dummy pointer for head*/
+    pcb_t *removeQ = (*tp);/*dummy pointer for head*/
     if(emptyProcQ(*tp)){ /*if the queue is empty return NULL*/
         return NULL;
     }
-    if(removeQ == p){ /*if the head is the pointer then call removeProcQ on tp*/
+    if(removeQ->p_next == p){ /*if the head is the pointer then call removeProcQ on tp*/
         return removeProcQ(tp);
     }
     for(i=0; i<MAXPROC; i++){
         if(removeQ != p ){
             debugA(i);
             removeQ ->p_next = removeQ;
-            if(i==MAXPROC){
+            if(i==MAXPROC-1){
                 break;
             }
             continue;
