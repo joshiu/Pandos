@@ -152,16 +152,24 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t* p){
         return removeProcQ(tp);
     }
     for(i=0; i<MAXPROC; i++){
-        if(removeQ != p ){
-            removeQ ->p_next = removeQ;
+        if(removeQ == p ){
+            debugA(i);
+            removeQ ->p_prev = removeQ;
             continue;
         }
+        debugA(1);
         pcb_t *forwardTo = removeQ ->p_next;/*dummy pointer to next item*/
+        debugA(1);
         pcb_t *backwardTo = removeQ ->p_prev;/*dummy pointer to previous item*/
+        debugA(1);
         backwardTo ->p_next = forwardTo;/*have previous point to next*/
+        debugA(1);
         forwardTo ->p_prev = backwardTo;/*have next point to previous*/
+        debugA(1);
         removeQ->p_next=NULL; /*remove pointer to next item*/
+        debugA(1);
         removeQ ->p_prev =NULL;/*remove pointer to previous item*/
+        debugA(1);
         return(removeQ); /*return pointer to removed*/
     }
     return(NULL); /*p is not on the list, so NULL*/
