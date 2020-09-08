@@ -15,7 +15,7 @@
 /**
  * Method for debugging for seeing a value or seeing where we are.
 **/
-void debugA(int a){
+void debugA(int a, pcb_t* p, pcb_t* q){
     int i;
     i = 0;
 }
@@ -96,7 +96,7 @@ int emptyProcQ(pcb_t*tp){
  * Note the double indirection through tp to allow for the possible updating of the tail pointer as well"
  * This method inserts an elements at the tail.
 **/
-void insertProcQ(pcb_t**tp, pcb_t* p){
+void insertProcQ(pcb_t* *tp, pcb_t* p){
     if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
@@ -116,10 +116,10 @@ void insertProcQ(pcb_t**tp, pcb_t* p){
  * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary"
 **/
 pcb_t*removeProcQ(pcb_t**tp){
-    pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
-    if(emptyProcQ(*tp)){/*if there is nothing*/
+    if(emptyProcQ(*tp)==TRUE){/*if there is nothing*/
         return NULL;
     }
+    pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
     if(head == (*tp)){/*only 1 item in queue*/
         (*tp) -> p_next = NULL;
         (*tp) -> p_prev = NULL;
@@ -152,19 +152,17 @@ pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
         return removeProcQ(tp);
     }
     for(i=0; i<MAXPROC; i++){
-        if(dumTail != p ){
-            debugA(i);/*we are infinte looping here: dumTail never equals p*/
-            dumTail ->p_next = dumTail;
+        if(dumTail != p){
+            debugA(i, p, dumTail);/*we are infinte looping here: dumTail never equals p*/
+            dumTail= dumTail->p_next;/*recursive call that shifts dumTail*/
             continue;
         }
         pcb_t *forwardTo = dumTail ->p_next;/*dummy pointer to next item*/
         pcb_t *backwardTo = dumTail ->p_prev;/*dummy pointer to previous item*/
-        debugA(1);
         backwardTo ->p_next = forwardTo;/*have previous point to next*/
         forwardTo ->p_prev = backwardTo;/*have next point to previous*/
         dumTail->p_next=NULL; /*remove pointer to next item*/
         dumTail ->p_prev =NULL;/*remove pointer to previous item*/
-        debugA(1);
         return(dumTail); /*return pointer to removed*/
     }
     return(NULL); /*p is not on the list, so NULL*/
