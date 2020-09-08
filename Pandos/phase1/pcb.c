@@ -207,7 +207,6 @@ void insertChild(pcb_t*prnt, pcb_t*p){
     p->p_sib_prev = currentChild;
     currentChild ->p_sib_next = p;
     prnt ->p_child = p;
-    debugA(1, prnt, currentChild);
     p->p_prnt = prnt;
 }
 
