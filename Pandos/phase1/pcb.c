@@ -216,15 +216,16 @@ void insertChild(pcb_t*prnt, pcb_t*p){
  * return a pointer to this removed first child pcb."
 **/
 pcb_t* removeChild(pcb_t*p){/*pointer points to parent*/
+    debugA(1,p,p);
     if(emptyChild(p)){/*call emptyChild to see if there are children*/
         debugA(1,p, p);
         return (NULL);
     }
     pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
-    if((p->p_child)->p_sib_prev ==NULL){/*if there is one child*/
+    if(removeFirst->p_sib_prev ==NULL){/*if there is one child*/
         removeFirst ->p_prnt= NULL;
         p->p_child =NULL;
-        debug(1, removeFirst, p->p_child);
+        debugA(1, removeFirst, p->p_child);
         return(removeFirst);
     }
     /*more than one child*/
@@ -248,14 +249,13 @@ pcb_t*outChild(pcb_t*p){/*pointer points to child*/
         return NULL;
     }
     pcb_t *parent = p->p_prnt;/*dummy pointer to the parent*/
-    
-    if(p->p_prnt != parent->p_child){/*if not the first child*/
+    if(p != parent->p_child){/*if not the first child*/
         if(p->p_sib_prev ==NULL){/*you are an end child, so no next sibling*/
             p->p_prnt=NULL;
             pcb_t *prevSib = p->p_sib_next;/*dummy pointer to previous sibling*/
             prevSib ->p_sib_prev = NULL;
             p->p_sib_next = NULL;
-            return(p); /*return orphaned child*/
+            return(p); /*return child*/
         }/*if you are a middle child, so have sib_next and sib_prev*/
         p->p_prnt = NULL;
         pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
