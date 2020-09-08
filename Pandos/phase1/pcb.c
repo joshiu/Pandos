@@ -156,7 +156,7 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t* p){
             debugA(i);
             removeQ ->p_next = removeQ;
             continue;
-            /* we never get to case removeQ ==p*/
+            /* we never get to case where removeQ ==p*/
         }
         pcb_t *forwardTo = removeQ ->p_next;/*dummy pointer to next item*/
         pcb_t *backwardTo = removeQ ->p_prev;/*dummy pointer to previous item*/
