@@ -149,7 +149,7 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t* p){
         return NULL;
     }
     if(removeQ == p){ /*if the head is the pointer then call removeProcQ on tp*/
-        removeProcQ(tp);
+        return removeProcQ(tp);
     }
     for(i=0; i<MAXPROC; i++){
         if(removeQ != p ){
