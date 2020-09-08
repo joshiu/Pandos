@@ -155,6 +155,9 @@ pcb_t*outProcQ(pcb_t**tp, pcb_t* p){
         if(removeQ != p ){
             debugA(i);
             removeQ ->p_next = removeQ;
+            if(i==MAXPROC){
+                break;
+            }
             continue;
             /* we never get to case where removeQ ==p*/
         }
