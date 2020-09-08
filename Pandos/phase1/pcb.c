@@ -192,7 +192,10 @@ pcb_t*headProcQ(pcb_t*tp){
  *FALSE otherwise"
 **/
 int emptyChild(pcb_t* p){
-    return (p->p_child == NULL);
+    if(p->p_child==NULL){
+        return TRUE;
+    }
+    return FALSE;
 }
 
 /**
@@ -218,7 +221,7 @@ void insertChild(pcb_t* prnt, pcb_t* p){
 pcb_t* removeChild(pcb_t* p){/*pointer points to parent*/
     debugA(1,p,p,p);
     pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
-    if(p->p_child == NULL){/*call emptyChild to see if there are children*/
+    if(emptyChild(p)== TRUE){/*call emptyChild to see if there are children*/
         debugA(5,p, p, p);
         return NULL;
     }
