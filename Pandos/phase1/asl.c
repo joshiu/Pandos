@@ -156,7 +156,8 @@ pcb_PTR headBlocked (int *semAdd){
 **/
 semd_PTR searchASL(int *semAdd){
     semd_t *temp = semd_h; /*dummy node pointing to the head*/
-    while(temp ->s_next-> s_semAdd < semAdd)
+    while(temp ->s_next-> s_semAdd < semAdd){
         temp=temp->s_next;
+    }
     return temp; 
 }
