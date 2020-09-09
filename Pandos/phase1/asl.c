@@ -29,7 +29,7 @@ HIDDEN semd_PTR semdFree_h;
 HIDDEN semd_PTR semd_h;
 /*end of globals*/
 
-void debugA(int a, semd_t* p, semd_t* q, semd_t* r){
+void debugA(int a, int* semAdd, int* semAddd, int* semAdddd){
     int i;
     i = 0;
 }
@@ -65,7 +65,9 @@ void initASL (){
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = searchASL(semAdd);/*dummy pointer that points to address from find*/
     p->p_semAdd = semAdd;
-    if(temp->s_next->s_semAdd == semAdd){/*if the sem addresses match*/
+    debugA(1, semAdd, p->p_semAdd, temp->s_semAdd);
+    if(temp->s_next->s_semAdd == p-> p_semAdd){/*if the sem addresses match*/
+        debugA(2, p->p_semAdd, temp->s_next->s_semAdd, temp->s_semAdd);
         insertProcQ(&(temp->s_next-> s_procQ), p);
         return FALSE; 
     }
@@ -75,10 +77,11 @@ int insertBlocked (int *semAdd, pcb_PTR p){
     }
     /*remove semd from Free list and add to ASL, then and insert pcb into new semd */
     semd_t *newSemd = allocASL(semAdd);
-    semd_t *actListPrev = searchASL(newSemd->s_semAdd);
-    semd_t *actListNext = actListPrev->s_next;
-    actListPrev->s_next = newSemd;
-    newSemd ->s_next = actListNext;/*point new to next*/
+    semd_t *ASLPrev = searchASL(newSemd->s_semAdd);
+    semd_t *ASLNext = ASLPrev->s_next;
+    ASLPrev->s_next = newSemd;
+    newSemd ->s_next = ASLNext;/*point new to next*/
+    debugA(3, p->p_semAdd, newSemd->s_semAdd, temp->s_semAdd);
     insertProcQ(&(newSemd->s_procQ), p);
     return FALSE;/*return false if semdFree not empty*/
 }
@@ -93,13 +96,17 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 **/
 pcb_PTR removeBlocked (int *semAdd){
     semd_PTR tempSemAdd = searchASL(semAdd);/*dummy pointer that points to address from find*/
+    debugA(50, semAdd, tempSemAdd->s_next->s_semAdd, tempSemAdd->s_semAdd);
     if(tempSemAdd->s_next->s_semAdd == semAdd){
-        pcb_PTR returnP = removeProcQ(&(tempSemAdd->s_next-> s_procQ));/*first variable wrong here*/
+        pcb_PTR returnP = removeProcQ(&(tempSemAdd->s_next-> s_procQ));
+        debugA(51, returnP->p_semAdd, tempSemAdd->s_next->s_semAdd, tempSemAdd->s_semAdd);
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if process queue empty, put semd back on free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;
             tempSemAdd ->s_next = tempRemoval->s_next;
             tempRemoval->s_next = semdFree_h;
+            tempRemoval->s_semAdd = NULL;
             semdFree_h = tempRemoval;
+            debugA(53, semAdd, tempSemAdd->s_next->s_semAdd, tempSemAdd->s_semAdd);
         }
         /*if process queue not empty/we're done adjusting the ASL, then return*/ 
         return(returnP);
@@ -115,8 +122,10 @@ pcb_PTR removeBlocked (int *semAdd){
 **/
 pcb_PTR outBlocked (pcb_PTR p){
     semd_PTR tempSemAdd = searchASL(p->p_semAdd);/*dummy pointer that points address from find*/
+    debugA(100,p->p_semAdd, tempSemAdd->s_semAdd, tempSemAdd->s_next->s_semAdd);
     if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){
-        pcb_PTR returnP = outProcQ(&(tempSemAdd->s_next-> s_procQ),p);/*dummy pointer to what we want to return*/
+        pcb_PTR returnP = outProcQ(&(tempSemAdd->s_next-> s_procQ),p);/*dummy pointer to return*/
+        debugA(200, p->p_semAdd, returnP->p_semAdd, tempSemAdd->s_semAdd);
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if queue empty, return semd to free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;
             tempSemAdd ->s_next = tempRemoval->s_next;
@@ -126,6 +135,7 @@ pcb_PTR outBlocked (pcb_PTR p){
         /*once done with semaphore, return p*/
         return returnP;
     }
+    debugA(300,p->p_semAdd, tempSemAdd->s_semAdd, tempSemAdd->s_next->s_semAdd);
     /*if semd not on list, error*/
     return NULL;
 }
