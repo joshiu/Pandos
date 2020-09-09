@@ -191,17 +191,14 @@ pcb_t*headProcQ(pcb_t*tp){
  *This method returns "TRUE if the pcb pointed to by p has no children. Return
  *FALSE otherwise"
 **/
-int emptyChild(pcb_t* p){
-    if(p->p_child==NULL){
-        return TRUE;
-    }
-    return FALSE;
+int emptyChild(pcb_t *p){
+    return(p->p_child == NULL);
 }
 
 /**
  * *This method "Make the pcb pointed to by p a child of the pcb pointed to by prnt"
 **/
-void insertChild(pcb_t* prnt, pcb_t* p){
+void insertChild(pcb_t *prnt, pcb_t *p){
     if(emptyChild(prnt)){ /*if no other children, point at new child*/
         prnt ->p_child = p;
         p -> p_prnt = prnt;
@@ -218,27 +215,30 @@ void insertChild(pcb_t* prnt, pcb_t* p){
  * p. Return NULL if initially there were no children of p. Otherwise,
  * return a pointer to this removed first child pcb."
 **/
-pcb_t* removeChild(pcb_t* p){/*pointer points to parent*/
-    debugA(1,p,p,p);
-    pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
-    if(emptyChild(p)== TRUE){/*call emptyChild to see if there are children*/
-        debugA(5,p, p, p);
+pcb_t* removeChild(pcb_t *p){/*pointer points to parent*/
+    debugA(1,p,p,p);/*let us know that the method is being called to begin with*/
+    if(emptyChild(p)){/*call emptyChild to see if there are children*/
+        debugA(5,p, p, p);/*let us know when empty called*/
         return NULL;
     }
+    pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
     debugA(2,removeFirst,removeFirst->p_sib_prev, removeFirst->p_sib_next);
     if(removeFirst->p_sib_prev == NULL){/*if there is one child*/
         removeFirst ->p_prnt= NULL;
+        removeFirst->p_sib_prev = NULL;
+        removeFirst ->p_sib_next = NULL;
+        debugA(1, removeFirst, p->p_child, p);/*let us know 1 child scenerio is done*/
         p->p_child =NULL;
-        debugA(1, removeFirst, p->p_child, p);
         return(removeFirst);
     }
     /*more than one child*/
     pcb_t *firstSib = removeFirst->p_sib_prev;/*dummy pointer to the next sibling*/
     firstSib ->p_sib_next =NULL;/*stops next sib from pointing to p*/
     p ->p_child = firstSib; /*set parent's first child as sib*/
-    removeFirst->p_sib_prev =NULL; /*make former first child have no siblings*/
+    removeFirst->p_sib_next =NULL; /*make former first child have no siblings*/
+    removeFirst ->p_sib_prev =NULL;
     removeFirst->p_prnt =NULL; /*make former first child have no parents*/
-    debugA(4,removeFirst,firstSib, p);
+    debugA(4,removeFirst,firstSib, p);/* let us know more than 1 child scenerio is done*/
     return(removeFirst); /*return removed child*/
     
 }
@@ -249,15 +249,24 @@ pcb_t* removeChild(pcb_t* p){/*pointer points to parent*/
  * p. Note that the element pointed to by p need not be the first child of
  * its parent"
 **/
-pcb_t*outChild(pcb_t* p){/*pointer points to child*/
+pcb_t* outChild(pcb_t *p){/*pointer points to child*/
+    if (p == NULL){
+        return NULL;
+    }
     if(p->p_prnt ==NULL){ /*if you don't have a parent then you are already an orphan*/
         return NULL;
     }
     pcb_t *parent = p->p_prnt;/*dummy pointer to the parent*/
-    if(p != parent->p_child){/*if not the first child*/
-        if(p->p_sib_prev ==NULL){/*you are an end child, so no next sibling*/
+    if(p == parent->p_child){/*if you are the first child*/
+        return(removeChild(parent)); /*child is first child, so use removeChild*/
+    }
+    if(p->p_sib_prev == NULL && p->p_sib_next == NULL && p == p->p_prnt->p_child){/*if you are only child*/
+        return(removeChild(parent));
+    }
+    if(p!= parent->p_child){/*not the first child*/
+        if(p->p_sib_prev ==NULL){/*you are an end child, so no prev sibling*/
             p->p_prnt=NULL;
-            pcb_t *nextSib = p->p_sib_next;/*dummy pointer to previous sibling*/
+            pcb_t *nextSib = p->p_sib_next;/*dummy pointer to next sibling*/
             nextSib ->p_sib_prev = NULL;
             p->p_sib_next = NULL;
             return(p); /*return child*/
@@ -271,5 +280,5 @@ pcb_t*outChild(pcb_t* p){/*pointer points to child*/
         p->p_sib_prev =NULL;
         return(p); /*return orphaned child*/
     }
-    return(removeChild(parent)); /*child is first child, so use removeChild*/
+    return NULL;/*case if p doesn't belong*/
 }
