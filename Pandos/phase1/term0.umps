@@ -16,3 +16,7 @@ insertChild, removeChild and emptyChild ok
 process tree module ok      
 Initialized active semaphore list   
 insertBlocked test #1 started  
+insertBlocked test #2 started  
+removeBlocked test started   
+insertBlocked and removeBlocked ok   
+outBlocked(1): couldn't remove from valid queue   

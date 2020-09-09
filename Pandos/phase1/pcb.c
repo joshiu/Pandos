@@ -15,10 +15,6 @@
 /**
  * Method for debugging for seeing a value or seeing where we are.
 **/
-void debugA(int a, pcb_t* p, pcb_t* q, pcb_t* r){
-    int i;
-    i = 0;
-}
 
 /* Global Variables */
 HIDDEN pcb_PTR pcbFree_h;

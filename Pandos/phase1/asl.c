@@ -21,12 +21,18 @@ typedef struct semd_t {
 
 /*local functions*/
 HIDDEN semd_PTR searchASL (int *semAdd);
+HIDDEN semd_PTR allocASL(int *semAdd);
 /*end of local functions*/
 
 /*globals*/
 HIDDEN semd_PTR semdFree_h;
 HIDDEN semd_PTR semd_h;
 /*end of globals*/
+
+void debugA(int a, semd_t* p, semd_t* q, semd_t* r){
+    int i;
+    i = 0;
+}
 
 /**
  * This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
@@ -58,27 +64,23 @@ void initASL (){
 **/
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR temp = searchASL(semAdd);/*dummy pointer that points to address from find*/
+    p->p_semAdd = semAdd;
     if(temp->s_next->s_semAdd == semAdd){/*if the sem addresses match*/
-        insertProcQ(&(temp->s_next-> s_procQ), p);/*first variable wrong here*/
+        insertProcQ(&(temp->s_next-> s_procQ), p);
         return FALSE; 
     }
     /*if we don't find, remove semdFree*/
     if(semdFree_h==NULL){/*if the free list is empty, there is an error*/
-        return NULL;
+        return TRUE;
     }
     /*remove semd from Free list and add to ASL, then and insert pcb into new semd */
-    semd_PTR newSemd = semdFree_h;/*get new semd from list*/
-    semdFree_h = newSemd->s_next;
-    newSemd ->s_next =NULL;
+    semd_t *newSemd = allocASL(semAdd);
     semd_t *actListPrev = searchASL(newSemd->s_semAdd);
     semd_t *actListNext = actListPrev->s_next;
     actListPrev->s_next = newSemd;
     newSemd ->s_next = actListNext;/*point new to next*/
     insertProcQ(&(newSemd->s_procQ), p);
-    if(semdFree_h==NULL){/*if the free list is empty,after semd removal*/
-        return TRUE;
-    }
-    return(FALSE);/*return false if semdFree not empty*/
+    return FALSE;/*return false if semdFree not empty*/
 }
 
 
@@ -160,4 +162,15 @@ semd_PTR searchASL(int *semAdd){
         temp=temp->s_next;
     }
     return temp; 
+}
+/**
+ * Allocates a semd from the semdFree list, assigns it the given semAdd, and creates and empty queue
+ **/
+semd_PTR allocASL(int *semAdd){
+    semd_PTR newSemd = semdFree_h;/*get new semd from list*/
+    semdFree_h = newSemd->s_next;
+    newSemd ->s_next =NULL;
+    newSemd ->s_semAdd = semAdd;
+    newSemd ->s_procQ = mkEmptyProcQ();
+    return newSemd;
 }
