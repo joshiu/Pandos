@@ -227,7 +227,7 @@ pcb_t* removeChild(pcb_t *p){/*pointer points to parent*/
         pcb_t *temp = p->p_child;
         p->p_child =NULL;
         temp ->p_prnt= NULL;
-        debugA(1, temp, p->p_child, p);/*let us know 1 child scenerio is done*/
+        debugA(1, temp, p->p_child, temp->p_prnt);/*let us know 1 child scenerio is done*/
         return(temp);
     }
     /*more than one child*/
