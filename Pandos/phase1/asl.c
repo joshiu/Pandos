@@ -116,7 +116,7 @@ pcb_PTR removeBlocked (int *semAdd){
 pcb_PTR outBlocked (pcb_PTR p){
     semd_PTR tempSemAdd = searchASL(p->p_semAdd);/*dummy pointer that points address from find*/
     if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){
-        pcb_PTR returnP = outProcQ(&(tempSemAdd->s_next-> s_procQ),p);/*first variable wrong here*/
+        pcb_PTR returnP = outProcQ(&(tempSemAdd->s_next-> s_procQ),p);/*dummy pointer to what we want to return*/
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if queue empty, return semd to free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;
             tempSemAdd ->s_next = tempRemoval->s_next;
