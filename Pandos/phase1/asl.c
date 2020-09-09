@@ -29,6 +29,28 @@ HIDDEN semd_PTR semd_h;
 /*end of globals*/
 
 /**
+ * This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
+ * on a free list not complete. "Initialize the semdFree list to contain all the elements of the array
+ * static semd t semdTable[MAXPROC] This method will be only called once during data structure initialization."
+**/
+void initASL (){
+    int i;
+    static semd_t semdTable[MAXPROC+2]; /* make a dummy table with +2 entries here */
+    semdFree_h = &semdTable[0];
+    for(i=1; i<MAXPROC; i++){
+        semdTable[i-1].s_next = & semdTable[i];
+    }
+    semdTable[MAXPROC-1].s_next = NULL;
+    semd_h = &semdTable[MAXPROC];
+    semd_h->s_next = &semdTable[MAXPROC+1];
+    semd_h->s_semAdd =0;/*head of list points to 0*/
+    semd_h -> s_next ->s_semAdd = MAXINT;/*tail of list points to near infinity*/
+    semd_h -> s_procQ = mkEmptyProcQ();/*give head an empty ProcQ*/
+    semd_h->s_next->s_procQ = mkEmptyProcQ();/*give tail empty ProcQ*/
+    return;
+}
+
+/**
  * This method searches the active semdList to see if theres the semAdd in it
  * Two cases: found -> calls insertProcQ 
  * Or not found -> allocate new node and put it into the active list then preform found case
@@ -126,27 +148,6 @@ pcb_PTR headBlocked (int *semAdd){
         return headProcQ(tempSemAdd->s_next->s_procQ);
     }
     return NULL;
-}
-
-/**
- * This method declares static array of 20 nodes (+ 2 dummy nodes) and then goes through the array and puts each node
- * on a free list not complete. "Initialize the semdFree list to contain all the elements of the array
- * static semd t semdTable[MAXPROC] This method will be only called once during data structure initialization."
-**/
-void initASL (){
-    int i;
-    static semd_t semdTable[MAXPROC+2]; /* make a dummy table with +2 entries here */
-    semdFree_h = &semdTable[0];
-    for(i=1; i<MAXPROC; i++){
-        semdTable[i-1].s_next = & semdTable[i];
-    }
-    semdTable[MAXPROC-1].s_next = NULL;
-    semd_h = &semdTable[MAXPROC];
-    semd_h->s_next = &semdTable[MAXPROC+1];
-    semd_h->s_semAdd =0;/*head of list points to 0*/
-    semd_h -> s_next ->s_semAdd = MAXINT;/*tail of list points to near infinity*/
-    semd_h -> s_procQ = mkEmptyProcQ();/*give head an empty ProcQ*/
-    semd_h->s_next->s_procQ = mkEmptyProcQ();/*give tail empty ProcQ*/
 }
 
 /**
