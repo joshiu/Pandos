@@ -202,12 +202,16 @@ void insertChild(pcb_t *prnt, pcb_t *p){
     if(emptyChild(prnt)){ /*if no other children, point at new child*/
         prnt ->p_child = p;
         p -> p_prnt = prnt;
-    } /*if there are children: parent points to new child and new child points to sibling + parent.*/
-    pcb_t *currentChild = prnt->p_child;/*dummy pointer to current child*/
-    p->p_sib_prev = currentChild;
-    currentChild ->p_sib_next = p;
-    prnt ->p_child = p;
-    p->p_prnt = prnt;
+        p->p_sib_next = NULL;
+        p->p_sib_prev = NULL;
+    }if(!emptyChild(prnt)){/*if there are children: parent points to new child and new child points to sibling + parent.*/
+        pcb_t *currentChild = prnt->p_child;/*dummy pointer to current child*/
+        p->p_sib_prev = currentChild;
+        p->p_next = NULL;
+        currentChild ->p_sib_next = p;
+        prnt ->p_child = p;
+        p->p_prnt = prnt;
+    } 
 }
 
 /**
