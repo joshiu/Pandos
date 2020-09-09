@@ -204,6 +204,7 @@ void insertChild(pcb_t *prnt, pcb_t *p){
         p -> p_prnt = prnt;
         p->p_sib_next = NULL;
         p->p_sib_prev = NULL;
+        return;
     }if(!emptyChild(prnt)){/*if there are children: parent points to new child and new child points to sibling + parent.*/
         pcb_t *currentChild = prnt->p_child;/*dummy pointer to current child*/
         p->p_sib_prev = currentChild;
@@ -211,6 +212,7 @@ void insertChild(pcb_t *prnt, pcb_t *p){
         currentChild ->p_sib_next = p;
         prnt ->p_child = p;
         p->p_prnt = prnt;
+        return;
     } 
 }
 
@@ -220,30 +222,24 @@ void insertChild(pcb_t *prnt, pcb_t *p){
  * return a pointer to this removed first child pcb."
 **/
 pcb_t* removeChild(pcb_t *p){/*pointer points to parent*/
-    debugA(1,p,p,p->p_child);/*let us know that the method is being called to begin with*/
     if(emptyChild(p)){/*call emptyChild to see if there are children*/
-        debugA(5,p, p, p);/*let us know when empty called*/
         return NULL;
     }
     
-    debugA(2,p->p_child,p->p_child->p_sib_prev, p->p_child->p_sib_next);
     if(p->p_child->p_sib_prev == NULL){/*if there is one child*/
         pcb_t *temp = p->p_child;
         p->p_child =NULL;
         temp ->p_prnt= NULL;
-        debugA(1, temp, p->p_child, temp->p_prnt);/*let us know 1 child scenerio is done*/
         return(temp);
     }
     /*more than one child*/
     pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
     pcb_t *firstSib = removeFirst->p_sib_prev;/*dummy pointer to the next sibling*/
-    debugA(7, removeFirst, p->p_child, p);
     firstSib ->p_sib_next =NULL;/*stops next sib from pointing to p*/
     p ->p_child = firstSib; /*set parent's first child as sib*/
     removeFirst->p_sib_next =NULL; /*make former first child have no siblings*/
     removeFirst ->p_sib_prev =NULL;
     removeFirst->p_prnt =NULL; /*make former first child have no parents*/
-    debugA(4,removeFirst,firstSib, p);/* let us know more than 1 child scenerio is done*/
     return(removeFirst); /*return removed child*/
     
 }
