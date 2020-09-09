@@ -73,6 +73,7 @@ int insertBlocked (int *semAdd, pcb_PTR p){
     }
     /*if we don't find, remove semdFree*/
     if(semdFree_h==NULL){/*if the free list is empty, there is an error*/
+        debugA(404, p->p_semAdd, semAdd, temp->s_semAdd);
         return TRUE;
     }
     /*remove semd from Free list and add to ASL, then and insert pcb into new semd */
