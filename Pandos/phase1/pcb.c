@@ -25,7 +25,7 @@ HIDDEN pcb_PTR pcbFree_h;
 /*------------------------------------------------------------------------------------------------------*/
 
 /**
- * This method inserts "the element pointed to by p onto the pcbFree list."
+ * This method inserts the element pointed to by p onto the pcbFree list.
  * This is done uing the insertProcQ method.
 **/
 void freePcb(pcb_t*p){
@@ -33,12 +33,8 @@ void freePcb(pcb_t*p){
 }
 
 /**
- * "Remove an element from the pcbFree list, provide initial values for ALL
- * of the pcbs fields (i.e. NULL and/or 0) and then return a pointer
- * to the removed element. pcbs get reused, so it is important that
- * no previous value persist in a pcb when it gets reallocated"
- * Gives needed Pcb, then removes Pcb from the list
- * If the list is empty then NULL is returned.
+ * Remove an element from the pcbFree list, provide initial values for ALL
+ * of the pcbs fields and then return a pointer to the removed element.
 **/
 pcb_t* allocPcb(){
     if(pcbFree_h == NULL){/*if the pcbFree list is empty, return NULL*/
@@ -57,10 +53,9 @@ pcb_t* allocPcb(){
 }
 
 /**
- *"Initialize the pcbFree list to contain all the elements of the
- *static array of MAXPROC pcbs. This method will be called only
- *once during data structure initialization"
- *It creates a new empty list and contains all elements in the static array MAXPROC in the pcb.
+ * Initialize the pcbFree list to contain all the elements of the
+ * static array of MAXPROC pcbs. This method will be called only
+ * once during data structure initialization.
 **/
 void initPcbs(){
     int i;
@@ -72,9 +67,8 @@ void initPcbs(){
 }
 
 /**
- *"This method is used to initialize a variable to be tail pointer to a
- *process queue. Return a pointer to the tail of an empty process queue; i.e. NULL"
- *Makes an empty list
+ * This method is used to initialize a variable to be tail pointer to a
+ * process queue. Return a pointer to the tail of an empty process queue.
 **/
 pcb_t* mkEmptyProcQ(){
     return (NULL);
@@ -88,17 +82,16 @@ int emptyProcQ(pcb_t*tp){
 }
 
 /**
- * "Insert the pcb pointed to by p into the process queue whose tail pointer is pointed to by tp. 
- * Note the double indirection through tp to allow for the possible updating of the tail pointer as well"
- * This method inserts an elements at the tail.
+ * Insert the pcb pointed to by p into the process queue whose tail pointer is pointed to by tp. 
+ * Note the double indirection through tp to allow for the possible updating of the tail pointer as well.
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
     if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
-    }
-    pcb_t *head = (*tp) -> p_next; 
+    } /*if the queue has one or more element(s) */
+    pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
     p->p_next = head;
     head -> p_prev = p;
     (*tp) -> p_next = p;
@@ -107,9 +100,9 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
 }
 
 /**
- * This method removes the head "from the process queue whose tail-pointer is pointed to by tp. 
+ * This method removes the head from the process queue whose tail-pointer is pointed to by tp. 
  * Return NULL if the process queue was initially empty; 
- * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary"
+ * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary.
 **/
 pcb_t*removeProcQ(pcb_t**tp){
     if(emptyProcQ(*tp)==TRUE){/*if there is nothing*/
@@ -123,20 +116,18 @@ pcb_t*removeProcQ(pcb_t**tp){
         return (head);
     }
     /*if we have more than one thing*/
-    pcb_t *newHead = head ->p_next;
-    head->p_prev = NULL; /*get rid of pointer from head to tail*/
-    (*tp) -> p_next = newHead; /*tail points to new head*/
-    newHead ->p_prev = (*tp);/*new head points back to tail*/
-    head ->p_next =NULL;/*get rid of pointer from old head to new head*/
+    pcb_t *newHead = head ->p_next;/*Dummy pointer to the new head*/
+    head->p_prev = NULL; 
+    (*tp) -> p_next = newHead; 
+    newHead ->p_prev = (*tp);
+    head ->p_next =NULL;
     return(head);/*return old head*/
 }
 
 /**
- *"Remove the pcb pointed to by p from the process queue whose tailpointer is pointed to by tp. 
- *Update the process queue’s tail pointer if
- *necessary. If the desired entry is not in the indicated queue (an error
- *condition), return NULL; otherwise, return p. "
- *This method points to any element in the queue and that element gets removed
+ *Remove the pcb pointed to by p from the process queue whose tailpointer is pointed to by tp. 
+ *Update the process queue’s tail pointer if necessary. 
+ *If the desired entry is not in the indicated queue (an error condition), return NULL; otherwise, return p. 
 **/
 pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
     int i;
@@ -152,22 +143,21 @@ pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
             dumTail= dumTail->p_next;/*recursive call that shifts dumTail*/
             continue;
         }
-        pcb_t *forwardTo = dumTail ->p_next;/*dummy pointer to next item*/
-        pcb_t *backwardTo = dumTail ->p_prev;/*dummy pointer to previous item*/
-        backwardTo ->p_next = forwardTo;/*have previous point to next*/
-        forwardTo ->p_prev = backwardTo;/*have next point to previous*/
-        dumTail->p_next=NULL; /*remove pointer to next item*/
-        dumTail ->p_prev =NULL;/*remove pointer to previous item*/
+        pcb_t *forwardTo = dumTail ->p_next;/*Dummy pointer to the next entry*/
+        pcb_t *backwardTo = dumTail ->p_prev;/*Dummy pointer to the prev entry*/
+        backwardTo ->p_next = forwardTo;
+        forwardTo ->p_prev = backwardTo;
+        dumTail->p_next=NULL; 
+        dumTail ->p_prev =NULL;
         return(dumTail); /*return pointer to removed*/
     }
     return(NULL); /*p is not on the list, so NULL*/
 }
 
 /**
- *"Return a pointer to the first pcb from the process queue whose tail
- *is pointed to by tp. Do not remove this pcbfrom the process queue.
- *Return NULL if the process queue is empty"
- *Gives head from Queue, or returns null if empty
+ *Return a pointer to the first pcb from the process queue whose tail
+ *is pointed to by tp. Do not remove this pcb from the process queue.
+ *Return NULL if the process queue is empty.
 **/
 pcb_t*headProcQ(pcb_t*tp){
     if(emptyProcQ(tp)){
@@ -184,15 +174,15 @@ pcb_t*headProcQ(pcb_t*tp){
 
 
 /**
- *This method returns "TRUE if the pcb pointed to by p has no children. Return
- *FALSE otherwise"
+ *This method returns TRUE if the pcb pointed to by p has no children. Return
+ *FALSE otherwise.
 **/
 int emptyChild(pcb_t *p){
     return(p->p_child == NULL);
 }
 
 /**
- * *This method "Make the pcb pointed to by p a child of the pcb pointed to by prnt"
+ * This method makes the pcb pointed to by p a child of the pcb pointed to by prnt.
 **/
 void insertChild(pcb_t *prnt, pcb_t *p){
     if(emptyChild(prnt)){ /*if no other children, point at new child*/
@@ -213,17 +203,17 @@ void insertChild(pcb_t *prnt, pcb_t *p){
 }
 
 /**
- * This method makes "the first child of the pcb pointed to by p no longer a child of
+ * This method makes the first child of the pcb pointed to by p no longer a child of
  * p. Return NULL if initially there were no children of p. Otherwise,
- * return a pointer to this removed first child pcb."
+ * return a pointer to this removed first child pcb.
 **/
-pcb_t* removeChild(pcb_t *p){/*pointer points to parent*/
+pcb_t* removeChild(pcb_t *p){
     if(emptyChild(p)){/*call emptyChild to see if there are children*/
         return NULL;
     }
     
     if(p->p_child->p_sib_prev == NULL){/*if there is one child*/
-        pcb_t *temp = p->p_child;
+        pcb_t *temp = p->p_child;/*dummy pointer to the first child*/
         p->p_child =NULL;
         temp ->p_prnt= NULL;
         return(temp);
@@ -231,22 +221,20 @@ pcb_t* removeChild(pcb_t *p){/*pointer points to parent*/
     /*more than one child*/
     pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
     pcb_t *firstSib = removeFirst->p_sib_prev;/*dummy pointer to the next sibling*/
-    firstSib ->p_sib_next =NULL;/*stops next sib from pointing to p*/
-    p ->p_child = firstSib; /*set parent's first child as sib*/
-    removeFirst->p_sib_next =NULL; /*make former first child have no siblings*/
+    firstSib ->p_sib_next =NULL;
+    p ->p_child = firstSib; 
+    removeFirst->p_sib_next =NULL; 
     removeFirst ->p_sib_prev =NULL;
-    removeFirst->p_prnt =NULL; /*make former first child have no parents*/
+    removeFirst->p_prnt =NULL; 
     return(removeFirst); /*return removed child*/
     
 }
 
 /**
- * This method "Make the pcb pointed to by p no longer the child of its parent." (an orphan) 
- * "If the pcb pointed to by p has no parent, return NULL; otherwise, return
- * p. Note that the element pointed to by p need not be the first child of
- * its parent"
+ * This method make the pcb pointed to by p no longer the child of its parent.
+ * If the pcb pointed to by p has no parent, return NULL; otherwise, return p.
 **/
-pcb_t* outChild(pcb_t *p){/*pointer points to child*/
+pcb_t* outChild(pcb_t *p){
     if (p == NULL){
         return NULL;
     }
@@ -255,7 +243,7 @@ pcb_t* outChild(pcb_t *p){/*pointer points to child*/
     }
     pcb_t *parent = p->p_prnt;/*dummy pointer to the parent*/
     if(p == parent->p_child){/*if you are the first child*/
-        return(removeChild(parent)); /*child is first child, so use removeChild*/
+        return(removeChild(parent));
     }
     if(p->p_sib_prev == NULL && p->p_sib_next == NULL && p == p->p_prnt->p_child){/*if you are only child*/
         return(removeChild(parent));
@@ -271,9 +259,9 @@ pcb_t* outChild(pcb_t *p){/*pointer points to child*/
         p->p_prnt = NULL;
         pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
         pcb_t *nextSib = p->p_sib_next;/*dummy pointer to next sibling*/
-        prevSib ->p_sib_next = nextSib;/*point previous to next sibling*/
-        nextSib ->p_sib_prev = prevSib;/*point next sibling to previous*/
-        p->p_sib_next =NULL;/*remove p's sibling relations*/
+        prevSib ->p_sib_next = nextSib;
+        nextSib ->p_sib_prev = prevSib;
+        p->p_sib_next =NULL;
         p->p_sib_prev =NULL;
         return(p); /*return orphaned child*/
     }
