@@ -4,7 +4,7 @@
  * and manipulate the process trees.
  * 
  * 
- * This code is written by Umang Joshi and Amy Kelley.
+ * This code is written by Umang Joshi and Amy Kelley, with help from Mikey G.
  */
 
 #include "../h/const.h"
