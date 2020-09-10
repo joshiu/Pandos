@@ -63,26 +63,26 @@ void initASL (){
  * Or not found -> allocate new node and put it into the active list then preform found case
 **/
 int insertBlocked (int *semAdd, pcb_PTR p){
-    semd_PTR temp = searchASL(semAdd);/*dummy pointer that points to address from find*/
-    p->p_semAdd = semAdd;
-    debugA(1, semAdd, p->p_semAdd, temp->s_semAdd);
-    if(temp->s_next->s_semAdd == p-> p_semAdd){/*if the sem addresses match*/
-        debugA(2, p->p_semAdd, temp->s_next->s_semAdd, temp->s_semAdd);
-        insertProcQ(&(temp->s_next-> s_procQ), p);
+    semd_PTR ASLPrev = searchASL(semAdd);/*dummy pointer that points to address from find*/
+    debugA(1, semAdd, p->p_semAdd, ASLPrev->s_semAdd);
+    if(ASLPrev->s_next->s_semAdd == semAdd){/*if the sem addresses match*/
+        p->p_semAdd = semAdd;
+        debugA(2, p->p_semAdd, ASLPrev->s_next->s_semAdd, ASLPrev->s_semAdd);
+        insertProcQ(&(ASLPrev->s_next-> s_procQ), p);
         return FALSE; 
     }
     /*if we don't find, remove semdFree*/
     if(semdFree_h==NULL){/*if the free list is empty, there is an error*/
-        debugA(404, p->p_semAdd, semAdd, temp->s_semAdd);
+        debugA(404, p->p_semAdd, semAdd, ASLPrev->s_semAdd);
         return TRUE;
     }
     /*remove semd from Free list and add to ASL, then and insert pcb into new semd */
     semd_t *newSemd = allocASL(semAdd);
-    semd_t *ASLPrev = searchASL(newSemd->s_semAdd);
     semd_t *ASLNext = ASLPrev->s_next;
     ASLPrev->s_next = newSemd;
+    p->p_semAdd = semAdd;
     newSemd ->s_next = ASLNext;/*point new to next*/
-    debugA(3, p->p_semAdd, newSemd->s_semAdd, temp->s_semAdd);
+    debugA(3, p->p_semAdd, newSemd->s_semAdd, ASLPrev->s_semAdd);
     insertProcQ(&(newSemd->s_procQ), p);
     return FALSE;/*return false if semdFree not empty*/
 }
