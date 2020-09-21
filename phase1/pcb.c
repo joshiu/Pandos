@@ -90,6 +90,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
+        return;
     } /*if the queue has one or more element(s) */
     pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
     p->p_next = head;
@@ -97,6 +98,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
     (*tp) = p;
+    return;
 }
 
 /**
