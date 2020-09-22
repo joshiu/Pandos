@@ -140,6 +140,8 @@ pcb_PTR headBlocked (int *semAdd){
     return NULL;/*If semd not found*/
 }
 
+/*******************Helper Functions**********************************/
+
 /**
  * Cycles through the ASL and finds the closest value to given semAdd.
 **/

@@ -5,8 +5,7 @@
 
 
 /**
- * This file contains the ASL or active semphone list. Which has public and private methods that are excessors and mutators that
- * manipulates this data structure.
+ * This file contains two lists
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G. 
  **/

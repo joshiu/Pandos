@@ -2,6 +2,12 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
+
+/**
+ * Main comment here
+ * */
+
+
 /** contains the main
  * initPcb
  * initASL
@@ -31,3 +37,23 @@
  * memory mangement(interrupt.c) then memoryHandler
  * */
 
+/*********************************Psycho Code*************************************************/
+
+/**
+ * Define and Init Global Variables
+ * processcnt = 0;
+ * softBlockcnt = 0;
+ * readyQue = mkeEmptyProc();
+ * currentProc = NULL;
+ * int devicesSema4s[49] = 0; 2 sema4s per device :, 5 devices per terminal : array size is 49
+ * initPCB();
+ * ASL(); instantiate Pcb and make the state of the Pcb into another state (ready) and put on readyQ
+ * then insert and run scheduler()
+ * */
+
+/**
+ * something to populate passup at 0x0FFF.F900
+ * xxx->tlb refll handler = (memaddr) uTLB RefillHandler;
+ * 
+ * 
+ * */
