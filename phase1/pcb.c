@@ -1,7 +1,5 @@
 /*
- * This file contains the freePCB list, and methods that helps it maintain and manipulate the queue. 
- * It also contains the process trees that also organize the pcbs. The methods for this section are used to support 
- * and manipulate the process trees.
+ * This file contains 
  * 
  * 
  * This code is written by Umang Joshi and Amy Kelley, with help from Mikey G.
@@ -93,7 +91,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
         (*tp) = p;/*the tail is whatever p point to*/
         return;
     } 
-    
+
     /*if the queue has one or more element(s) */
     pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
     p->p_next = head;

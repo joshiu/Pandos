@@ -5,8 +5,7 @@
 
 
 /**
- * This file contains the ASL or active semphone list. Which has public and private methods that are excessors and mutators that
- * manipulates this data structure.
+ * This file contains 
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G. 
  **/
@@ -37,9 +36,11 @@ void initASL (){
     int i;
     static semd_t semdTable[MAXPROC+2]; /* make a table with MAXPROC+2 entries*/
     semdFree_h = &semdTable[0];
+
     for(i=1; i<MAXPROC; i++){/*initialize semdFree List*/
         semdTable[i-1].s_next = & semdTable[i];
     }
+
     semdTable[MAXPROC-1].s_next = NULL;
     semd_h = &semdTable[MAXPROC];
     semd_h->s_next = &semdTable[MAXPROC+1];
@@ -58,15 +59,18 @@ void initASL (){
 **/
 int insertBlocked (int *semAdd, pcb_PTR p){
     semd_PTR ASLPrev = searchASL(semAdd);/*dummy pointer that points to address from find*/
+
     if(ASLPrev->s_next->s_semAdd == semAdd){/*if the sem addresses match*/
         p->p_semAdd = semAdd;
         insertProcQ(&(ASLPrev->s_next-> s_procQ), p);
         return FALSE; 
     }
+
     /*if we don't find, remove semdFree*/
     if(semdFree_h==NULL){/*if the free list is empty, there is an error*/
         return TRUE;
     }
+
     /*remove semd from Free list and add to ASL, then and insert pcb into new semd */
     semd_t *newSemd = allocASL(semAdd);
     semd_t *ASLNext = ASLPrev->s_next;
@@ -87,8 +91,10 @@ int insertBlocked (int *semAdd, pcb_PTR p){
 **/
 pcb_PTR removeBlocked (int *semAdd){
     semd_PTR tempSemAdd = searchASL(semAdd);/*dummy pointer that points to address from find*/
+
     if(tempSemAdd->s_next->s_semAdd == semAdd){/*Found semd with given semAdd*/
         pcb_PTR returnP = removeProcQ(&(tempSemAdd->s_next-> s_procQ));
+
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if process queue empty, put semd back on free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;/*Dummy pointer to what we want to remove*/
             tempSemAdd ->s_next = tempRemoval->s_next;
@@ -109,8 +115,10 @@ pcb_PTR removeBlocked (int *semAdd){
 **/
 pcb_PTR outBlocked (pcb_PTR p){
     semd_PTR tempSemAdd = searchASL(p->p_semAdd);/*dummy pointer that points address from find*/
+
     if(tempSemAdd->s_next->s_semAdd == p->p_semAdd){/*if semd that contains p is found*/
         pcb_PTR returnP = outProcQ(&(tempSemAdd->s_next-> s_procQ),p);/*dummy pointer to return*/
+
         if(emptyProcQ(tempSemAdd->s_next -> s_procQ)){/*if queue empty, return semd to free list*/
             semd_PTR tempRemoval = tempSemAdd ->s_next;/*Dummy pointer that points to semd that we want to put on the free list*/
             tempSemAdd ->s_next = tempRemoval->s_next;
@@ -131,6 +139,7 @@ pcb_PTR outBlocked (pcb_PTR p){
 **/
 pcb_PTR headBlocked (int *semAdd){
     semd_t *tempSemAdd = searchASL(semAdd);/*dummy pointer that points to address from find*/
+
     if(tempSemAdd->s_next->s_semAdd ==semAdd){/*If semd with semAdd is found*/
         if(emptyProcQ(tempSemAdd->s_next->s_procQ)){/*If semd queue is empty*/
             return NULL;
@@ -140,7 +149,9 @@ pcb_PTR headBlocked (int *semAdd){
     return NULL;/*If semd not found*/
 }
 
-/*******************Helper Functions**********************************/
+/*********************************************************************/
+/*******************Helper Functions below****************************/
+/*********************************************************************/
 
 /**
  * Cycles through the ASL and finds the closest value to given semAdd.
