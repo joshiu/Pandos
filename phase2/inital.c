@@ -14,7 +14,7 @@
  * readyQ = mkemptyQ()
  * set current Proc
  * scheduler() <-- Last line of the code
- * 
+ *
  * all the global variables are to be defined and initialized here
  * initialize all 40 semaphores to 0 (use 1 process and put it on readyQ)
  * */
@@ -54,6 +54,24 @@
 /**
  * something to populate passup at 0x0FFF.F900
  * xxx->tlb refll handler = (memaddr) uTLB RefillHandler;
- * 
- * 
+ *
+ * set stack pointer for nucleus TLB refill event to the top of the nucleus event: Ox2000.1000
+ * set xxx-> expection_handler = (memaddr) fooBar; (change foo name)
+ * set stack pointer for the expection handler to top of Nucleus 0x2000.1000
+ * initPCB
+ * initSemd
+ * initilzate all the nucleus maintained variables
+ * Process Count (0), Soft-block Count (0), Ready Queue (mkEmptyProcQ()), and Current Process (NULL).
+ * set system wide interval timer at 100 millsecs
+ * place pcb on ready queue and processcount ++
+ * allocPCB
+ * init alloct state on PCB (interrupts enable, process local timer enabled, cornal mode on)
+ * SP = RAMTOP
+ * PCADDRESS = TEST
+ * set all process tree fields to NULL
+ * set p_time = 0;
+ * set p_semAdd = NULL;
+ * set p_supportstruct = NULL;
+ * call scheduler();
+ * after this never return to main again
  * */
