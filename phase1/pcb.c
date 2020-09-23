@@ -1,5 +1,5 @@
 /*
- * This file contains 
+ * This file contains the PCB which is a doubly linked linear list. 
  * 
  * 
  * This code is written by Umang Joshi and Amy Kelley, with help from Mikey G.
@@ -181,7 +181,7 @@ pcb_t*headProcQ(pcb_t*tp){
 /*------------------------------------------------------------------------------------------------------*/
 
 /**
- * Main comment about trees here
+ * This section is for the process tree of the program. Where it is doubly linked binary tree.
  * */
 
 

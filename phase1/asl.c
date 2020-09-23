@@ -5,7 +5,10 @@
 
 
 /**
- * This file contains 
+ * This file contains the ASL which is a semaphore that contains an address and a process queue. It also 
+ * contains two lists. Both are NULL terminated single, linear list. The first list is the 
+ * Active Semaphore List or ASL and it's sorted in ascending order. The second list is a semaphore
+ * descriptors (semdFree list) that holds the unused semaphore descriptors.
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G. 
  **/
