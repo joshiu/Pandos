@@ -40,6 +40,7 @@ pcb_t* allocPcb(){
     if(pcbFree_h == NULL){/*if the pcbFree list is empty, return NULL*/
         return NULL;
     }
+    
     /*initialize all our pointers*/
     pcb_t *p=removeProcQ(&pcbFree_h);/*set the pointer to point to the removed pcb*/
     p->p_next =NULL;
@@ -91,7 +92,9 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
         return;
-    } /*if the queue has one or more element(s) */
+    } 
+    
+    /*if the queue has one or more element(s) */
     pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
     p->p_next = head;
     head -> p_prev = p;
@@ -110,6 +113,7 @@ pcb_t*removeProcQ(pcb_t**tp){
     if(emptyProcQ(*tp)==TRUE){/*if there is nothing*/
         return NULL;
     }
+
     pcb_t *head = (*tp)->p_next; /*dummy pointer to the head*/
     if(head == (*tp)){/*only 1 item in queue*/
         (*tp) -> p_next = NULL;
@@ -117,6 +121,7 @@ pcb_t*removeProcQ(pcb_t**tp){
         (*tp) = NULL;
         return (head);
     }
+
     /*if we have more than one thing*/
     pcb_t *newHead = head ->p_next;/*Dummy pointer to the new head*/
     head->p_prev = NULL; 
@@ -137,14 +142,18 @@ pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
     if(emptyProcQ(*tp)){ /*if the queue is empty return NULL*/
         return NULL;
     }
+
     if(dumTail->p_next == p){ /*if the head is the pointer then call removeProcQ on tp*/
         return removeProcQ(tp);
     }
+
     for(i=0; i<MAXPROC; i++){
+
         if(dumTail != p){
             dumTail= dumTail->p_next;/*recursive call that shifts dumTail*/
             continue;
         }
+
         pcb_t *forwardTo = dumTail ->p_next;/*Dummy pointer to the next entry*/
         pcb_t *backwardTo = dumTail ->p_prev;/*Dummy pointer to the prev entry*/
         backwardTo ->p_next = forwardTo;
@@ -173,6 +182,9 @@ pcb_t*headProcQ(pcb_t*tp){
 /*---------------------------------Below: methods for process trees--------------------------------------*/
 /*------------------------------------------------------------------------------------------------------*/
 
+/**
+ * Main comment about trees here
+ * */
 
 
 /**
@@ -187,6 +199,7 @@ int emptyChild(pcb_t *p){
  * This method makes the pcb pointed to by p a child of the pcb pointed to by prnt.
 **/
 void insertChild(pcb_t *prnt, pcb_t *p){
+
     if(emptyChild(prnt)){ /*if no other children, point at new child*/
         prnt ->p_child = p;
         p -> p_prnt = prnt;
@@ -194,6 +207,7 @@ void insertChild(pcb_t *prnt, pcb_t *p){
         p->p_sib_prev = NULL;
         return;
     }
+
     pcb_t *currentChild = prnt->p_child; /*dummy pointer to current child*/
     p->p_sib_prev = currentChild;
     p->p_next = NULL;
@@ -219,6 +233,7 @@ pcb_t* removeChild(pcb_t *p){
         temp ->p_prnt= NULL;
         return(temp);
     }
+
     /*more than one child*/
     pcb_t *removeFirst = p->p_child;/*dummy pointer that points to child we want to remove*/
     pcb_t *firstSib = removeFirst->p_sib_prev;/*dummy pointer to the next sibling*/
@@ -239,13 +254,16 @@ pcb_t* outChild(pcb_t *p){
     if (p == NULL){
         return NULL;
     }
+
     if(p->p_prnt ==NULL){ /*if you don't have a parent then you are already an orphan*/
         return NULL;
     }
+    
     pcb_t *parent = p->p_prnt;/*dummy pointer to the parent*/
     if(p == parent->p_child){/*if you are the first child*/
         return(removeChild(parent));
     }
+
     if(p!= parent->p_child){/*not the first child*/
         if(p->p_sib_prev ==NULL){/*you are an end child, so no prev sibling*/
             p->p_prnt=NULL;
@@ -253,7 +271,8 @@ pcb_t* outChild(pcb_t *p){
             nextSib ->p_sib_prev = NULL;
             p->p_sib_next = NULL;
             return(p); /*return child*/
-        }/*if you are a middle child, so have sib_next and sib_prev*/
+        }
+        /*if you are a middle child, so have sib_next and sib_prev*/
         p->p_prnt = NULL;
         pcb_t *prevSib = p->p_sib_prev;/*dummy pointer to previous sibling*/
         pcb_t *nextSib = p->p_sib_next;/*dummy pointer to next sibling*/
