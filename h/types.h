@@ -15,6 +15,26 @@ typedef signed int cpu_t;
 typedef unsigned int memaddr;
 
 #define STATEREGNUM	31
+
+/* process context */
+typedef struct context_t {
+/* process context fields */
+unsigned int 	c_stackPtr, /* stack pointer value */
+				c_status, /* status reg value*/
+				c_pc; /* PC address*/
+} context_t;
+
+typedef struct support_t {
+int 			sup_asid;/* Process Id (asid)*/
+state_t			sup_exceptState[2];/* stored excpt states */
+context_t		sup_exceptContext[2]; /* pass up context*/
+/*... other fields to be added later*/
+} support_t;
+
+/* Exceptions related constants */
+#define PGFAULTEXCEPT 0
+#define GENERALEXCEPT 1
+
 typedef struct state_t {
 	unsigned int	s_entryHI;
 	unsigned int	s_cause;
@@ -40,7 +60,7 @@ cpu_t               p_time;      /*cpu time used by proc*/
 int 				*p_semAdd;   /*pointer to sema4 on*/
 								/*which process blocked*/
 /*support layer information*/
-/*support_t			*p_supportStruct;*/
+support_t			*p_supportStruct;
 								/*ptr to support struct*/
 }pcb_t;
 

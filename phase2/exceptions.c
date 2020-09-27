@@ -6,7 +6,10 @@
 
 /**
  * public void SYSCALL(a0){
- * if (a0!=NULL &&  kernel_mode ==true){
+ * if(kernel_mode !=true){
+ * programTrapExec();
+ * }
+ * if (a0!=NULL ){
  * branch -> look at a0
  * if a0 == 1 then SYS1
  * a0 == 2 then sys2
@@ -22,7 +25,7 @@
  * */
 
 /**
- * public int SYS1(a0, state_t *statep, support_t *supportp, 0){
+ * public int SYS1(a0, state_t *statep, support_t *supportp, int i){
  * pcb_t *newPcb = allocPcb();
  * if(newPcb == NULL){
  * return (-1); (put this in v0)
@@ -37,7 +40,7 @@
  * */
 
 /**
- * public void SYS2(a0, 0, 0, 0){
+ * public void SYS2(a0, int i, int j, int k){
  * pcb_PTR lastChild = currentProc;
  * 
  * if you have no kids
@@ -68,7 +71,7 @@
  * */
 
 /**
- * public void SYS3 (a0, int *semaddr, 0, 0){
+ * public void SYS3 (a0, int *semaddr, int i, int j){
  * semaddr --;
  * if (semaddr <0){
  * insertBlocked(&semaddr, currentProc);
@@ -81,7 +84,7 @@
  * */
 
 /**
- * public void SYS4(a0, int *semaddr,0,0){
+ * public void SYS4(a0, int *semaddr,int i ,int j){
  * semaddr++;
  * if(semaddr <= 0){
  * pcb_t *temp = removeBlocked(&semaddr);
@@ -94,8 +97,42 @@
 
 /**
  * public int SYS5(a0, int int1No, int dnum, int waitForTermRead){
+ * SYS3(a0, currentProc->p_semAdd,0,0);
+ * insertBlocked(& currentProc->p_semAdd, currentProc);
+ * scheduler(); 
  * 
+ * GET BACK TO THIS LATER
  * }
+ * */
+
+/**
+ * public cpu_t SYS6(a0, int i, int j, int k){
+ * cpu_t sumOfTime = currentProc->p_time + amnt of time used in current quantum; 
+ * return sumOfTime
+ * }
+ * */
+
+/**
+ * public void SYS7(a0, int i, int j, int k){
+ * need to preform P opertation on psuedoclock semaphore; (SYS3)
+ * insertBlocked(& currentProc->p_semAdd, currentProc);
+ * scheduler();
+ * }
+ * */
+
+/**
+ * public support_t SYS8(a0, int i, int j, int k){
+ * if(currentProc -> p_supportStruct == NULL){
+ * return NULL;
+ * }
+ * return currentProc -> p_supportStruct;
+ * }
+ * 
+ * */
+
+/**
+ * 
+ * 
  * */
 
 
