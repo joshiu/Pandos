@@ -48,6 +48,8 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
+    /*p->p_s = NULL;*/
+    /*p-> p_supportStruct = NULL;*/
     return (p);/*return the pointer*/
 }
 
