@@ -11,13 +11,13 @@
  * }
  * if (a0!=NULL ){
  * branch -> look at a0
- * if a0 == 1 then SYS1
- * a0 == 2 then sys2
- * a0 == 3 : sys3
+ * if a0 == 1 then SYS1 return LDST(currentProc);
+ * a0 == 2 then sys2 
+ * a0 == 3 : sys3 (PC count +4)
  * a0 == 4 : sys4
- * a0 == 5 : sys5
+ * a0 == 5 : sys5(PC count +4)
  * a0 == 6 : sys6
- * a0 == 7 " sys7
+ * a0 == 7 " sys7(PC count +4)
  * a0 == 8 : sys8
  * (check 9/18 notes for more)
  * }
@@ -71,7 +71,11 @@
  * */
 
 /**
+ * SEPTEMBER 14th
  * public void SYS3 (a0, int *semaddr, int i, int j){
+ * (PC count +4)
+ * currentProc->p_s = saved proc state;
+ * update CPU time for current proc
  * semaddr --;
  * if (semaddr <0){
  * insertBlocked(&semaddr, currentProc);
@@ -97,7 +101,7 @@
 
 /**
  * public int SYS5(a0, int int1No, int dnum, int waitForTermRead){
- * SYS3(a0, currentProc->p_semAdd,0,0);
+ * SYS3(a0, currentProc->p_semAdd,0,0); /this might be wrong
  * insertBlocked(& currentProc->p_semAdd, currentProc);
  * scheduler(); 
  * 
