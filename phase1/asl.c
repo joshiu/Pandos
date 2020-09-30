@@ -22,13 +22,13 @@ typedef struct semd_t {
 } semd_t;
 
 /*local functions*/
-HIDDEN semd_PTR searchASL (int *semAdd);
-HIDDEN semd_PTR allocASL(int *semAdd);
+HIDDEN semd_PTR searchASL (int *semAdd); /*insert what this does here*/
+HIDDEN semd_PTR allocASL(int *semAdd); /*insert what this does here*/
 /*end of local functions*/
 
 /*globals*/
-HIDDEN semd_PTR semdFree_h;
-HIDDEN semd_PTR semd_h;
+HIDDEN semd_PTR semdFree_h; /*insert what this does here*/
+HIDDEN semd_PTR semd_h; /*insert what this does here*/
 /*end of globals*/
 
 /**

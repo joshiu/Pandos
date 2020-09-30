@@ -1,6 +1,7 @@
 /*
- * This file contains the PCB which is a doubly linked linear list. 
- * 
+ * This file contains the PCB which is a doubly linked linear list.
+ * There are two queues: the ready and wait queue. This queue is doubly linked 
+ *  and circular.
  * 
  * This code is written by Umang Joshi and Amy Kelley, with help from Mikey G.
  */
@@ -15,7 +16,7 @@
 **/
 
 /* Global Variables */
-HIDDEN pcb_PTR pcbFree_h;
+HIDDEN pcb_PTR pcbFree_h; /*insert what this does here*/
 /*End of Global Variables*/
 
 /*--------------------------------------------------------------------------------------------------------*/
