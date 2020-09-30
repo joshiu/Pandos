@@ -4,7 +4,9 @@
 #include "../h/pcb.h"
 
 /**
- * Main comment here
+ * This file contains an array of intergers for the sema4s 
+ * 
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G
  * */
 
 

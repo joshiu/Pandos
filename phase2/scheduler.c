@@ -3,6 +3,11 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 
+/**
+ * This file conatins a round robin scheduler 
+ * 
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G.
+ * */
 
 /**
  * timeslice of 5 miliseconds
