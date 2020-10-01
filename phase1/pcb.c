@@ -1,22 +1,18 @@
-/*
- * This file contains the PCB which is a doubly linked linear list.
- * There are two queues: the ready and wait queue. This queue is doubly linked 
- *  and circular.
- * 
- * This code is written by Umang Joshi and Amy Kelley, with help from Mikey G.
- */
-
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/pcb.h"
 #include "../h/asl.h"
 
 /**
- * Method for debugging for seeing a value or seeing where we are.
-**/
+ * This file makes a PCB queue which is doubly linked and linear.
+ * There is a free list that contains all freePCBs, and these pcbs are 
+ * removed from the list and added to the queue. 
+ * 
+ * This code is written by Umang Joshi and Amy Kelley, with help from Mikey G.
+ **/
 
 /* Global Variables */
-HIDDEN pcb_PTR pcbFree_h; /*insert what this does here*/
+HIDDEN pcb_PTR pcbFree_h; /*contains all unused free pcbs*/
 /*End of Global Variables*/
 
 /*--------------------------------------------------------------------------------------------------------*/
@@ -183,8 +179,14 @@ pcb_t*headProcQ(pcb_t*tp){
 /*---------------------------------Below: methods for process trees--------------------------------------*/
 /*------------------------------------------------------------------------------------------------------*/
 
+
 /**
- * This section is for the process tree of the program. Where it is doubly linked binary tree.
+ * This section is for the process tree of the program. We create a tree
+ * where the parents and the newest child are doubly linked. The rest
+ * of the child point to the parent. (singly linked)
+ * The children point to one another in a doubly linked linear list. 
+ * p_prev -> the "younger" sibling. While p_next -> to the next
+ * "oldest" sibling.
  * */
 
 
