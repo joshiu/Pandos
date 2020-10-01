@@ -3,12 +3,11 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 
-
 /**
- * This file contains the ASL which is a semaphore that contains an address and a process queue. It also 
- * contains two lists. Both are NULL terminated single, linear list. The first list is the 
- * Active Semaphore List or ASL and it's sorted in ascending order. The second list is a semaphore
- * descriptors (semdFree list) that holds the unused semaphore descriptors.
+ * This file contains the ASL which is a semaphore that contains an address (semAdd) and a process queue. 
+ * It also contains two lists. Both are NULL terminated single, linear list. The first list is the 
+ * Active Semaphore List or ASL and it's sorted from a semAdd to 0 to MAXINT
+ * The second list is a semaphore descriptors (semdFree list) that holds the unused semaphore descriptors.
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G. 
  **/
@@ -22,13 +21,13 @@ typedef struct semd_t {
 } semd_t;
 
 /*local functions*/
-HIDDEN semd_PTR searchASL (int *semAdd); /*insert what this does here*/
-HIDDEN semd_PTR allocASL(int *semAdd); /*insert what this does here*/
+HIDDEN semd_PTR searchASL (int *semAdd); /*searches through ASL and finds the sema4 before the insertion*/
+HIDDEN semd_PTR allocASL(int *semAdd); /*allocs sema4*/
 /*end of local functions*/
 
 /*globals*/
-HIDDEN semd_PTR semdFree_h; /*insert what this does here*/
-HIDDEN semd_PTR semd_h; /*insert what this does here*/
+HIDDEN semd_PTR semdFree_h;  /*free list that is unsorted*/
+HIDDEN semd_PTR semd_h; /*sorted sema4 list*/
 /*end of globals*/
 
 /**
