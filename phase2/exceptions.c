@@ -52,7 +52,7 @@
 //
 // /* this is the situation where either kernel mode is not TRUE or a0 is not 1-8*/
 //     Cause.ExcCode = RI;
-//     programTrapExcept();
+//     programTrapExcept(GeneralExcept's index value);
 //     return;
 // }
 
@@ -166,16 +166,8 @@
  * */
 
 /**
- * void programTrapExcept(){
- * 
+ * performs standard pass up or die using the general exception index value
+ * void programTrapExcept(int index){
+ *      passUpOrDie(index);
  * }
- * */
-
-
-/**
- *  something Handler() (ask Mia or Pandos? or Paul)
- * */
-
-/**
- * memoryHandler()
  * */
