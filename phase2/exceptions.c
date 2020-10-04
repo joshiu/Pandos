@@ -4,7 +4,7 @@
 #include "../h/pcb.h"
 
 /**
- * This file contains sys calls 1-8.
+ * Insert file comment here.
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
