@@ -9,29 +9,57 @@
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
-/**
- * public void SYSCALL(a0){
- * if(kernel_mode !=true){
- * programTrapExec();
- * }
- * if (a0!=NULL ){
- * branch -> look at a0
- * if a0 == 1 then SYS1 return LDST(currentProc);
- * a0 == 2 then sys2 
- * a0 == 3 : sys3 (PC count +4)
- * a0 == 4 : sys4
- * a0 == 5 : sys5(PC count +4)
- * a0 == 6 : sys6
- * a0 == 7 " sys7(PC count +4)
- * a0 == 8 : sys8
- * (check 9/18 notes for more)
- * }
- * }
- * */
+// void SYSCALL(a0, a1, a2, a3){ /*find out how to call a0*/
+//     if(a0!=NULL && kernel_mode == TRUE){
+//         if(a0==1){
+//             int returnInt = SYS1(a0, statep, supportp, i);
+//             pcbUsingSYSCALL -> v1 = returnInt;
+//         }
+//         if(a0==2){
+//             SYS2(a0, a1, a2, a3);
+//             PC=PC+4;
+//             return;/* don't return control after a terminate*/
+//         }
+//         if(a0==3){
+//             SYS3(a0, a1->semAdd, a2, a3);
+//             PC = PC+4;
+//             return; /*we don't return control after a block*/
+//         }
+//         if(a0==4){
+//             SYS4(a0, a1->semAdd, a2, a3);
+//         }
+//         if(a0==5){
+//             int IOStatus = SYS5(a0, a1->semAdd, a2, a3);
+//             PC = PC+4;
+//             return; /*we don't return control after a block*/
+//         }
+//         if(a0==6){
+//             cpu_t timeReturn = SYS6(a0, a1, a2, a3);
+//             pbcUsingSYSCALL -> p_time = timeReturn;
+//         }
+//         if(a0==7){
+//             SYS7(a0, a1->semAdd, a2, a3);
+//             PC = PC+4;
+//             return; /*we don't return control after a block*/
+//         }
+//         if(a0==8){
+//             support_t *info = SYS8(a0, a1, a2, a3);
+//         }
+//         PC = PC +4;
+//         LDST(currentProc);
+//         return;
+//     }
+//
+// /* this is the situation where either kernel mode is not TRUE or a0 is not 1-8*/
+//     Cause.ExcCode = RI;
+//     programTrapExcept();
+//     return;
+// }
 
 /**
- * public int SYS1(a0, state_t *statep, support_t *supportp, int i){
+ * int SYS1(a0, state_t *statep, support_t *supportp, int i){
  * pcb_t *newPcb = allocPcb();
+ * processcnt ++;
  * if(newPcb == NULL){
  * return (-1); (put this in v0)
  * }
@@ -45,7 +73,7 @@
  * */
 
 /**
- * public void SYS2(a0, int i, int j, int k){
+ * void SYS2(a0, int i, int j, int k){
  * pcb_PTR lastChild = currentProc;
  * 
  * if you have no kids
@@ -60,14 +88,15 @@
  * if there are children
  * 
  * find the last descendent with children
+ * 
  * while(lastChild->p_child->p_child != NULL){
- * lastChild = lastChild ->p_child;
+ *  lastChild = lastChild ->p_child;
  * }
  * 
  * remove all the children
  * 
  * while(!emptyChild(lastChild)){
- * removeChild(lastChild);
+ *  removeChild(lastChild);
  * }
  * 
  * repeat until no children left
@@ -76,9 +105,7 @@
  * */
 
 /**
- * SEPTEMBER 14th
- * public void SYS3 (a0, int *semaddr, int i, int j){
- * (PC count +4)
+ * void SYS3 (a0, int *semaddr, int i, int j){
  * currentProc->p_s = saved proc state;
  * update CPU time for current proc
  * semaddr --;
@@ -93,7 +120,7 @@
  * */
 
 /**
- * public void SYS4(a0, int *semaddr,int i ,int j){
+ * void SYS4(a0, int *semaddr,int i ,int j){
  * semaddr++;
  * if(semaddr <= 0){
  * pcb_t *temp = removeBlocked(&semaddr);
@@ -105,24 +132,23 @@
  * */
 
 /**
- * public int SYS5(a0, int int1No, int dnum, int waitForTermRead){
- * SYS3(a0, currentProc->p_semAdd,0,0); /this might be wrong
+ * int SYS5(a0, int int1No, int dnum, int waitForTermRead){
  * insertBlocked(& currentProc->p_semAdd, currentProc);
- * scheduler(); 
- * 
- * GET BACK TO THIS LATER
+ * scheduler();
+ * what do we return?
+ * this is incorrect, talk to Mikey Monday
  * }
  * */
 
 /**
- * public cpu_t SYS6(a0, int i, int j, int k){
+ * cpu_t SYS6(a0, int i, int j, int k){
  * cpu_t sumOfTime = currentProc->p_time + amnt of time used in current quantum; 
  * return sumOfTime
  * }
  * */
 
 /**
- * public void SYS7(a0, int i, int j, int k){
+ * void SYS7(a0, int i, int j, int k){
  * need to preform P opertation on psuedoclock semaphore; (SYS3)
  * insertBlocked(& currentProc->p_semAdd, currentProc);
  * scheduler();
@@ -130,7 +156,7 @@
  * */
 
 /**
- * public support_t SYS8(a0, int i, int j, int k){
+ * support_t SYS8(a0, int i, int j, int k){
  * if(currentProc -> p_supportStruct == NULL){
  * return NULL;
  * }
@@ -140,8 +166,9 @@
  * */
 
 /**
+ * void programTrapExcept(){
  * 
- * 
+ * }
  * */
 
 
