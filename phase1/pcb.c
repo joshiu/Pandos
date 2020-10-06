@@ -45,8 +45,6 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
-    /*p->p_s = NULL;*/
-    /*p-> p_supportStruct = NULL;*/
     return (p);/*return the pointer*/
 }
 
@@ -58,9 +56,9 @@ pcb_t* allocPcb(){
 void initPcbs(){
     int i;
     pcbFree_h = mkEmptyProcQ();
-    static pcb_t foo[MAXPROC];
+    static pcb_t populate[MAXPROC];
     for( i=0; i<MAXPROC; i++){
-        insertProcQ(&pcbFree_h,&foo[i]);
+        insertProcQ(&pcbFree_h,&populate[i]);
     }
 }
 

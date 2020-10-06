@@ -13,19 +13,33 @@
 
 /**
  * contains the main
- * 
- * 
- * ASL(); instantiate Pcb and make the state of the Pcb into another state (ready) and put on readyQ
- * then insert and run scheduler()
+ *
  * */
+main(){
+    extern void uTLB_RefillHandler();
+
+    /* GLOBAL VARIABLES */
+    int processCnt = 0;
+    int softBlockCnt = 0;
+    pcb_t *readyQ = mkEmptyProc();
+    pcb_t *currentProc = NULL;
+    int devicesSema4s[49] = 0; /*2 sema4s per device :, 5 devices per terminal, so array size is 49*/
+    /* END GLOBAL VARIABLES*/
+    
+    initPCB();
+    initASL();
+    pcb_t *newPcb = allocPcb();
+    newPcb->p_time = 0;
+    newPcb->p_supportStruct = NULL;
+}
 
 /**
  * extern void uTLB_RefillHandler();
  * 
  * GLOBAL VARIABLES 
- * int processcnt = 0;
- * int softBlockcnt = 0;
- * pcb_t *readyQue = mkEmptyProc();
+ * int processCnt = 0;
+ * int softBlockCnt = 0;
+ * pcb_t *readyQ = mkEmptyProc();
  * pcb_t *currentProc = NULL;
  * int devicesSema4s[49] = 0; 2 sema4s per device :, 5 devices per terminal : array size is 49
  * initPCB();
@@ -42,11 +56,9 @@
  * set system wide interval timer at 1000 millsecs
  * 
  * pcb_t newPcb = allocPCB();
- * in alloc, do these 
- * set all process tree fields to NULL
- * set p_time = 0;
- * set p_semAdd = NULL;
- * set p_supportstruct = NULL;
+ * newPcb -> p_time = 0;
+ * newPcb -> p_semAdd = newPcb->s_a0;
+ * newPcb -> p_supportstruct = NULL;
  * 
  * insertProcQ(readyQ, newPcb);
  * processcnt ++;

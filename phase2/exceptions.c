@@ -10,10 +10,10 @@
  * */
 
 // void SYSCALL(a0, a1, a2, a3){ /*find out how to call a0*/
-//     if(a0!=NULL && kernel_mode == TRUE){
-//         if(a0==1){
+//     if(s_a0!=NULL && kernel_mode == TRUE){
+//         if(s_a0==1){
 //             int returnInt = SYS1(a0, statep, supportp, i);
-//             pcbUsingSYSCALL -> v1 = returnInt;
+//             pcbUsingSYSCALL -> s_v1 = returnInt;
 //         }
 //         if(a0==2){
 //             SYS2(a0, a1, a2, a3);
