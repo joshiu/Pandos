@@ -171,3 +171,29 @@
  *      passUpOrDie(index);
  * }
  * */
+/**
+ * TLBExceptionHandler()
+ * 
+ * */
+
+/**
+ * idk where to put this, so it's going here!
+ * 
+ * void passUpOrDie(){
+ * if currentProc(p_SupportStruct == NULL) -> sys2
+ * Else:
+ * two tasks: copy and save the exception state into a location accessible 
+ * pass control to a routine specified by the Support Level
+ * 
+ * Support level: two locations for saved exception states, two addresses for handlers.
+ * One state t/PC address pair for both TLB exceptions & one for all other exceptions
+ * 
+ * To pass up the handling of an exception:
+ * Copy the saved exception state from the BIOS 
+ * Give to the correct sup exceptState field of the Current Process.
+ * 
+ * Important: The Current Process’s pcb should point to a non-null support t.
+ * 
+ * Perform a LDCXT using the fields from the correct sup exceptContext field of the Current Process
+ * }
+ * */
