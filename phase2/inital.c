@@ -52,18 +52,18 @@ main()
     }
 
     LDIT(100); /*load interval timer with 100 ms*/
-    
+
     pcb_t *newPcb = allocPcb();
     
     /* we need to set the state such that interrupts, PLT, kernel mode enabled*/
     /* also need to set SP to RAMTOP and PC to test*/
 
-    newPcb ->p_s.s_pc = &(test());/*set PC*/
-    newPcb -> p_s.s_t9 = &(test());/*for technical reasons, we do this when we set the pc*/
-    newPcb -> p_s.s_TE = 1; /*timer enable bit*/
-    newPcb ->p_s.s_sp = RAMTOP; /*stack pointer*/
-    newPcb -> p_s.s_KUp = 0;/*enable kernel mode*/
-    newPcb ->p_s.s_IEp = 1; /*enable interrupts*/
+    // newPcb ->p_s.s_pc = &(test());/*set PC*/
+    // newPcb -> p_s.s_t9 = &(test());/*for technical reasons, we do this when we set the pc*/
+    // newPcb -> p_s.s_TE = 1; /*timer enable bit*/
+    // newPcb ->p_s.s_sp = RAMTOP; /*stack pointer*/
+    // newPcb -> p_s.s_KUp = 0;/*enable kernel mode*/
+    // newPcb ->p_s.s_IEp = 1; /*enable interrupts*/
     
     newPcb->p_time = 0;
     newPcb->p_supportStruct = NULL;
