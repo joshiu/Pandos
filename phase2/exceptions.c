@@ -11,7 +11,7 @@
 
 // void SYSCALL(a0, a1, a2, a3){ /*find out how to call a0*/
 //     if(s_a0!=NULL && kernel_mode == TRUE){
-//         if(s_a0==1){
+//         if(p_s.s_a0==1){
 //             int returnInt = SYS1(a0, statep, supportp, i);
 //             pcbUsingSYSCALL -> s_v1 = returnInt;
 //         }

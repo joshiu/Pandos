@@ -2,6 +2,7 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
+#include "/usr/local/include/umps3/umps/libumps.h"
 
 /**
  * insert file comment here
@@ -15,22 +16,60 @@
  * contains the main
  *
  * */
-main(){
-    extern void uTLB_RefillHandler();
+/* GLOBAL VARIABLES */
+int processCnt;
+int softBlockCnt;
+pcb_t *readyQ;
+pcb_t *currentProc;
+int devicesSema4s[49]; /*2 sema4s per device :, 5 devices per terminal, so array size is 49*/
+passupvector_t *passUpVec;
+int counter;
+/* END GLOBAL VARIABLES*/
 
-    /* GLOBAL VARIABLES */
-    int processCnt = 0;
-    int softBlockCnt = 0;
-    pcb_t *readyQ = mkEmptyProc();
-    pcb_t *currentProc = NULL;
-    int devicesSema4s[49] = 0; /*2 sema4s per device :, 5 devices per terminal, so array size is 49*/
-    /* END GLOBAL VARIABLES*/
-    
-    initPCB();
+extern void uTLB_RefillHandler();
+extern void test();
+
+main()
+{ 
+    passUpVec = PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
+
+    passUpVec-> tlb_refll_handler = (memaddr) uTLB_RefillHandler;
+    passUpVec -> tlb_refll_stackPtr = 0x20001000;
+    passUpVec-> exception_handler = (memaddr) exceptionHandler; /*have not created this yet*/
+    passUpVec -> exception_stackPtr = 0x200010000;
+
+    initPcbs();
     initASL();
+
+    processCnt = 0;
+    softBlockCnt= 0;
+    readyQ = mkEmptyProcQ();
+    currentProc = NULL;
+
+    /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
+    for(counter = 0; counter < 49; counter ++){
+        devicesSema4s[counter] = 0;
+    }
+
+    LDIT(100); /*load interval timer with 100 ms*/
+    
     pcb_t *newPcb = allocPcb();
+    
+    /* we need to set the state such that interrupts, PLT, kernel mode enabled*/
+    /* also need to set SP to RAMTOP and PC to test*/
+
+    newPcb ->p_s.s_pc = &(test());/*set PC*/
+    newPcb -> p_s.s_t9 = &(test());/*for technical reasons, we do this when we set the pc*/
+    newPcb -> p_s.s_TE = 1; /*timer enable bit*/
+    newPcb ->p_s.s_sp = RAMTOP; /*stack pointer*/
+    newPcb -> p_s.s_KUp = 0;/*enable kernel mode*/
+    newPcb ->p_s.s_IEp = 1; /*enable interrupts*/
+    
     newPcb->p_time = 0;
     newPcb->p_supportStruct = NULL;
+    insertProcQ(&readyQ, newPcb);
+    processCnt ++;
+    scheduler();
 }
 
 /**
@@ -66,7 +105,7 @@ main(){
  * SP = RAMTOP
  * PCADDRESS = TEST
  * 
- * scheduler();
+ * 
  * after this never return to main again
  * */
 /**
