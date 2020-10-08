@@ -3,6 +3,7 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
+/* we will need to include the other 3 files (from phase 2) as well */
 
 /**
  * insert file comment here
@@ -10,26 +11,24 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
-/****************************Detailed Pseudo Code*************************************************/
-
-/**
- * contains the main
- *
- * */
 /* GLOBAL VARIABLES */
 int processCnt;
 int softBlockCnt;
-pcb_t *readyQ;
-pcb_t *currentProc;
+pcb_t *readyQ; /* Shouldn't this equal mkEmptyProc();?*/
+pcb_t *currentProc; /* Shouldn't this equal NULL? */
 int devicesSema4s[49]; /*2 sema4s per device :, 5 devices per terminal, so array size is 49*/
 passupvector_t *passUpVec;
 int counter;
 /* END GLOBAL VARIABLES*/
 
-extern void uTLB_RefillHandler();
-extern void test();
+extern void uTLB_RefillHandler(); /*Insert what these do*/
+extern void test(); /*Insert what these do*/
 
-main()
+
+/**
+ * Insert what this does here
+ * */
+int main()
 { 
     passUpVec = PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
 
@@ -41,8 +40,8 @@ main()
     initPcbs();
     initASL();
 
-    processCnt = 0;
-    softBlockCnt= 0;
+    processCnt = 0; /*Initialize process count*/
+    softBlockCnt= 0; /*Initialize soft block count*/
     readyQ = mkEmptyProcQ();
     currentProc = NULL;
 
@@ -52,6 +51,7 @@ main()
     }
 
     LDIT(100); /*load interval timer with 100 ms*/
+    /*Need to get top of RAM address*/
 
     pcb_t *newPcb = allocPcb();
     
@@ -70,20 +70,22 @@ main()
     insertProcQ(&readyQ, newPcb);
     processCnt ++;
     scheduler();
+    /*Need a return?*/
+}
+
+
+/**
+ * Insert method comment here
+ * */
+extern void uTLB_RefillHandler(){
+    /* calls approiate handlers this includes the program traps
+    for example: if it's sysexception then call sys Trap
+    so get cause and branch to the correct one needed */
 }
 
 /**
+ * idk if we need any of this comment (didn't wanna delete it just in case)
  * extern void uTLB_RefillHandler();
- * 
- * GLOBAL VARIABLES 
- * int processCnt = 0;
- * int softBlockCnt = 0;
- * pcb_t *readyQ = mkEmptyProc();
- * pcb_t *currentProc = NULL;
- * int devicesSema4s[49] = 0; 2 sema4s per device :, 5 devices per terminal : array size is 49
- * initPCB();
- * initASL();
- * 
  * something to populate passup at 0x0FFF.F900
  * xxx->tlb refll handler = (memaddr) uTLB RefillHandler;
  *
@@ -107,11 +109,4 @@ main()
  * 
  * 
  * after this never return to main again
- * */
-/**
- * genExceptionHandler(take in file state/cause register);
- * create a branch: look at Cause.ExcCode
- * interupt go to interupt, 
- * if syscall go to syscall(interrupt.c), 
- * if program execption go to exceptions.c,
  * */
