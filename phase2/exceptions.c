@@ -2,11 +2,24 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
+#include "/usr/local/include/umps3/umps/libumps.h"
+/*Need to include  inital and scheduler*/
 
 /**
  * Insert file comment here.
  * 
- * Written by Umang Joshi and Amy Kelley with help from Mikey G.
+ * Written by Umang Joshi and Amy Kelley
+ * */
+
+/**
+ * Side notes from Amy:
+ * pass up or die method goes in this file 
+ * also include the trap programs here (that are needed for uTLB_RefillHandler) and so syscall
+ * is the systrap program?
+ *
+ * the ifs are fine but he may yell at us for not using causes (shrug) this way makes more sense to me
+ * 
+ * may need helper functions
  * */
 
 // void SYSCALL(a0, a1, a2, a3){ /*find out how to call a0*/
