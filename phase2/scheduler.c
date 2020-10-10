@@ -2,13 +2,15 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
+/*gotta include the .h files for initial-> maybe more*/
 
 /**
- * This file conatins a round robin scheduler 
+ * This file contains a round robin scheduler 
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
+/** I added methods I think we need in google doc so look at that!*/
 /**
  * timeslice of 5 miliseconds
  *  

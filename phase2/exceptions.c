@@ -3,7 +3,7 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
-/*Need to include  inital and scheduler*/
+/*Need to include  inital and scheduler (the .h files)*/
 
 /**
  * Insert file comment here.

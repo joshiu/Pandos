@@ -2,6 +2,7 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
+/* need to include inital.h and scheduler.h*/
 
 /**
  * Main comment here
