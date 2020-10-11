@@ -2,6 +2,13 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
+#include "/usr/local/include/umps3/umps/libumps.h"
+/**
+ * #include "../h/exceptions.h"
+ * #include "../h/initial.h"
+ * #include "../h/scheduler.h"
+ * */
+
 /* need to include inital.h and scheduler.h*/
 
 /**

@@ -2,7 +2,12 @@
 #include "../h/types.h"
 #include "../h/asl.h"
 #include "../h/pcb.h"
-/*gotta include the .h files for initial-> maybe more*/
+#include "/usr/local/include/umps3/umps/libumps.h"
+/**
+ * #include "../h/exceptions.h"
+ * #include "../h/interrupts.h"
+ * #include "../h/initial.h"
+ * */
 
 /**
  * This file contains a round robin scheduler 

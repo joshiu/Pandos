@@ -36,11 +36,11 @@
 #define NETWINT 		  5
 #define PRNTINT 		  6
 #define TERMINT			  7
-
 #define DEVINTNUM		  5		  /* interrupt lines used by devices */
 #define DEVPERINT		  8		  /* devices per interrupt line */
 #define DEVREGLEN		  4		  /* device register field length in bytes, and regs per dev */	
 #define DEVREGSIZE	  16 		/* device register size in bytes */
+#define DEVCNT   (DEVINTNUM * DEVPERINT) /*total number of devices */
 
 /* device register field number for non-terminal devices */
 #define STATUS			  0

@@ -3,7 +3,11 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
-/* we will need to include the other 3 files (from phase 2) as well */
+/**
+ * #include "../h/exceptions.h"
+ * #include "../h/interrupts.h"
+ * #include "../h/scheduler.h"
+ * */
 
 /**
  * insert file comment here
@@ -11,30 +15,38 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+extern void uTLB_RefillHandler(); /*Address of the TLB Refill Event Handler*/
+extern void test(); /*sets up the nucleus calls that are to be tested*/
+
+HIDDEN void generalExceptHandler(); /* method for handling exceptions*/
+
 /* GLOBAL VARIABLES */
-int processCnt;
-int softBlockCnt;
-pcb_t *readyQ; /* Shouldn't this equal mkEmptyProc();?*/
-pcb_t *currentProc; /* Shouldn't this equal NULL? */
-int devicesSema4s[49]; /*2 sema4s per device :, 5 devices per terminal, so array size is 49*/
-passupvector_t *passUpVec;
-int counter;
+unsigned int saveState[DEVCNT+DEVPERINT]; /* this is where we save the state when IO*/
+int processCnt; /*number of pcbs that have been allocated*/
+int softBlockCnt; /*number of processes that have been blocked*/
+pcb_t *readyQ; /*queue of processes ready to run*/
+pcb_t *currentProc; /*process that is currently running*/
+int devSema4[DEVCNT+DEVPERINT+1]; /*array of device semaphores*/
+cpu_t startTimeOD; /*beginning of a time unit*/
+cpu_t timeSlice; /*amount of time until the time slice*/
+
 /* END GLOBAL VARIABLES*/
 
-extern void uTLB_RefillHandler(); /*Insert what these do*/
-extern void test(); /*Insert what these do*/
+
 
 
 /**
  * Insert what this does here
  * */
-int main()
-{ 
+int main(){
+    passupvector_t *passUpVec;
+    int counter;
+
     passUpVec = PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
 
     passUpVec-> tlb_refll_handler = (memaddr) uTLB_RefillHandler;
     passUpVec -> tlb_refll_stackPtr = 0x20001000;
-    passUpVec-> exception_handler = (memaddr) exceptionHandler; /*have not created this yet*/
+    passUpVec-> exception_handler = (memaddr) generalExceptHandler; /*have not created this yet*/
     passUpVec -> exception_stackPtr = 0x200010000;
 
     initPcbs();
@@ -47,7 +59,7 @@ int main()
 
     /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
     for(counter = 0; counter < 49; counter ++){
-        devicesSema4s[counter] = 0;
+        devSema4[counter] = 0;
     }
 
     LDIT(100); /*load interval timer with 100 ms*/
