@@ -24,6 +24,15 @@ unsigned int 	c_stackPtr, /* stack pointer value */
 				c_pc; /* PC address*/
 } context_t;
 
+typedef struct state_t {
+	unsigned int	s_entryHI;
+	unsigned int	s_cause;
+	unsigned int	s_status;
+	unsigned int 	s_pc;
+	int	 			s_reg[STATEREGNUM];
+
+} state_t, *state_PTR;
+
 typedef struct support_t {
 int 			sup_asid;/* Process Id (asid)*/
 state_t			sup_exceptState[2];/* stored excpt states */
@@ -35,14 +44,7 @@ context_t		sup_exceptContext[2]; /* pass up context*/
 #define PGFAULTEXCEPT 0
 #define GENERALEXCEPT 1
 
-typedef struct state_t {
-	unsigned int	s_entryHI;
-	unsigned int	s_cause;
-	unsigned int	s_status;
-	unsigned int 	s_pc;
-	int	 			s_reg[STATEREGNUM];
 
-} state_t, *state_PTR;
 
 /*process control block type*/
 typedef struct pcb_t{

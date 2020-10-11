@@ -82,7 +82,7 @@ int emptyProcQ(pcb_t*tp){
  * Note the double indirection through tp to allow for the possible updating of the tail pointer as well.
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
-    if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
+    if(emptyProcQ(*tp)){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
@@ -105,7 +105,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
  * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary.
 **/
 pcb_t*removeProcQ(pcb_t**tp){
-    if(emptyProcQ(*tp)==TRUE){/*if there is nothing*/
+    if(emptyProcQ(*tp)){/*if there is nothing*/
         return NULL;
     }
 

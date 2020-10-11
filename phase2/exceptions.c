@@ -3,12 +3,8 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
-
-/**
- * #include "../h/initial.h"
- * #include "../h/interrupts.h"
- * #include "../h/scheduler.h"
- * */
+#include "../h/initial.h"
+#include "../h/scheduler.h"
 
 /**
  * Insert file comment here.
@@ -26,6 +22,20 @@
  * 
  * may need helper functions
  * */
+
+void programTrap(){
+    /* this will handle program traps by derring it to support level or killing it*/
+    passUpOrDie(GENERALEXCEPT);
+}
+
+void TLBExceptHandler(){
+    passUpOrDie(PGFAULTEXCEPT);
+}
+
+  void passUpOrDie(int i){
+  if( currentProc->p_SupportStruct == NULL)){
+
+  }
 
 // void SYSCALL(a0, a1, a2, a3){ /*find out how to call a0*/
 //     if(s_a0!=NULL && kernel_mode == TRUE){
@@ -189,16 +199,13 @@
  *      passUpOrDie(index);
  * }
  * */
-/**
- * TLBExceptionHandler()
- * 
- * */
+ 
+ 
 
-/**
- * idk where to put this, so it's going here!
- * 
- * void passUpOrDie(){
- * if currentProc(p_SupportStruct == NULL) -> sys2
+
+ /* idk where to put this, so it's going here!*/
+  
+/*
  * Else:
  * two tasks: copy and save the exception state into a location accessible 
  * pass control to a routine specified by the Support Level

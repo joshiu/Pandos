@@ -10,3 +10,15 @@ process queues module ok
 checking process trees...
 Inserting...   
 Inserted 9 children   
+outChild ok   
+Removing...   
+insertChild, removeChild and emptyChild ok   
+process tree module ok      
+Initialized active semaphore list   
+insertBlocked test #1 started  
+insertBlocked test #2 started  
+removeBlocked test started   
+insertBlocked and removeBlocked ok   
+headBlocked and outBlocked ok   
+ASL module ok   
+So Long and Thanks for All the Fish

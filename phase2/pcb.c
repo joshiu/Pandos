@@ -45,6 +45,8 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
+    p->p_time = 0;
+    p->p_supportStruct = NULL;
     return (p);/*return the pointer*/
 }
 
@@ -56,9 +58,9 @@ pcb_t* allocPcb(){
 void initPcbs(){
     int i;
     pcbFree_h = mkEmptyProcQ();
-    static pcb_t foo[MAXPROC];
+    static pcb_t populate[MAXPROC];
     for( i=0; i<MAXPROC; i++){
-        insertProcQ(&pcbFree_h,&foo[i]);
+        insertProcQ(&pcbFree_h,&populate[i]);
     }
 }
 
@@ -82,10 +84,11 @@ int emptyProcQ(pcb_t*tp){
  * Note the double indirection through tp to allow for the possible updating of the tail pointer as well.
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
-    if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
+    if(emptyProcQ(*tp)){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
+        return;
     } 
     /*if the queue has one or more element(s) */
     pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
@@ -94,6 +97,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
     (*tp) = p;
+    return;
 }
 
 /**
@@ -102,7 +106,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
  * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary.
 **/
 pcb_t*removeProcQ(pcb_t**tp){
-    if(emptyProcQ(*tp)==TRUE){/*if there is nothing*/
+    if(emptyProcQ(*tp)){/*if there is nothing*/
         return NULL;
     }
 

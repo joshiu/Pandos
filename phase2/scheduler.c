@@ -3,10 +3,11 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
+#include "../h/initial.h"
 /**
  * #include "../h/exceptions.h"
  * #include "../h/interrupts.h"
- * #include "../h/initial.h"
+ * 
  * */
 
 /**
@@ -16,10 +17,14 @@
  * */
 
 /** I added methods I think we need in google doc so look at that!*/
+
+void scheduler(){
+    
+}
 /**
  * timeslice of 5 miliseconds
  *  
- * public void scheduler(){
+ * void scheduler(){
  * if(readyQ != NULL){
  * pcb_PTR newProc = removeProcQ(readyQ);
  * insertProcQ(&currentProc, newProc);
