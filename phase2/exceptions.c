@@ -4,7 +4,7 @@
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
 #include "../h/initial.h"
-#include "../h/scheduler.h"
+#include "../h/scheduler.h" /*why this not working?*/
 
 /**
  * Insert file comment here.
@@ -32,52 +32,79 @@ void TLBExceptHandler(){
     passUpOrDie(PGFAULTEXCEPT);
 }
 
-  void passUpOrDie(int i){
-  if( currentProc->p_SupportStruct == NULL)){
+void passUpOrDie(int exceptNum){
+    if (currentProc->p_supportStruct == NULL)
+    {
+        sys2(currentProc);
+        /*use LDST*/
+    }
+    /*write the biosdatapage to the currentProc -> p_supportStruct->sup_exceptState[exceptNum]*/
+    /*do a LDCXT() on 3 things:
+  currentProc->p_supportStruct->sup_exceptState[exceptNum].c_stackPtr;
+  currentProc->p_supportStruct->sup_exceptState[exceptNum].c_status;
+  currentProc->p_supportStruct->sup_exceptState[exceptNum].c_pc;
+  */
+}
 
-  }
+void SYSCALL()
+{ /*find out how to call a0*/
+    int sysNum;
+    state_t *procState;
+    cpu_t currentTOD;
 
-// void SYSCALL(a0, a1, a2, a3){ /*find out how to call a0*/
-//     if(s_a0!=NULL && kernel_mode == TRUE){
-//         if(p_s.s_a0==1){
-//             int returnInt = SYS1(a0, statep, supportp, i);
-//             pcbUsingSYSCALL -> s_v1 = returnInt;
-//         }
-//         if(a0==2){
-//             SYS2(a0, a1, a2, a3);
-//             PC=PC+4;
-//             return;/* don't return control after a terminate*/
-//         }
-//         if(a0==3){
-//             SYS3(a0, a1->semAdd, a2, a3);
-//             PC = PC+4;
-//             return; /*we don't return control after a block*/
-//         }
-//         if(a0==4){
-//             SYS4(a0, a1->semAdd, a2, a3);
-//         }
-//         if(a0==5){
-//             int IOStatus = SYS5(a0, a1->semAdd, a2, a3);
-//             PC = PC+4;
-//             return; /*we don't return control after a block*/
-//         }
-//         if(a0==6){
-//             cpu_t timeReturn = SYS6(a0, a1, a2, a3);
-//             pbcUsingSYSCALL -> p_time = timeReturn;
-//         }
-//         if(a0==7){
-//             SYS7(a0, a1->semAdd, a2, a3);
-//             PC = PC+4;
-//             return; /*we don't return control after a block*/
-//         }
-//         if(a0==8){
-//             support_t *info = SYS8(a0, a1, a2, a3);
-//         }
-//         PC = PC +4;
-//         LDST(currentProc);
-//         return;
-//     }
-//
+    procState = (state_t *)BIOSDATAPAGE;
+    sysNum = procState->s_a0;
+
+    /*are we in kernel mode?*/
+    if (sysNum >= 1 && sysNum <= 8 && (procState->s_status & 0x00000008) == 1){
+        procState->s_cause = (procState->s_cause & 0xFFFFF00) | (10<<2); /* what are we doing here?*/
+        programTrap();
+    }
+
+    /*we are in kernel mode*/
+    pcb_t *currentProc;
+    
+    currentProc -> p_s.s_pc = currentProc->p_s.s_pc +4;
+    
+    if (sysNum == 1)
+    {
+        int returnInt = SYS1(a0, statep, supportp, i);
+        pcbUsingSYSCALL->s_v1 = returnInt;
+    }
+    if (sysNum == 2)
+    {
+        SYS2(a0, a1, a2, a3);
+        return; /* don't return control after a terminate*/
+    }
+    if (a0 == 3)
+    {
+        SYS3(a0, a1->semAdd, a2, a3);
+        return; /*we don't return control after a block*/
+    }
+    if (a0 == 4)
+    {
+        SYS4(a0, a1->semAdd, a2, a3);
+    }
+    if (a0 == 5)
+    {
+        int IOStatus = SYS5(a0, a1->semAdd, a2, a3);
+        return; /*we don't return control after a block*/
+    }
+    if (a0 == 6)
+    {
+        cpu_t timeReturn = SYS6(a0, a1, a2, a3);
+        pbcUsingSYSCALL->p_time = timeReturn;
+    }
+    if (a0 == 7)
+    {
+        SYS7(a0, a1->semAdd, a2, a3);
+        return; /*we don't return control after a block*/
+    }
+    if (a0 == 8)
+    {
+        support_t *info = SYS8(a0, a1, a2, a3);
+    }
+}
 // /* this is the situation where either kernel mode is not TRUE or a0 is not 1-8*/
 //     Cause.ExcCode = RI;
 //     programTrapExcept(GeneralExcept's index value);
@@ -199,12 +226,9 @@ void TLBExceptHandler(){
  *      passUpOrDie(index);
  * }
  * */
- 
- 
 
+/* idk where to put this, so it's going here!*/
 
- /* idk where to put this, so it's going here!*/
-  
 /*
  * Else:
  * two tasks: copy and save the exception state into a location accessible 
