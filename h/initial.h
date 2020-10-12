@@ -13,6 +13,7 @@
 
 extern int main();
 extern memaddr getRAMTOP();
-
+extern pcb_t *currentProc;
+/*add all global variables as extern*/
 
 #endif

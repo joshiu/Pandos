@@ -112,14 +112,6 @@ void generalExceptHandler(){
     programTrap();
 }
 
-/**
- * Insert method comment here
- * */
-void uTLB_RefillHandler(){
-    /* calls approiate handlers this includes the program traps
-    for example: if it's sysexception then call sys Trap
-    so get cause and branch to the correct one needed */
-}
 
 memaddr getRAMTOP(memaddr t){
     t = ((* ((int *) RAMBASEADDR))+ (* ((int *) RAMBASESIZE)));

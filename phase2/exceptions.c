@@ -4,7 +4,7 @@
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
 #include "../h/initial.h"
-#include "../h/scheduler.h" /*why this not working?*/
+#include "../h/scheduler.h" 
 
 /**
  * Insert file comment here.
