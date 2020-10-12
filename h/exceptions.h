@@ -12,9 +12,15 @@
 
 extern void programTrap();
 extern void TLBExceptHandler();
-void passUpOrDie();
-void SYSCALL();
-/*To do: add sys1-8*/
-
+extern void passUpOrDie();
+extern void SYSCALL();
+extern int SYS1();
+extern void SYS2();
+extern void SYS3();
+extern void SYS4();
+extern int SYS5();
+extern cpu_t SYS6();
+extern void SYS7();
+extern support_t SYS8();
 
 #endif
