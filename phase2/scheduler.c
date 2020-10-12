@@ -4,23 +4,38 @@
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
 #include "../h/initial.h"
-/**
- * #include "../h/exceptions.h"
- * #include "../h/interrupts.h"
- * 
- * */
+#include "../h/exceptions.h"
+#include "../h/interrupts.h"
 
 /**
- * This file contains a round robin scheduler 
+ * In this file, the nucleus implements a simple preemptive round-robin 
+ * scheduling algorithm with a set time slice value.
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
-/** I added methods I think we need in google doc so look at that!*/
-
+/**
+ * Method comment here
+ * */
 void scheduler(){
     
 }
+/**
+ * This method copies the processor state that is being pointed at and moves it to it’s wanted destination
+ * */
+void moveState(/*need something here*/){
+
+}
+
+/**
+ * This function takes a process 
+ * from the ready queue and switches it to the current running process.
+ * If the queue is empty, a deadlock is executed.
+ * */
+void switchProcess(/*need something here*/){
+
+}
+
 /**
  * timeslice of 5 miliseconds
  *  

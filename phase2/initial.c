@@ -3,14 +3,17 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
-/**
- * #include "../h/exceptions.h"
- * #include "../h/interrupts.h"
- * #include "../h/scheduler.h"
- * */
+#include "../h/exceptions.h"
+#include "../h/interrupts.h"
+#include "../h/scheduler.h"
 
 /**
- * insert file comment here
+ * This file is the entry point and performs Nucleus initialization. 
+ * This entry point (main) is only executed once. 
+ * This includes the process count, soft-block count, ready queue, current process, device sema4s (array of integers). 
+ * Populates the pass up vector which is part of the BIOS Data Page, initialization data structures 
+ * and variables, loads the timer, and instantiates a single process. 
+ * It also has a case statement that looks at the cause registers.
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
@@ -36,6 +39,10 @@ cpu_t timeSlice; /*amount of time until the time slice*/
 
 /*--------------------------------------------------------------------------------------------------*/
 
+
+/**
+ * This method is only executed once. It performs the Nucleus initialization to set up the system.
+ * */
 int main(){
     passupvector_t *passUpVec;
     int counter;
@@ -91,7 +98,9 @@ int main(){
     return (0);
 }/*end of main*/
 
-
+/**
+ * This method determines the case statement, whether it's an interrupt or syscall and calls the appropriate handler.
+ * */
 void generalExceptHandler(){
     state_t *programState;
     int causeNum;
@@ -112,7 +121,9 @@ void generalExceptHandler(){
     programTrap();
 }
 
-
+/**
+ * Method comment here
+ * */
 memaddr getRAMTOP(memaddr t){
     t = ((* ((int *) RAMBASEADDR))+ (* ((int *) RAMBASESIZE)));
     return t;

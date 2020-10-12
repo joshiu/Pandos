@@ -3,21 +3,21 @@
 #include "../h/asl.h"
 #include "../h/pcb.h"
 #include "/usr/local/include/umps3/umps/libumps.h"
-/**
- * #include "../h/exceptions.h"
- * #include "../h/initial.h"
- * #include "../h/scheduler.h"
- * */
-
-/* need to include inital.h and scheduler.h*/
+#include "../h/exceptions.h"
+#include "../h/initial.h"
+#include "../h/scheduler.h"
 
 /**
- * Main comment here
+ * This file occurs when either a previously initiated I/O request completes 
+ * or when either a Processor Local Timer (PLT) or the Interval Timer 
+ * makes a 0x0000.0000 ⇒ 0xFFFF.FFFF transition.
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
 
 /**
+ * This method is used to determine the appropriate action for when the timer generates an interrupt. 
+ * 
  * void interruptHandler(){
  * who interrupted me, look at Cause.ExcCode.
  * Look at Cause.IP to find line number;

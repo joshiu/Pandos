@@ -7,7 +7,9 @@
 #include "../h/scheduler.h" 
 
 /**
- * Insert file comment here.
+ * This file occurs when the SYSCALL assembly instruction is executed. 
+ * It places the appropriate values into registers a0-a3 before executing 
+ * the SYSCALL instruction and it will execute based on the value in a0.
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
@@ -17,7 +19,6 @@
  * pass up or die method goes in this file 
  * also include the trap programs here (that are needed for uTLB_RefillHandler) and so syscall
  * is the systrap program?
- *
  * the ifs are fine but he may yell at us for not using causes (shrug) this way makes more sense to me
  * 
  * may need helper functions
