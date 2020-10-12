@@ -47,8 +47,7 @@ void passUpOrDie(int exceptNum){
   */
 }
 
-void SYSCALL()
-{ /*find out how to call a0*/
+void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
     state_t *procState;
     cpu_t currentTOD;

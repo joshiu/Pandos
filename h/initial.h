@@ -1,12 +1,12 @@
 #ifndef initial
 #define initial
 
-/************************** INITAL.H ******************************
+/************************** INITIAL.H ******************************
 *
-*  The externals declaration file for Inital.c or the Nucleus of 
+*  The externals declaration file for Initial.c or the Nucleus of 
 *   the Pandos Project
 *
-*  Written by Mikeyg
+*  Written by Umang J and Amy K
 */
 
 #include "../h/types.h"
