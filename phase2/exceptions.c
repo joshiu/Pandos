@@ -146,9 +146,10 @@ int SYS1(){
 
     supportData = (support_t *) currentProc->p_s.s_a2;
 
-    if((support_t *) currentProc->p_s.s_a2 != NULL || (support_t *) currentProc->p_s.s_a2 !=0){
-        newPcb -> p_supportStruct = (support_t *) currentProc->p_s.s_a2; 
+    if(supportData != NULL || supportData !=0){
+        newPcb -> p_supportStruct = supportData; 
     }
+    
     insertProcQ(&readyQ, newPcb);
     insertChild(&currentProc, newPcb);
     /*time is set in pcb.c*/
