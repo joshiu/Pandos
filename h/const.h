@@ -14,6 +14,7 @@
 #define MAXPROC           20
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
+
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000
 #define RAMBASESIZE		0x10000004
@@ -21,6 +22,8 @@
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
 
+/* clock semaphore definition*/
+#define clockSem devSema4[DEVCNT+DEVPERINT];
 
 /* utility constants */
 #define	TRUE			    1

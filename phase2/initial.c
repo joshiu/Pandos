@@ -31,9 +31,9 @@ int softBlockCnt; /*number of processes that have been blocked*/
 pcb_t *readyQ; /*queue of processes ready to run*/
 pcb_t *currentProc; /*process that is currently running*/
 int devSema4[DEVCNT+DEVPERINT+1]; /*array of device semaphores*/
-cpu_t startTimeOD; /*beginning of a time unit*/
+cpu_t startTime; /*beginning of a time unit*/
 cpu_t timeSlice; /*amount of time until the time slice*/
-#define clockSem devSema4[DEVCNT+DEVPERINT]; /*clock sema4*/
+
 
 /* END GLOBAL VARIABLES*/
 
@@ -90,7 +90,7 @@ int main(){
 
         insertProcQ(&readyQ, newPcb);
 
-        scheduler();
+        scheduleNext();
     }
     else{
         PANIC();

@@ -13,7 +13,14 @@
 
 extern int main();
 extern memaddr getRAMTOP();
+
+/* GLOBAL VARIABLES*/
 extern pcb_t *currentProc;
-/*add all global variables as extern*/
+extern int processCnt; 
+extern int softBlockCnt; 
+extern pcb_t *readyQ;
+extern int devSema4[DEVCNT+DEVPERINT+1];
+extern cpu_t startTime;
+extern cpu_t timeSlice;
 
 #endif

@@ -50,60 +50,67 @@ void passUpOrDie(int exceptNum){
 void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
     state_t *procState;
-    cpu_t currentTOD;
+    cpu_t currentTime;
 
     procState = (state_t *)BIOSDATAPAGE;
     sysNum = procState->s_a0;
 
     /*are we in kernel mode?*/
     if (sysNum >= 1 && sysNum <= 8 && (procState->s_status & 0x00000008) == 1){
+        /*if the program is not in kernel, then make the cause a not privileged instruction*/
         procState->s_cause = (procState->s_cause & 0xFFFFF00) | (10<<2); /* what are we doing here?*/
         programTrap();
     }
 
-    /*we are in kernel mode*/
-    pcb_t *currentProc;
-    
+    /*we are in kernel mode*/    
     currentProc -> p_s.s_pc = currentProc->p_s.s_pc +4;
     
     if (sysNum == 1)
     {
-        int returnInt = SYS1(s_a0, statep, supportp, i);
-        pcbUsingSYSCALL->s_v1 = returnInt;
+        int returnInt = SYS1();
+        currentProc->p_s.s_v1 = returnInt;
+        /*run load state*/
     }
     if (sysNum == 2)
     {
-        SYS2(s_a0, s_a1, s_a2, s_a3);
-        return; /* don't return control after a terminate*/
+        SYS2(currentProc);
+
+        scheduleNext(); /* don't return control after a terminate*/
     }
-    if (s_a0 == 3)
+    if (sysNum == 3)
     {
-        SYS3(s_a0, s_a1->semAdd, s_a2, s_a3);
-        return; /*we don't return control after a block*/
+        SYS3();
+        scheduleNext(); /*we don't return control after a block*/
     }
-    if (s_a0 == 4)
+    if (sysNum == 4)
     {
-        SYS4(s_a0, s_a1->semAdd, s_a2, s_a3);
+        SYS4();
+        /*load state*/
     }
-    if (s_a0 == 5)
+    if (sysNum == 5)
     {
-        int IOStatus = SYS5(s_a0, s_a1->semAdd, s_a2, s_a3);
-        return; /*we don't return control after a block*/
+        int IOStatus = SYS5();
+        scheduleNext(); /*we don't return control after a block*/
     }
-    if (s_a0 == 6)
+    if (sysNum == 6)
     {
-        cpu_t timeReturn = SYS6(s_a0, s_a1, s_a2, s_a3);
-        pbcUsingSYSCALL->p_time = timeReturn;
+        cpu_t timeReturn = SYS6();
+        currentProc->p_s.s_v0 = timeReturn;
+        /*load state*/
     }
-    if (s_a0 == 7)
+    if (sysNum == 7)
     {
-        SYS7(s_a0, s_a1->semAdd, s_a2, s_a3);
-        return; /*we don't return control after a block*/
+        SYS7();
+        scheduleNext(); /*we don't return control after a block*/
     }
-    if (a0 == 8)
+    if (sysNum == 8)
     {
-        support_t *info = SYS8(s_a0, s_a1, s_a2, s_a3);
+        int info = SYS8();
+        currentProc->p_s.s_v0 = info;
+        /*load state*/
     }
+
+    passUpOrDie(GENERALEXCEPT);
 }
 /**
  * this is the situation where either kernel mode is not TRUE or a0 is not 1-8
@@ -115,17 +122,19 @@ void SYSCALL(){ /*find out how to call a0*/
 /**
  * 
  * */
-int SYS1(s_a0, state_t *statep, support_t *supportp, int i){
+int SYS1(){
     pcb_t *newPcb = allocPcb();
-    processcnt ++;
     if(newPcb == NULL){
         return(-1); /*put thiis in v0 */
     }
-    newPcb -> p_s = s_a1;
-    newPcb -> p_supportStruct = s_a2 /*NUll if there is nothing*/
+    processCnt ++;
+    newPcb -> p_s = (state_t *) currentProc->p_s.s_a1;
+    if((support_t *) currentProc->p_s.s_a2 != NULL || (support_t *) currentProc->p_s.s_a2 !=0){
+        newPcb -> p_supportStruct = (support_t *) currentProc->p_s.s_a2; 
+    }
     insertProcQ(&readyQ, newPcb);
     insertChild(&currentProc, newPcb);
-    p_time = 0;
+    /*time is set in pcb.c*/
     return 0; /*put this in v0*/
 }
 
@@ -133,102 +142,139 @@ int SYS1(s_a0, state_t *statep, support_t *supportp, int i){
 /**
  * 
  * */
-void SYS2(s_a0, int i , int j, int k){
-    pcb_PTR lastChild = currentProc;
+void SYS2(pcb_t *runningProc){
+    pcb_t *blockedChild;
+    int *semNum;
 
-    if(emptyChild(lastChild)){/*if you have no kids*/
-    lastChild -> p_prnt -> p_child =NULL;
-    lastChild -> p_prnt = NULL;
-    scheduler();
-    return;
+    /*As long as there are kids, remove them, till we get the the last one */
+    while(!(emptyChild(runningProc))){
+        SYS2(removeChild(runningProc));
     }
 
-/*If there are children: find the last descendent with children */
-    while(lastChild -> p_child -> p_child != NULL){
-        lastChild = lastChild -> p_child;
+    if(runningProc = currentProc){/*the running one is currentProc*/
+        removeChild(runningProc);
     }
 
-/* remove all the children */
-    while(!emptyChild(lastChild)){
-        removeChild(lastChild);
+    /*if it is on the Q*/
+    else if (runningProc->p_semAdd == NULL){
+        outProcQ(&readyQ, runningProc);
     }
 
-    SYS2(s_a0, 0, 0, 0);
+    /* if it is blocked*/
+    else{
+        blockedChild = outBlocked(runningProc);
+        if(blockedChild != NULL){
+            semNum = blockedChild->p_semAdd;
+
+            /*update softblock count or v the semNum*/
+        }
+    }
+    /*once the are pulled off ready Q/unblocked, free them*/
+    freePcb(runningProc);
+    processCnt --;
 }
 
 /**
  * 
  * */
-void SYS3 (s_a0, int *semaddr, int i, int j){
-    currentProc -> p_s = savedProc; /* saveProc = saved proc state */
+void SYS3 (){
+    int *semAddr;
+    cpu_t endTime;
+
+    semAddr = (int *)currentProc -> p_s.s_a1; /* */
     /*update CPU for current proc*/
-    semaddr --;
+    *semAddr --;
 
-    if(semaddr < 0){
-        insertBlocked(&semaddr, currentProc);
-        scheduler();
+    if(*semAddr < 0){
+        endTime = adjustTime(endTime);
+        currentProc->p_time = endTime;
+        insertBlocked(&semAddr, currentProc);
+        currentProc = NULL;
         return;
     }
 
-    LDST(currentProc);
-    return;
+    /* if we don't block*/
+    /* LDST(currentProc);*/
 }
 
 
 /**
  * 
  * */
-void SYS4(s_a0, int *semaddr,int i ,int j){
-    semaddr++;
+void SYS4(){
 
-    if(semaddr <= 0){
-        pcb_t *temp = removeBlocked(&semaddr);
-        insertProcQ(&readyQ, temp);
+    int *semAddr;
+    pcb_t *removedPcb;
+
+    semAddr = (int *) currentProc ->p_s.s_a1;
+    semAddr++;
+
+    if(semAddr <= 0){
+        removedPcb = removeBlocked(semAddr);
+        insertProcQ(&readyQ, removedPcb);
         return;
     }
 
-    LDST(currentProc);
+    /* if we don't remove*/
+    /*LDST(currentProc);*/
 
 }
 
 /**
  * 
  * */
-int SYS5(s_a0, int int1No, int dnum, int waitForTermRead){
+int SYS5(){
+    /* find the line num and device num*/
+    /*convert device num to sema4 number*/
+    /*if the interrupt is on line 7, then add dev num to devperint*/
+    /*reduce number of devSem by 1*/
+    /*if no interrupt, then softblock++, block, do time shit, and invoke scheduler*/
+    /*if it has occur, then load dev # to v0 and ldst*/
+
     insertBlocked(& currentProc->p_semAdd, currentProc);
-    scheduler();
     return; /* what do we return? this is also incorrect so come back to later */
 }
 
 /**
  * 
  * */
-cpu_t SYS6(s_a0, int i, int j, int k){
-    pu_t sumOfTime = currentProc->p_time /*+ amnt of time used in current quantum*/
-    return sumOfTime;
+cpu_t SYS6(){
+    cpu_t currentTime;
+
+    currentTime= timeCalc(currentTime);
+    
+    return currentTime;
 }
 
 /**
  * 
  * */
-void SYS7(s_a0, int i, int j, int k){
+void SYS7(){
     /*need to preform P opertation on psuedoclock semaphore; (SYS3)*/
-    insertBlocked(& currentProc->p_semAdd, currentProc);
-    scheduler();
+    insertBlocked(clockSem, currentProc); /*wait on clock semaphore*/
 }
 
 /**
  * 
  * */
-support_t SYS8(s_a0, int i, int j, int k){
+int SYS8(){
     if(currentProc -> p_supportStruct == NULL){
-        return NULL;
+        return ((support_t *) NULL);
     }
 
-    return currentProc -> p_supportStruct;
+    return (currentProc -> p_supportStruct);
 
 }
 
+/**
+ * Method to find the total time used
+ * */
+cpu_t timeCalc(cpu_t time){
+    cpu_t totalTime;
+    STCK(time);
+    totalTime = currentProc->p_time + (time-startTime);
+    return totalTime;
+}
 
 /**
  * performs standard pass up or die using the general exception index value
