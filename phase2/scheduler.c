@@ -20,12 +20,7 @@
 void scheduleNext(){
     return;
 }
-/**
- * This method copies the processor state that is being pointed at and moves it to it’s wanted destination
- * */
-void moveState(/*need something here*/){
-    return;
-}
+
 
 /**
  * This function takes a process 
