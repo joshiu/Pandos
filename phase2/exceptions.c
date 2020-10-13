@@ -269,6 +269,7 @@ int SYS8(){
 /**
  * Method to find the total time used
  * */
+
 cpu_t timeCalc(cpu_t time){
     cpu_t totalTime;
     STCK(time);
