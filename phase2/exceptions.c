@@ -123,12 +123,29 @@ void SYSCALL(){ /*find out how to call a0*/
  * 
  * */
 int SYS1(){
-    pcb_t *newPcb = allocPcb();
+    int i;
+    pcb_t *newPcb; 
+    support_t *supportData;
+
+    newPcb = allocPcb();
+
     if(newPcb == NULL){
         return(-1); /*put thiis in v0 */
     }
     processCnt ++;
-    newPcb -> p_s = (state_t *) currentProc->p_s.s_a1;
+
+    /*copying states to the child*/
+
+    for(i = 0; i<STATEREGNUM; i++){
+        newPcb->p_s.s_reg[i] = currentProc->p_s.s_reg[i];
+    }
+    newPcb->p_s.s_cause = currentProc->p_s.s_cause;
+    newPcb->p_s.s_entryHI = currentProc->p_s.s_entryHI;
+    newPcb->p_s.s_status = currentProc->p_s.s_status;
+    newPcb->p_s.s_pc = currentProc->p_s.s_pc;
+
+    supportData = (support_t *) currentProc->p_s.s_a2;
+
     if((support_t *) currentProc->p_s.s_a2 != NULL || (support_t *) currentProc->p_s.s_a2 !=0){
         newPcb -> p_supportStruct = (support_t *) currentProc->p_s.s_a2; 
     }
