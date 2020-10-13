@@ -24,28 +24,12 @@
  * may need helper functions
  * */
 
-void programTrap(){
-    /* this will handle program traps by derring it to support level or killing it*/
-    passUpOrDie(GENERALEXCEPT);
-}
-
-void TLBExceptHandler(){
-    passUpOrDie(PGFAULTEXCEPT);
-}
-
-void passUpOrDie(int exceptNum){
-    if (currentProc->p_supportStruct == NULL)
-    {
-        sys2(currentProc);
-        /*use LDST*/
-    }
     /*write the biosdatapage to the currentProc -> p_supportStruct->sup_exceptState[exceptNum]*/
     /*do a LDCXT() on 3 things:
   currentProc->p_supportStruct->sup_exceptState[exceptNum].c_stackPtr;
   currentProc->p_supportStruct->sup_exceptState[exceptNum].c_status;
   currentProc->p_supportStruct->sup_exceptState[exceptNum].c_pc;
   */
-}
 
 void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
@@ -149,7 +133,7 @@ int SYS1(){
     if(supportData != NULL || supportData !=0){
         newPcb -> p_supportStruct = supportData; 
     }
-    
+
     insertProcQ(&readyQ, newPcb);
     insertChild(&currentProc, newPcb);
     /*time is set in pcb.c*/
@@ -295,29 +279,19 @@ cpu_t timeCalc(cpu_t time){
     return totalTime;
 }
 
-/**
- * performs standard pass up or die using the general exception index value
- * void programTrapExcept(int index){
- *      passUpOrDie(index);
- * }
- * */
+void programTrap(){
+    /* this will handle program traps by derring it to support level or killing it*/
+    passUpOrDie(GENERALEXCEPT);
+}
 
-/* idk where to put this, so it's going here!*/
+void TLBExceptHandler(){
+    passUpOrDie(PGFAULTEXCEPT);
+}
 
-/*
- * Else:
- * two tasks: copy and save the exception state into a location accessible 
- * pass control to a routine specified by the Support Level
- * 
- * Support level: two locations for saved exception states, two addresses for handlers.
- * One state t/PC address pair for both TLB exceptions & one for all other exceptions
- * 
- * To pass up the handling of an exception:
- * Copy the saved exception state from the BIOS 
- * Give to the correct sup exceptState field of the Current Process.
- * 
- * Important: The Current Process’s pcb should point to a non-null support t.
- * 
- * Perform a LDCXT using the fields from the correct sup exceptContext field of the Current Process
- * }
- * */
+void passUpOrDie(int exceptNum){
+    if (currentProc->p_supportStruct == NULL)
+    {
+        SYS2(currentProc);
+        /*use LDST*/
+    }
+}
