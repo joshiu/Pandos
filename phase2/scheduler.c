@@ -15,21 +15,25 @@
  * */
 
 /**
- * Method comment here
+ * This function takes a process from the ready queue 
+ * and makes it the current running process.
+ * If the queue is empty, a deadlock is executed.
  * */
 void scheduleNext(){
+    
     return;
 }
 
-
 /**
- * This function takes a process 
- * from the ready queue and switches it to the current running process.
- * If the queue is empty, a deadlock is executed.
+ * This method loads a process and sets it equal to the currentProcess.
+ * Then we load the state of the current process and let it run
  * */
-void switchProcess(/*need something here*/){
+void loadState(pcb_t *process){
 
+    currentProc = process;
+    LDST(&(process->p_s));
 }
+
 
 /**
  * timeslice of 5 miliseconds
