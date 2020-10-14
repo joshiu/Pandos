@@ -104,7 +104,7 @@ void SYSCALL(){ /*find out how to call a0*/
  **/
 
 /**
- * 
+ * When request this service creates a new process
  * */
 int SYS1(){
     int i;
@@ -142,7 +142,8 @@ int SYS1(){
 
 
 /**
- * 
+ * When requested this service causes the executing process 
+ * to cease to exist.
  * */
 void SYS2(pcb_t *runningProc){
     pcb_t *blockedChild;
@@ -177,7 +178,8 @@ void SYS2(pcb_t *runningProc){
 }
 
 /**
- * 
+ * When requested this service tells the Nucleus
+ * to perform a P operation on the semaphore.
  * */
 void SYS3 (){
     int *semAddr;
@@ -201,7 +203,8 @@ void SYS3 (){
 
 
 /**
- * 
+ * When requested this service tells the Nucleus
+ * to perform a V operation on the semaphore.
  * */
 void SYS4(){
 
@@ -223,7 +226,8 @@ void SYS4(){
 }
 
 /**
- * 
+ * When requested, this serivce is used to transition the 
+ * Current Process from the “running” state to a “blocked”state.
  * */
 int SYS5(){
     /* find the line num and device num*/
@@ -238,7 +242,8 @@ int SYS5(){
 }
 
 /**
- * 
+ * When requested, this service requests the Nucleus records 
+ * (in the pcb: p time) the amount of processor time used by each process.
  * */
 cpu_t SYS6(){
     cpu_t currentTime;
@@ -249,7 +254,8 @@ cpu_t SYS6(){
 }
 
 /**
- * 
+ * This service  service performs a P operation 
+ * on the Nucleus maintained Pseudo-clock semaphore.
  * */
 void SYS7(){
     /*need to preform P opertation on psuedoclock semaphore; (SYS3)*/
@@ -257,7 +263,9 @@ void SYS7(){
 }
 
 /**
- * 
+ * This service requests a pointer to the Current Process’s Support Structure. 
+ * Hence,this service returns the value of p supportStruct from the Current Process’s pcb.
+ * If there is no value, it returns NULL.
  * */
 int SYS8(){
     if(currentProc -> p_supportStruct == NULL){
@@ -269,9 +277,8 @@ int SYS8(){
 }
 
 /**
- * Method to find the total time used
+ * This method to finds the total time used
  * */
-
 cpu_t timeCalc(cpu_t time){
     cpu_t totalTime;
     STCK(time);
@@ -279,15 +286,26 @@ cpu_t timeCalc(cpu_t time){
     return totalTime;
 }
 
+/**
+ * This method will handle program traps by derring it 
+ * to the support level or killing it. (calling passUpOrDie)
+ * */
 void programTrap(){
-    /* this will handle program traps by derring it to support level or killing it*/
     passUpOrDie(GENERALEXCEPT);
 }
 
+/**
+ * This method passes the memory management issue to passUpOrDie.
+ * */
 void TLBExceptHandler(){
     passUpOrDie(PGFAULTEXCEPT);
 }
 
+/**
+ * This method will take all SYSCALLs 9 and above
+ * and will either "pass up" to phase 3 if the currentProc's p_supportStruct
+ * is not NULL. Otherwise it will call SYS2 and terminate it. ("die")
+ * */
 void passUpOrDie(int exceptNum){
     if (currentProc->p_supportStruct == NULL)
     {
