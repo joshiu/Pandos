@@ -14,17 +14,6 @@
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
-
-/**
- * This function takes a process from the ready queue 
- * and makes it the current running process.
- * If the queue is empty, a deadlock is executed.
- * */
-void scheduleNext(){
-    
-    return;
-}
-
 /**
  * This method loads a process and sets it equal to the currentProcess.
  * Then we load the state of the current process and let it run
@@ -36,10 +25,11 @@ void loadState(pcb_t *process){
 }
 
 /**
- * This method is a simple preemptive round-robin 
- * scheduling algorithm with a time slice value of 5 milliseconds
+ * * This function takes a process from the ready queue 
+ * and makes it the current running process.
+ * If the queue is empty, a deadlock is executed.
  * */
-void scheduler(){
+void scheduleNext(){
 
     /* */
     if(readyQ != NULL){
@@ -65,4 +55,6 @@ void scheduler(){
     if(processCnt > 0 && softBlockCnt == 0){
         PANIC();
     }
+
+    return;
 }
