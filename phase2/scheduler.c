@@ -14,6 +14,7 @@
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
+
 /**
  * This function takes a process from the ready queue 
  * and makes it the current running process.
@@ -34,27 +35,34 @@ void loadState(pcb_t *process){
     LDST(&(process->p_s));
 }
 
-
 /**
- * timeslice of 5 miliseconds
- *  
- * void scheduler(){
- * if(readyQ != NULL){
- * pcb_PTR newProc = removeProcQ(readyQ);
- * insertProcQ(&currentProc, newProc);
- * load 5 miliseconds onto processor local timer;
- * LDST(newProc->p_s);
- * }
- * if(proccnt == 0){
- * HALT(); //good job, we done
- * }
- * if(proccnt>0 && softblockcnt>0){
- * set status to enable interrupts;
- * set PLT = MAXINT;
- * WAIT();
- * }
- * if(proccnt >0 && softblockcnt ==0){
- * PANIC();
- * }
- * }
+ * This method is a simple preemptive round-robin 
+ * scheduling algorithm with a time slice value of 5 milliseconds
  * */
+void scheduler(){
+
+    /* */
+    if(readyQ != NULL){
+        pcb_PTR newProc = removeProcQ(readyQ);
+        insertProcQ(&currentProc, newProc);
+        /* load timeslice (5miliseconds) onto processor local timer */
+        LDST(newProc -> p_s); /*not really sure why this is angry*/
+    }
+
+    /*if we have no processes then we are done!*/
+    if(processCnt == 0){
+        HALT(); /* we done! */
+    }
+
+    /* */
+    if(processCnt > 0 && softBlockCnt > 0){
+        /*set status to enable interrupts*/
+        /*set PLT = MAXINT */
+        WAIT();
+    }
+    
+    /**/
+    if(processCnt > 0 && softBlockCnt == 0){
+        PANIC();
+    }
+}

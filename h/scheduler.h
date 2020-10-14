@@ -12,6 +12,7 @@
 #include "../h/types.h"
 
 extern void scheduleNext();
-
+extern void loadState();
+/*extern void scheduler(); this has an error for some reason*/
 
 #endif
