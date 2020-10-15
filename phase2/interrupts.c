@@ -15,10 +15,13 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+void interruptHandler(){
+    
+}
 /**
  * This method is used to determine the appropriate action for when the timer generates an interrupt. 
  * 
- * void interruptHandler(){
+ * 
  * who interrupted me, look at Cause.ExcCode.
  * Look at Cause.IP to find line number;
  *  if line 1, it's localTimerInt();
