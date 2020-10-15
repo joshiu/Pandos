@@ -14,22 +14,8 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
-/**
- * Side notes from Amy:
- * pass up or die method goes in this file 
- * also include the trap programs here (that are needed for uTLB_RefillHandler) and so syscall
- * is the systrap program?
- * the ifs are fine but he may yell at us for not using causes (shrug) this way makes more sense to me
- * 
- * may need helper functions
- * */
+HIDDEN cpu_t timeCalc();
 
-    /*write the biosdatapage to the currentProc -> p_supportStruct->sup_exceptState[exceptNum]*/
-    /*do a LDCXT() on 3 things:
-  currentProc->p_supportStruct->sup_exceptState[exceptNum].c_stackPtr;
-  currentProc->p_supportStruct->sup_exceptState[exceptNum].c_status;
-  currentProc->p_supportStruct->sup_exceptState[exceptNum].c_pc;
-  */
 
 void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
@@ -53,7 +39,7 @@ void SYSCALL(){ /*find out how to call a0*/
     {
         int returnInt = SYS1();
         currentProc->p_s.s_v1 = returnInt;
-        /*run load state*/
+        loadState(currentProc);
     }
     if (sysNum == 2)
     {
@@ -64,12 +50,11 @@ void SYSCALL(){ /*find out how to call a0*/
     if (sysNum == 3)
     {
         SYS3();
-        scheduleNext(); /*we don't return control after a block*/
     }
     if (sysNum == 4)
     {
         SYS4();
-        /*load state*/
+        loadState(currentProc);
     }
     if (sysNum == 5)
     {
@@ -80,18 +65,17 @@ void SYSCALL(){ /*find out how to call a0*/
     {
         cpu_t timeReturn = SYS6();
         currentProc->p_s.s_v0 = timeReturn;
-        /*load state*/
+        loadState(currentProc);
     }
     if (sysNum == 7)
     {
         SYS7();
-        scheduleNext(); /*we don't return control after a block*/
     }
     if (sysNum == 8)
     {
         int info = SYS8();
         currentProc->p_s.s_v0 = info;
-        /*load state*/
+        loadState(currentProc);
     }
 
     passUpOrDie(GENERALEXCEPT);
@@ -194,11 +178,10 @@ void SYS3 (){
         currentProc->p_time = endTime;
         insertBlocked(&semAddr, currentProc);
         currentProc = NULL;
+        scheduleNext();
         return;
     }
-
-    /* if we don't block*/
-    /* LDST(currentProc);*/
+    loadState(currentProc);
 }
 
 
@@ -258,8 +241,18 @@ cpu_t SYS6(){
  * on the Nucleus maintained Pseudo-clock semaphore.
  * */
 void SYS7(){
-    /*need to preform P opertation on psuedoclock semaphore; (SYS3)*/
-    insertBlocked(clockSem, currentProc); /*wait on clock semaphore*/
+    cpu_t endTime;
+
+    clockSem -= 1;
+    if(clockSem<0){
+        softBlockCnt++;
+        endTime = timeCalc(endTime);
+        currentProc->p_time = currentProc->p_time + endTime;
+        insertBlocked(&clockSem, currentProc); /*wait on clock semaphore*/
+        scheduleNext();
+    }
+    loadState(currentProc);
+    
 }
 
 /**
@@ -279,7 +272,7 @@ int SYS8(){
 /**
  * This method to finds the total time used
  * */
-cpu_t timeCalc(cpu_t time){
+cpu_t timeCalc(time){
     cpu_t totalTime;
     STCK(time);
     totalTime = currentProc->p_time + (time-startTime);
