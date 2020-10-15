@@ -102,7 +102,7 @@ int SYS1(){
     }
     processCnt ++;
 
-    /*copying states to the child*/
+    /*copying states from parent to child*/
 
     for(i = 0; i<STATEREGNUM; i++){
         newPcb->p_s.s_reg[i] = currentProc->p_s.s_reg[i];
