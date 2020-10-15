@@ -241,7 +241,7 @@ void SYS7(){
     clockSem -= 1;
     if(clockSem<0){
         softBlockCnt++;
-        endTime = timeCalc(endTsime);
+        endTime = timeCalc(endTime);
         currentProc->p_time = currentProc->p_time + endTime;
         insertBlocked(&clockSem, currentProc); /*wait on clock semaphore*/
         scheduleNext();

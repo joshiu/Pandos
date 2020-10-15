@@ -31,12 +31,12 @@ void loadState(pcb_t *process){
  * */
 void scheduleNext(){
     pcb_t *newProc;
-    unsigned int idleState;
+    unsigned int waitState;
     
     /* */
     if(readyQ != NULL){
         newProc = removeProcQ(readyQ);
-        
+
         timeSlice = 500; /*make this a constant*/
         STCK(startTime); /*ecord new timeslice as starttime*/
         setTIMER(timeSlice); /*set the quantum*/
@@ -54,10 +54,10 @@ void scheduleNext(){
         currentProc = NULL;
         setTIMER(MAXINT); /*set timer to infinity*/
 
-        idleState = 0x00000000 | 0x00000001|0x0000FF00|0x08000000; 
+        waitState = 0x00000000 | 0x00000001|0x0000FF00|0x08000000; 
         /*turn on current interrupt bit, masking off, and te bit on*/ 
 
-        setSTATUS(idleState);
+        setSTATUS(waitState);
         WAIT();
     }
     
