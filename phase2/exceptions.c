@@ -15,12 +15,13 @@
  * */
 
 HIDDEN cpu_t timeCalc();
-
+HIDDEN void copyState();
 
 void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
     state_t *procState;
     cpu_t currentTime;
+    int i; /*counter for copying states*/
 
     procState = (state_t *)BIOSDATAPAGE;
     sysNum = procState->s_a0;
@@ -31,6 +32,8 @@ void SYSCALL(){ /*find out how to call a0*/
         procState->s_cause = (procState->s_cause & 0xFFFFF00) | (10<<2); /* what are we doing here?*/
         programTrap();
     }
+
+    copyState(procState, &(currentProc->p_s));    
 
     /*we are in kernel mode*/    
     currentProc -> p_s.s_pc = currentProc->p_s.s_pc +4;
@@ -102,15 +105,7 @@ int SYS1(){
     }
     processCnt ++;
 
-    /*copying states from parent to child*/
-
-    for(i = 0; i<STATEREGNUM; i++){
-        newPcb->p_s.s_reg[i] = currentProc->p_s.s_reg[i];
-    }
-    newPcb->p_s.s_cause = currentProc->p_s.s_cause;
-    newPcb->p_s.s_entryHI = currentProc->p_s.s_entryHI;
-    newPcb->p_s.s_status = currentProc->p_s.s_status;
-    newPcb->p_s.s_pc = currentProc->p_s.s_pc;
+    copyState(&(currentProc->p_s), &(newPcb->p_s)); /*copying states from parent to child*/
 
     supportData = (support_t *) currentProc->p_s.s_a2;
 
@@ -246,7 +241,7 @@ void SYS7(){
     clockSem -= 1;
     if(clockSem<0){
         softBlockCnt++;
-        endTime = timeCalc(endTime);
+        endTime = timeCalc(endTsime);
         currentProc->p_time = currentProc->p_time + endTime;
         insertBlocked(&clockSem, currentProc); /*wait on clock semaphore*/
         scheduleNext();
@@ -305,4 +300,16 @@ void passUpOrDie(int exceptNum){
         SYS2(currentProc);
         /*use LDST*/
     }
+}
+/** Method for copying the states of one entry into the other*/
+void copyState(state_t *source, state_t *copy){
+    int i;
+
+    for(i = 0; i<STATEREGNUM; i++){
+        copy->s_reg[i] = source->s_reg[i];
+    }
+    copy->s_cause = source->s_cause;
+    copy->s_entryHI = source->s_entryHI;
+    copy->s_status = source->s_status;
+    copy->s_pc = source->s_pc;
 }
