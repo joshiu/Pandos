@@ -33,10 +33,10 @@ void scheduleNext(){
 
     /* */
     if(readyQ != NULL){
-        pcb_PTR newProc = removeProcQ(readyQ);
+        pcb_t *newProc = removeProcQ(readyQ);
         insertProcQ(&currentProc, newProc);
         /* load timeslice (5miliseconds) onto processor local timer */
-        LDST(newProc -> p_s); /*not really sure why this is angry*/
+        loadState(newProc); /*not really sure why this is angry*/
     }
 
     /*if we have no processes then we are done!*/
