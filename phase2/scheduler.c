@@ -30,12 +30,17 @@ void loadState(pcb_t *process){
  * If the queue is empty, a deadlock is executed.
  * */
 void scheduleNext(){
-
+    pcb_t *newProc;
+    unsigned int idleState;
+    
     /* */
     if(readyQ != NULL){
-        pcb_t *newProc = removeProcQ(readyQ);
-        insertProcQ(&currentProc, newProc);
-        /* load timeslice (5miliseconds) onto processor local timer */
+        newProc = removeProcQ(readyQ);
+        
+        timeSlice = 500; /*make this a constant*/
+        STCK(startTime); /*ecord new timeslice as starttime*/
+        setTIMER(timeSlice); /*set the quantum*/
+
         loadState(newProc); /*not really sure why this is angry*/
     }
 
@@ -46,8 +51,13 @@ void scheduleNext(){
 
     /* */
     if(processCnt > 0 && softBlockCnt > 0){
-        /*set status to enable interrupts*/
-        /*set PLT = MAXINT */
+        currentProc = NULL;
+        setTIMER(MAXINT); /*set timer to infinity*/
+
+        idleState = 0x00000000 | 0x00000001|0x0000FF00|0x08000000; 
+        /*turn on current interrupt bit, masking off, and te bit on*/ 
+
+        setSTATUS(idleState);
         WAIT();
     }
     
