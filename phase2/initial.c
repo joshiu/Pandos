@@ -65,7 +65,7 @@ int main(){
     currentProc = NULL;
 
     /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
-    clockSem = 0; /* why is this wrong?*/
+    devSema4[DEVCNT+DEVPERINT] = 0; /* why is this wrong?*/
     for(counter = 0; counter < (DEVCNT+DEVPERINT); counter ++){
         devSema4[counter] = 0;
     }
