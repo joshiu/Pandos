@@ -41,8 +41,9 @@ void interruptHandler(){
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00004000) !=0){/*print interrupt*/
 
     }
-    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00008000) !=0){/*terminal interrupt*/
-
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00008000) !=0){
+        /*terminal interrupt*/
+        terminalInterrupt(); /*some dev num*/
     }
 
     if(currentProc != NULL){
