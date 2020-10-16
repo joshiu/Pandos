@@ -34,7 +34,7 @@ int devSema4[DEVCNT+DEVPERINT+1]; /*array of device semaphores*/
 cpu_t startTime; /*beginning of a time unit*/
 cpu_t timeSlice; /*amount of time until the time slice*/
 
-
+#define clockSem devSema4[DEVCNT+DEVPERINT];
 /* END GLOBAL VARIABLES*/
 
 /*--------------------------------------------------------------------------------------------------*/

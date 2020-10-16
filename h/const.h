@@ -22,9 +22,6 @@
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
 
-/* clock semaphore definition*/
-#define clockSem devSema4[DEVCNT+DEVPERINT];
-
 /* utility constants */
 #define	TRUE			    1
 #define	FALSE			    0
