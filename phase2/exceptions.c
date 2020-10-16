@@ -5,6 +5,7 @@
 #include "/usr/local/include/umps3/umps/libumps.h"
 #include "../h/initial.h"
 #include "../h/scheduler.h" 
+#include "../h/initial.h"
 
 /**
  * This file occurs when the SYSCALL assembly instruction is executed. 

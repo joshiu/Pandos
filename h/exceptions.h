@@ -23,4 +23,6 @@ extern cpu_t SYS6();
 extern void SYS7();
 extern support_t SYS8();
 extern void copyState();
+extern cpu_t timeCalc();
+
 #endif
