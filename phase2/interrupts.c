@@ -16,8 +16,52 @@
  * */
 
 void interruptHandler(){
-    
+    cpu_t stopTime;
+    cpu_t leftoverQTime;
+
+
+    STCK(stopTime);
+    leftoverQTime = getTIMER();
+
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000200) !=0){
+        /*local timer interrupt*/
+        localTimerInterrupt(stopTime);
+    }
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000400) !=0){
+        /*timer interrupt*/
+        timerInterrupt();
+    }
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000800) !=0){
+        /*disk interrupt*/
+         
+    }
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00001000) !=0){/*flash interrupt*/
+
+    }
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00004000) !=0){/*print interrupt*/
+
+    }
+    if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00008000) !=0){/*terminal interrupt*/
+
+    }
+
+    if(currentProc != NULL){
+
+        currentProc ->p_time = currentProc->p_time + (stopTime - startTime);
+
+        copyState((state_t *) BIOSDATAPAGE, currentProc->p_s);
+
+        setSpecificQuantum (currentProc, leftoverQTime);
+    }
+    else{
+        /*if there is no current, then we have a problem!*/
+
+        HALT();
+    }
+
 }
+
+
 /**
  * This method is used to determine the appropriate action for when the timer generates an interrupt. 
  * 

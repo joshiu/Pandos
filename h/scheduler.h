@@ -13,5 +13,6 @@
 
 extern void scheduleNext();
 extern void loadState();
+extern void setSpecificQuantum();
 
 #endif

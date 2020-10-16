@@ -68,3 +68,9 @@ void scheduleNext(){
 
     return;
 }
+
+void setSpecificQuantum(pcb_t *process, cpu_t specificTime){
+    STCK(startTime);
+    setTIMER(specificTime); /*set the quantum*/
+    loadState(process); /*not really sure why this is angry*/
+}

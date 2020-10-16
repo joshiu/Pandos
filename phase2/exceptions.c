@@ -15,7 +15,7 @@
  * */
 
 HIDDEN cpu_t timeCalc();
-HIDDEN void copyState();
+
 
 void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
