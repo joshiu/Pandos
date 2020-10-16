@@ -3,11 +3,26 @@
 #
 # Edited for uMPS v3 by MikeyG on 2020/04/14
 
-INCDIR = /usr/local/include/umps3/umps
-SUPDIR = /usr/local/share/umps3
-LIBDIR = /usr/local/lib/umps3
+# Simplistic search for the umps3 installation prefix.
+# If you have umps3 installed on some weird location, set UMPS3_DIR_PREFIX by hand.
+ifneq ($(wildcard /usr/bin/umps3),)
+	UMPS3_DIR_PREFIX = /usr
+	LIBDIR = $(UMPS3_DIR_PREFIX)/lib/x86_64-linux-gnu/umps3
+	
+else
+	UMPS3_DIR_PREFIX = /usr/local
+	LIBDIR = $(UMPS3_DIR_PREFIX)/lib/umps3
+endif
 
-DEFS = ../h/const.h ../h/types.h ../h/asl.h ../h/pcb.h $(INCDIR)/libumps.h Makefile
+INCDIR = $(UMPS3_DIR_PREFIX)/include/umps3/umps
+SUPDIR = $(UMPS3_DIR_PREFIX)/share/umps3
+#LIBDIR = $(UMPS3_DIR_PREFIX)/lib/umps3
+
+DEFS = ../h/const.h ../h/types.h ../h/pcb.h ../h/asl.h \
+	../h/initial.h ../h/interrupts.h ../h/scheduler.h ../h/exceptions.h \
+	$(INCDIR)/libumps.h Makefile
+
+OBJS = initial.o interrupts.o scheduler.o exceptions.o asl.o pcb.o
 
 CFLAGS = -ffreestanding -ansi -Wall -c -mips1 -mabi=32 -mfp32 -mno-gpopt -G 0 -fno-pic -mno-abicalls
 
@@ -27,15 +42,16 @@ all: kernel.core.umps
 kernel.core.umps: kernel
 	$(EF) -k kernel
 
-kernel: p1test.o asl.o pcb.o 
-	$(LD) $(LDCOREFLAGS) $(LIBDIR)/crtso.o p1test.o asl.o pcb.o $(LIBDIR)/libumps.o -o kernel 
+kernel: p2test.o $(OBJS)
+	$(LD) $(LDCOREFLAGS) $(LIBDIR)/crtso.o p2test.o $(OBJS) $(LIBDIR)/libumps.o -o kernel
+
 
 %.o: %.c $(DEFS)
 	$(CC) $(CFLAGS) $<
 
 
 clean:
-	rm -f *.o term*.umps kernel
+	rm -f *.o term*.umps kernel kernel.*.umps
 
 
 distclean: clean
