@@ -15,6 +15,21 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+/************ FILE SPECIFIC METHODS *********************/
+HIDDEN void localTimerInterrupt(cpu_t time);
+HIDDEN void pseudoClockInterrupt();
+HIDDEN void deviceInterrupt(int deviceType);
+
+
+/**
+ * This method is used to determine the appropriate action
+ * when the timer generates an interrupt. Look at who interrupted 
+ * me, look at Cause.ExcCode.
+ *  if line 1, it's localTimerInterrupt();
+ *  if line 2, it's pseudoClockInterrupt();
+ *  if 3-7, then deviceInterrupt();
+ * }
+ * */
 void interruptHandler(){
     cpu_t stopTime;
     cpu_t leftoverQTime;
@@ -29,21 +44,21 @@ void interruptHandler(){
     }
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000400) !=0){
         /*timer interrupt*/
-        timerInterrupt();
+        pseudoClockInterrupt();
     }
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000800) !=0){
         /*disk interrupt*/
-         
+        deviceInterrupt(DISKINT);
     }
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00001000) !=0){/*flash interrupt*/
-
+        deviceInterrupt(FLASHINT);
     }
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00004000) !=0){/*print interrupt*/
-
+        deviceInterrupt(PRNTINT);
     }
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00008000) !=0){
         /*terminal interrupt*/
-        terminalInterrupt(); /*some dev num*/
+        deviceInterrupt(TERMINT);
     }
 
     if(currentProc != NULL){
@@ -62,18 +77,59 @@ void interruptHandler(){
 
 }
 
+/**Put the process to sleep b/c quantum over
+**/
+void localInterruptTimer(cpu_t stopTime){
+    if(currentProc == NULL){
+        PANIC();
+        return;
+    }
+    
+    currentProc->p_time = timeCalc(stopTime);
+    copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
-/**
- * This method is used to determine the appropriate action for when the timer generates an interrupt. 
- * 
- * 
- * who interrupted me, look at Cause.ExcCode.
- * Look at Cause.IP to find line number;
- *  if line 1, it's localTimerInt();
- *  if line 2, it's pseudoClockInt();
- *  if 3-7, then deviceInterrupt();
- * }
+    insertProcQ(&readyQ, currentProc);
+    scheduleNext();
+}
+
+/** Pseudoclock is done! DING DONG BITCH
  * */
+void pseudoClockInterrupt(){
+    pcb_t *removedPcbs;
+
+    LDIT(1000);
+    
+    removedPcbs = removeBlocked(&(devSema4[DEVPERINT+DEVCNT]));
+    while (removedPcbs !=NULL){
+        insertProcQ(&readyQ, removedPcbs);
+        softBlockCnt --;
+        removedPcbs = removeBlocked(&(devSema4[DEVPERINT+DEVCNT]));
+    }
+
+    devSema4[DEVPERINT+DEVCNT] = 0;
+
+    if(currentProc ==NULL){
+        scheduleNext();
+    }
+
+    loadState(currentProc);
+    
+}
+
+/** see what device number is calling this interrupt
+ * */
+void deviceInterrupt(int deviceType){
+    int deviceNumber;
+    int deviceSema4Num;
+    unsigned int devStatus;
+    unsigned int bitMap;
+    devregarea_t *deviceRegister; /*ask about if this is volatile in class (cite POPs)*/ 
+
+    deviceRegister = (devregarea_t *)RAMBASEADDR;
+    bitMap = deviceRegister->interrupt_dev[(deviceType - DISKINT)]; /*ask about this monday*/
+    
+}
+
 
 /**
  * void deviceInterrupt(){

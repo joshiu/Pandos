@@ -15,8 +15,9 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
-HIDDEN cpu_t timeCalc();
 
+/**method comment here
+ * */
 
 void SYSCALL(){ /*find out how to call a0*/
     int sysNum;
@@ -84,12 +85,7 @@ void SYSCALL(){ /*find out how to call a0*/
 
     passUpOrDie(GENERALEXCEPT);
 }
-/**
- * this is the situation where either kernel mode is not TRUE or a0 is not 1-8
- * Cause.ExcCode = RI;
- * programTrapExcept(GeneralExcept's index value);
- * return;
- **/
+
 
 /**
  * When request this service creates a new process
@@ -199,9 +195,6 @@ void SYS4(){
         return;
     }
 
-    /* if we don't remove*/
-    /*LDST(currentProc);*/
-
 }
 
 /**
@@ -239,12 +232,12 @@ cpu_t SYS6(){
 void SYS7(){
     cpu_t endTime;
 
-    clockSem -= 1;
-    if(clockSem<0){
+    devSema4[DEVCNT+DEVPERINT] -= 1;
+    if(devSema4[DEVCNT+DEVPERINT]<0){
         softBlockCnt++;
         endTime = timeCalc(endTime);
         currentProc->p_time = currentProc->p_time + endTime;
-        insertBlocked(&clockSem, currentProc); /*wait on clock semaphore*/
+        insertBlocked(&(devSema4[DEVCNT+DEVPERINT]), currentProc); /*wait on clock semaphore*/
         scheduleNext();
     }
     loadState(currentProc);
@@ -263,16 +256,6 @@ int SYS8(){
 
     return (currentProc -> p_supportStruct);
 
-}
-
-/**
- * This method to finds the total time used
- * */
-cpu_t timeCalc(time){
-    cpu_t totalTime;
-    STCK(time);
-    totalTime = currentProc->p_time + (time-startTime);
-    return totalTime;
 }
 
 /**
@@ -302,6 +285,9 @@ void passUpOrDie(int exceptNum){
         /*use LDST*/
     }
 }
+
+/*********************************** HELPER METHODS *********************************/
+
 /** Method for copying the states of one entry into the other*/
 void copyState(state_t *source, state_t *copy){
     int i;
@@ -313,4 +299,14 @@ void copyState(state_t *source, state_t *copy){
     copy->s_entryHI = source->s_entryHI;
     copy->s_status = source->s_status;
     copy->s_pc = source->s_pc;
+}
+
+/**
+ * This method to finds the total time used
+ * */
+cpu_t timeCalc(cpu_t time){
+    cpu_t totalTime;
+    STCK(time);
+    totalTime = currentProc->p_time + (time-startTime);
+    return totalTime;
 }
