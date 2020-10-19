@@ -13,6 +13,7 @@
 
 extern int main();
 extern memaddr getRAMTOP();
+extern void generalExceptHandler();
 
 /* GLOBAL VARIABLES*/
 extern pcb_t *currentProc;
