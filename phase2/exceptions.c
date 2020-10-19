@@ -16,10 +16,13 @@
  * */
 
 
-/**method comment here
+/**
+ * This System Call method occurs when the SYSCALL assembly 
+ * intruction is executed. This places the appropriate values in 
+ * the general purpose registers (a0-a3) and these values will
+ * call the appropriate SYSCALL (1-8)
  * */
-
-void SYSCALL(){ /*find out how to call a0*/
+void SYSCALL(){
     int sysNum;
     state_t *procState;
     cpu_t currentTime;

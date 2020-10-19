@@ -25,10 +25,9 @@ HIDDEN void deviceInterrupt(int deviceType);
  * This method is used to determine the appropriate action
  * when the timer generates an interrupt. Look at who interrupted 
  * me, look at Cause.ExcCode.
- *  if line 1, it's localTimerInterrupt();
- *  if line 2, it's pseudoClockInterrupt();
- *  if 3-7, then deviceInterrupt();
- * }
+ *  if line 1, it's a local timer interrupt
+ *  if line 2, it's pseudo clock interrupt
+ *  if 3-7, then device interrupt 
  * */
 void interruptHandler(){
     cpu_t stopTime;
@@ -42,20 +41,25 @@ void interruptHandler(){
         /*local timer interrupt*/
         localTimerInterrupt(stopTime);
     }
+
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000400) !=0){
         /*timer interrupt*/
         pseudoClockInterrupt();
     }
+
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00000800) !=0){
         /*disk interrupt*/
         deviceInterrupt(DISKINT);
     }
+
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00001000) !=0){/*flash interrupt*/
         deviceInterrupt(FLASHINT);
     }
+
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00004000) !=0){/*print interrupt*/
         deviceInterrupt(PRNTINT);
     }
+
     if(((((state_t *)BIOSDATAPAGE )->s_cause) & 0x00008000) !=0){
         /*terminal interrupt*/
         deviceInterrupt(TERMINT);
@@ -68,8 +72,7 @@ void interruptHandler(){
         copyState((state_t *) BIOSDATAPAGE, currentProc->p_s);
 
         setSpecificQuantum (currentProc, leftoverQTime);
-    }
-    else{
+    }else{
         /*if there is no current, then we have a problem!*/
 
         HALT();
@@ -77,7 +80,10 @@ void interruptHandler(){
 
 }
 
-/**Put the process to sleep b/c quantum over
+/**
+ * The current process's time is up so this method checks if there
+ * is a currrent process then it 
+ * stops the clock and puts that process back on the readyQ.
 **/
 void localInterruptTimer(cpu_t stopTime){
     if(currentProc == NULL){
@@ -92,7 +98,11 @@ void localInterruptTimer(cpu_t stopTime){
     scheduleNext();
 }
 
-/** Pseudoclock is done! DING DONG BITCH
+/** 
+ * This method is called when the pseudo clock
+ * has finished and it sys4 everything that we sys7 on the clock.
+ * It then resets clock to 0 and calls the scheduler and loads
+ * the next process.
  * */
 void pseudoClockInterrupt(){
     pcb_t *removedPcbs;
@@ -100,6 +110,7 @@ void pseudoClockInterrupt(){
     LDIT(1000);
     
     removedPcbs = removeBlocked(&(devSema4[DEVPERINT+DEVCNT]));
+
     while (removedPcbs !=NULL){
         insertProcQ(&readyQ, removedPcbs);
         softBlockCnt --;
@@ -116,14 +127,18 @@ void pseudoClockInterrupt(){
     
 }
 
-/** see what device number is calling this interrupt
+/** 
+ * This method looks at the which device is called (Bus register)
+ * It then finds the bit number for the device. (with priority: 1 has highest
+ * 7 has the lowest) It then saves the status code and acknowledges the interrupt
+ * (Writes acknowledgement in the device register)
  * */
 void deviceInterrupt(int deviceType){
     int deviceNumber;
     int deviceSema4Num;
     unsigned int devStatus;
     unsigned int bitMap;
-    devregarea_t *deviceRegister; /*ask about if this is volatile in class (cite POPs)*/ 
+    volatile devregarea_t *deviceRegister; /*ask about if this is volatile in class (cite POPs)*/ 
 
     deviceRegister = (devregarea_t *)RAMBASEADDR;
     bitMap = deviceRegister->interrupt_dev[(deviceType - DISKINT)]; /*ask about this monday*/
@@ -143,7 +158,6 @@ void deviceInterrupt(int deviceType){
  * insertProcQ(readyQ, newPcb);
  * newPcb status = ready;
  * LDST(saved exception state);
- * }
  * */
 
 /**
@@ -156,7 +170,6 @@ void deviceInterrupt(int deviceType){
  * insertProcQ(readyQ, currentProc);
  * Change currentProc state to ready state
  * scheduler();
- * }
  * */
 
 /**
@@ -166,5 +179,4 @@ void deviceInterrupt(int deviceType){
  * We sys4 everything that SYS7 on the pseudoClock
  * reset pseudoClock to 0
  * LDST(currentProc) (could also be a wait, so make sure to include this is scheduler)
- * }
  * */

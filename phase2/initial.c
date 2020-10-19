@@ -122,7 +122,7 @@ void generalExceptHandler(){
 }
 
 /**
- * Method comment here
+ * This method gets the top of the RAM.
  * */
 memaddr getRAMTOP(memaddr t){
     t = ((* ((int *) RAMBASEADDR))+ (* ((int *) RAMBASESIZE)));
