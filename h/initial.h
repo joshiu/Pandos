@@ -12,7 +12,6 @@
 #include "../h/types.h"
 
 extern int main();
-extern memaddr getRAMTOP();
 extern void generalExceptHandler();
 
 /* GLOBAL VARIABLES*/

@@ -88,4 +88,10 @@
 /* Macro to read the TOD clock */
 #define STCK(T) ((T) = ((* ((cpu_t *) TODLOADDR)) / (* ((cpu_t *) TIMESCALEADDR))))
 
+/**
+ * This macro assumes that both RAMBASEADDR and RAMBASESIZE are
+ * both defined with the appropriate addresses (from the beginning of the Bus Register area.
+ * */
+#define RAMTOP(T) ((T) = ((* ((int *) RAMBASEADDR)) + (* ((int *) RAMBASESIZE))))
+
 #endif

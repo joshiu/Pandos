@@ -72,7 +72,7 @@ int main(){
 
     LDIT(100); /*load interval timer with 100 ms*/
     /*Need to get top of RAM address*/
-    TopRamAdd = getRAMTOP(TopRamAdd);
+    TopRamAdd = RAMTOP(TopRamAdd);
     newPcb = allocPcb();
     if(newPcb!=NULL){
         newPcb->p_s.s_pc = (memaddr) test;
@@ -119,12 +119,4 @@ void generalExceptHandler(){
     }
     /*if all else fails*/
     programTrap();
-}
-
-/**
- * This method gets the top of the RAM.
- * */
-memaddr getRAMTOP(memaddr t){
-    t = ((* ((int *) RAMBASEADDR))+ (* ((int *) RAMBASESIZE)));
-    return t;
 }
