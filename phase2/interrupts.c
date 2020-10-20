@@ -138,8 +138,8 @@ void deviceInterrupt(int deviceType){
     int deviceSema4Num;
     unsigned int devStatus;
     unsigned int bitMap;
-    volatile devregarea_t *deviceRegister; /*ask about if this is volatile in class (cite POPs)*/ 
-
+    volatile devregarea_t *deviceRegister; /
+    
     deviceRegister = (devregarea_t *)RAMBASEADDR;
     bitMap = deviceRegister->interrupt_dev[(deviceType - DISKINT)]; /*ask about this monday*/
     
