@@ -205,6 +205,26 @@ void SYS4(){
  * Current Process from the “running” state to a “blocked”state.
  * */
 int SYS5(){
+    /*local variables*/
+    int lineNum;
+    int deviceNum;
+    /*end of local variables*/
+    /* find the line num and device num*/
+    /*lineNum = currentProc-> deviceNum = currentProc->*/
+    /*convert device num to sema4 number*/
+    /*if the interrupt is on line 7, then add dev num to devperint*/
+    if(deviceNum = 7){
+        deviceNum = deviceNum + DEVPERINT;
+        /*reduce number of devSem by 1*/
+        deviceNum--;
+        } 
+    /*if no interrupt, then softblock++, block, do time shit, and invoke scheduler*/
+    /*if it has occur, then load dev # to v0 and ldst*/
+    insertBlocked(& currentProc->p_semAdd, currentProc); 
+    return;
+    }
+
+int SYS5(){
     /* find the line num and device num*/
     /*convert device num to sema4 number*/
     /*if the interrupt is on line 7, then add dev num to devperint*/
