@@ -224,17 +224,6 @@ int SYS5(){
     return;
     }
 
-int SYS5(){
-    /* find the line num and device num*/
-    /*convert device num to sema4 number*/
-    /*if the interrupt is on line 7, then add dev num to devperint*/
-    /*reduce number of devSem by 1*/
-    /*if no interrupt, then softblock++, block, do time shit, and invoke scheduler*/
-    /*if it has occur, then load dev # to v0 and ldst*/
-
-    insertBlocked(& currentProc->p_semAdd, currentProc);
-    return; /* what do we return? this is also incorrect so come back to later */
-}
 
 /**
  * When requested, this service requests the Nucleus records 
