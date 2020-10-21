@@ -35,13 +35,14 @@ void scheduleNext(){
     
     /* */
     if(readyQ != NULL){
-        newProc = removeProcQ(readyQ);
+
+        newProc = removeProcQ(&readyQ);
 
         timeSlice = 500; /*make this a constant*/
         STCK(startTime); /*ecord new timeslice as starttime*/
         setTIMER(timeSlice); /*set the quantum*/
-
-        loadState(newProc); /*not really sure why this is angry*/
+        
+        loadState(newProc); 
     }
 
     /*if we have no processes then we are done!*/
@@ -58,6 +59,7 @@ void scheduleNext(){
         /*turn on current interrupt bit, masking off, and te bit on*/ 
 
         setSTATUS(waitState);
+
         WAIT();
     }
     

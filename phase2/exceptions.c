@@ -41,7 +41,7 @@ void syscall(){
     copyState(procState, &(currentProc->p_s));    
 
     /*we are in kernel mode*/    
-    currentProc -> p_s.s_pc = currentProc->p_s.s_pc +4;
+    currentProc -> p_s.s_pc +=4;
     
     if (sysNum == 1){
         int returnInt;

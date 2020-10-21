@@ -148,7 +148,7 @@ void deviceInterrupt(int lineNum){
     bitMap = deviceRegister->interrupt_dev[(lineNum - DISKINT)];
 
     /*if the bitMap has nothing in it, something is wrong*/
-    if (bitMap == NULL){
+    if (&(bitMap) == NULL){
         PANIC();
     }
 

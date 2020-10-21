@@ -38,7 +38,9 @@ cpu_t timeSlice; /*amount of time until the time slice*/
 
 
 /*--------------------------------------------------------------------------------------------------*/
-
+void debug(int a){
+    return;
+}
 
 /**
  * This method is only executed once. It performs the Nucleus initialization to set up the system.
