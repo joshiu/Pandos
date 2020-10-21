@@ -192,7 +192,8 @@ void deviceInterrupt(int lineNum){
     deviceSema4Num = ((lineNum - DISKINT) * DEVPERINT) + deviceNumber;
     
     if(lineNum == TERMINT){
-        /*do something, see notes; don't acknowledge*/
+        /*set the status to either receive or transmit*/
+        devStatus = terminalInterrupt(&deviceSema4Num);
     }
     else{
         devStatus = (deviceRegister->devreg[deviceSema4Num]).d_status;/*copy status*/
@@ -218,4 +219,25 @@ void deviceInterrupt(int lineNum){
         scheduleNext();
     }
 
+}
+
+int terminalInterrupts(int *deviceSema4Num){
+    /*return device status after distinguishing between transmit and receive case*/
+    unsigned int statusRecord;
+    volatile devregarea_t *devRegisters;
+
+    devRegisters = (devregarea_t *) RAMBASEADDR;
+
+    statusRecord = devRegisters->devreg[(*deviceSema4Num)].t_transm_status;
+    if((statusRecord & 0x0F) != READY){
+        devRegisters->devreg[(*deviceSema4Num)].t_transm_command = ACK;
+    }
+    else{
+        statusRecord = devRegisters->devreg[(*deviceSema4Num)].t_recv_status;
+        devRegisters->devreg[(*deviceSema4Num)].t_recv_command = ACK;
+        
+        *deviceSema4Num += DEVPERINT;
+    }
+
+    return(statusRecord);
 }
