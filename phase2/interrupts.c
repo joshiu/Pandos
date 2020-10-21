@@ -19,6 +19,7 @@
 HIDDEN void localTimerInterrupt(cpu_t time);
 HIDDEN void pseudoClockInterrupt();
 HIDDEN void deviceInterrupt(int deviceType);
+HIDDEN int terminalInterrupt(int *deviceSema4Num);
 
 /**
  * This method is used to determine the appropriate action
@@ -209,7 +210,7 @@ void deviceInterrupt(int lineNum){
         if(pseudoSys4 != NULL){
             pseudoSys4->p_s.s_v0 = devStatus;
             insertProcQ(&readyQ, pseudoSys4);
-            softBlockCnt --;
+            softBlockCnt -=1;
             }
     }else{
         saveState[deviceSema4Num] = devStatus;/*save the state because there's no where else*/     
@@ -221,7 +222,7 @@ void deviceInterrupt(int lineNum){
 
 }
 
-int terminalInterrupts(int *deviceSema4Num){
+int terminalInterrupt(int *deviceSema4Num){
     /*return device status after distinguishing between transmit and receive case*/
     unsigned int statusRecord;
     volatile devregarea_t *devRegisters;

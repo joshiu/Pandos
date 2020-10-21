@@ -173,7 +173,6 @@ void SYS3 (){
         insertBlocked(&semAddr, currentProc);
         currentProc = NULL;
         scheduleNext();
-        return;
     }
     loadState(currentProc);
 }
@@ -207,22 +206,38 @@ int SYS5(){
     /*local variables*/
     int lineNum;
     int deviceNum;
+    cpu_t endTime;
     /*end of local variables*/
     
     /* find the line num and device num*/
-    /*lineNum = currentProc-> deviceNum = currentProc->*/
-    /*convert device num to sema4 number*/
-    /*if the interrupt is on line 7, then add dev num to devperint*/
-    if(deviceNum == 7){
-        deviceNum = deviceNum + DEVPERINT;
-        /*reduce number of devSem by 1*/
-        deviceNum--;
-        } 
-    /*if no interrupt, then softblock++, block, do time shit, and invoke scheduler*/
-    /*if it has occur, then load dev # to v0 and ldst*/
-    insertBlocked(&(currentProc->p_semAdd), currentProc); 
-    return;
+    lineNum = currentProc->p_s.s_a1;
+    deviceNum = currentProc ->p_s.s_a2;
+
+    deviceNum += ((lineNum-DISKINT)*DEVPERINT); /*find which device we in*/
+
+    /*if the interrupt is on line 7, then correct deviceNum*/
+    if((deviceNum == TERMINT) && (currentProc->p_s.s_a3)){
+        deviceNum = deviceNum + DEVPERINT; 
+    } 
+
+    devSema4[deviceNum] -=1;
+    
+    /*no interrupt happened, so block process and move on*/
+    if(devSema4[deviceNum]<0){
+        softBlockCnt +=1;
+        endTime = timeCalc(endTime);
+        currentProc->p_time = endTime;
+        insertBlocked(&deviceNum, currentProc);
+        currentProc = NULL;
+        scheduleNext();
     }
+    
+    /*so interrupt happened and ACK-ed, so load savedState and return*/
+    else{
+        currentProc->p_s.s_v0 = saveState[deviceNum];
+        scheduleNext();
+    }
+}
 
 
 /**
@@ -299,8 +314,7 @@ void passUpOrDie(int exceptNum){
     LDCXT(currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr,
     currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_status,
     currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_pc);
-    /*ask mikey about these*/
-
+    
 }
 
 /*********************************** HELPER METHODS *********************************/
