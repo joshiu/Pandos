@@ -33,6 +33,7 @@ void SYSCALL(){
 
     /*are we in kernel mode?*/
     if (sysNum >= 1 && sysNum <= 8 && (procState->s_status & 0x00000008) == 1){
+
         /*if the program is not in kernel, then make the cause a not privileged instruction*/
         procState->s_cause = (procState->s_cause & 0xFFFFF00) | (10<<2); /* what are we doing here?*/
         programTrap();
@@ -43,44 +44,43 @@ void SYSCALL(){
     /*we are in kernel mode*/    
     currentProc -> p_s.s_pc = currentProc->p_s.s_pc +4;
     
-    if (sysNum == 1)
-    {
+    if (sysNum == 1){
         int returnInt = SYS1();
         currentProc->p_s.s_v1 = returnInt;
         loadState(currentProc);
     }
-    if (sysNum == 2)
-    {
+
+    if (sysNum == 2){
         SYS2(currentProc);
 
         scheduleNext(); /* don't return control after a terminate*/
     }
-    if (sysNum == 3)
-    {
+
+    if (sysNum == 3){
         SYS3();
     }
-    if (sysNum == 4)
-    {
+
+    if (sysNum == 4){
         SYS4();
         loadState(currentProc);
     }
-    if (sysNum == 5)
-    {
+
+    if (sysNum == 5){
         int IOStatus = SYS5();
         scheduleNext(); /*we don't return control after a block*/
     }
-    if (sysNum == 6)
-    {
+
+    if (sysNum == 6){
         cpu_t timeReturn = SYS6();
         currentProc->p_s.s_v0 = timeReturn;
         loadState(currentProc);
     }
-    if (sysNum == 7)
-    {
+
+    if (sysNum == 7){
         SYS7();
     }
-    if (sysNum == 8)
-    {
+
+    if (sysNum == 8){
         int info = SYS8();
         currentProc->p_s.s_v0 = info;
         loadState(currentProc);
@@ -209,6 +209,7 @@ int SYS5(){
     int lineNum;
     int deviceNum;
     /*end of local variables*/
+    
     /* find the line num and device num*/
     /*lineNum = currentProc-> deviceNum = currentProc->*/
     /*convert device num to sema4 number*/

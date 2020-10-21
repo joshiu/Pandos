@@ -20,7 +20,6 @@
 
 extern void uTLB_RefillHandler(); /*Address of the TLB Refill Event Handler*/
 extern void test(); /*sets up the nucleus calls that are to be tested*/
-
 HIDDEN void generalExceptHandler(); /* method for handling exceptions*/
 
 /* GLOBAL VARIABLES */
@@ -36,6 +35,7 @@ cpu_t timeSlice; /*amount of time until the time slice*/
 
 #define clockSem devSema4[DEVCNT+DEVPERINT];
 /* END GLOBAL VARIABLES*/
+
 
 /*--------------------------------------------------------------------------------------------------*/
 
@@ -65,15 +65,17 @@ int main(){
     currentProc = NULL;
 
     /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
-    devSema4[DEVCNT+DEVPERINT] = 0; /* why is this wrong?*/
+    devSema4[DEVCNT+DEVPERINT] = 0;
     for(counter = 0; counter < (DEVCNT+DEVPERINT); counter ++){
         devSema4[counter] = 0;
     }
 
     LDIT(100); /*load interval timer with 100 ms*/
+
     /*Need to get top of RAM address*/
     TopRamAdd = RAMTOP(TopRamAdd);
     newPcb = allocPcb();
+    
     if(newPcb!=NULL){
         newPcb->p_s.s_pc = (memaddr) test;
         newPcb -> p_s.s_t9 = (memaddr) test;

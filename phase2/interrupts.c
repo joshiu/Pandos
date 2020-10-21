@@ -28,61 +28,51 @@ HIDDEN void deviceInterrupt(int deviceType);
  *  if line 2, it's pseudo clock interrupt
  *  if 3-7, then device interrupt 
  * */
-void interruptHandler()
-{
+void interruptHandler(){
     cpu_t stopTime;
     cpu_t leftoverQTime;
 
     STCK(stopTime);
     leftoverQTime = getTIMER();
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0)
-    {
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0){
         /*local timer interrupt*/
         localTimerInterrupt(stopTime);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0)
-    {
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0){
         /*timer interrupt*/
         pseudoClockInterrupt();
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000800) != 0)
-    {
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000800) != 0){
         /*disk interrupt*/
         deviceInterrupt(DISKINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00001000) != 0)
-    { /*flash interrupt*/
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00001000) != 0){ /*flash interrupt*/
         deviceInterrupt(FLASHINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0)
-    { /*print interrupt*/
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0){ /*print interrupt*/
         deviceInterrupt(PRNTINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00008000) != 0)
-    {
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00008000) != 0){
         /*terminal interrupt*/
         deviceInterrupt(TERMINT);
     }
 
-    if (currentProc != NULL)
-    {
+    if (currentProc != NULL){
 
         currentProc->p_time = currentProc->p_time + (stopTime - startTime);
 
         copyState((state_t *)BIOSDATAPAGE, currentProc->p_s);
 
         setSpecificQuantum(currentProc, leftoverQTime);
-    }
-    else
-    {
-        /*if there is no current, then we have a problem!*/
+    }else{
 
+        /*if there is no current, then we have a problem!*/
         HALT();
     }
 }
@@ -92,10 +82,9 @@ void interruptHandler()
  * is a currrent process then it 
  * stops the clock and puts that process back on the readyQ.
 **/
-void localInterruptTimer(cpu_t stopTime)
-{
-    if (currentProc == NULL)
-    {
+void localInterruptTimer(cpu_t stopTime){
+
+    if (currentProc == NULL){
         PANIC();
         return;
     }
@@ -113,8 +102,7 @@ void localInterruptTimer(cpu_t stopTime)
  * It then resets clock to 0 and calls the scheduler and loads
  * the next process.
  * */
-void pseudoClockInterrupt()
-{
+void pseudoClockInterrupt(){
     pcb_t *removedPcbs;
 
     LDIT(1000);
@@ -122,8 +110,7 @@ void pseudoClockInterrupt()
     removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
 
     
-    while (removedPcbs != NULL)
-    {
+    while (removedPcbs != NULL){
         insertProcQ(&readyQ, removedPcbs);
         softBlockCnt--;
         removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
@@ -146,8 +133,8 @@ void pseudoClockInterrupt()
  * look at everything in relation to DISKINT 
  * (we make DISKINT our "0th" line and continue from there)
  * */
-void deviceInterrupt(int lineNum)
-{
+void deviceInterrupt(int lineNum){
+
     /*Local Variables*/
     int deviceNumber;
     int deviceSema4Num;
@@ -168,24 +155,31 @@ void deviceInterrupt(int lineNum)
     if ((bitMap & 0x00000001) != 0){
         deviceNumber = 0;
     }
+
     else if ((bitMap & 0x00000002) != 0){
         deviceNumber = 1;
     }
+
     else if ((bitMap & 0x00000004) != 0){
         deviceNumber = 2;
     }
+
     else if ((bitMap & 0x00000008) != 0){
         deviceNumber = 3;
     }
+
     else if ((bitMap & 0x00000010) != 0){
         deviceNumber = 4;
     }
+
     else if ((bitMap & 0x00000020) != 0){
         deviceNumber = 5;
     }
+
     else if ((bitMap & 0x00000040) != 0){
         deviceNumber = 6;
     }
+
     else if ((bitMap & 0x00000080) != 0){
         deviceNumber = 7;
     }
@@ -210,13 +204,13 @@ void deviceInterrupt(int lineNum)
     /*we are done waiting for IO, so pop the pcb off*/
     if(devSema4[deviceSema4Num] <= 0){
         pseudoSys4 = removeBlocked(&(devSema4[deviceSema4Num]));
+        
         if(pseudoSys4 != NULL){
             pseudoSys4->p_s.s_v0 = devStatus;
             insertProcQ(&readyQ, pseudoSys4);
             softBlockCnt --;
             }
-    }
-    else{
+    }else{
         saveState[deviceSema4Num] = devStatus;/*save the state because there's no where else*/     
     }
 
