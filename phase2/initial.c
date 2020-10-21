@@ -52,9 +52,9 @@ int main(){
     passUpVec = (passupvector_t *) PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
 
     passUpVec-> tlb_refll_handler = (memaddr) uTLB_RefillHandler;
-    passUpVec -> tlb_refll_stackPtr = 0x20001000;
+    passUpVec -> tlb_refll_stackPtr = STKPTR;
     passUpVec-> exception_handler = (memaddr) generalExceptHandler; /*have not created this yet*/
-    passUpVec -> exception_stackPtr = 0x200010000;
+    passUpVec -> exception_stackPtr = STKPTR;
 
     initPcbs();
     initASL();
@@ -73,13 +73,13 @@ int main(){
     LDIT(100); /*load interval timer with 100 ms*/
 
     /*Need to get top of RAM address*/
-    TopRamAdd = RAMTOP(TopRamAdd);
+    RAMTOP(TopRamAdd);
     newPcb = allocPcb();
     
     if(newPcb!=NULL){
         newPcb->p_s.s_pc = (memaddr) test;
         newPcb -> p_s.s_t9 = (memaddr) test;
-        newPcb->p_s.s_status = 0x00000000 | 0x00000004|0x0000FF00|0x08000000; 
+        newPcb->p_s.s_status = ALLOFF | 0x00000004|0x0000FF00|0x08000000; 
         newPcb->p_s.s_sp = TopRamAdd;
         /* figure out how to turn on timer, interrupts, and keep kernel mode*/
         /* here, we turn all bits to 0, then turn on the previous interrupt enable it
@@ -87,7 +87,7 @@ int main(){
         /*interrupt mask needs to be turned off(by changing to 1), so when we enable interrupts
          we need to disable the mask when we enable interrupts*/
 
-        processCnt ++;
+        processCnt += 1;
         /*set p_time and p_supportStruct in pcb.c*/
 
         insertProcQ(&readyQ, newPcb);
@@ -111,7 +111,7 @@ void generalExceptHandler(){
     causeNum = (int) (programState->s_cause & 0x0000007C) >> 2; 
     /*we need to look at cause reg, then turn off all but bits 2-6 (from the back), then shift right 2*/
     if(causeNum == 8){
-        SYSCALL();
+        syscall();
     }
     if(causeNum == 0){
         interruptHandler();

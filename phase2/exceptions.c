@@ -22,10 +22,9 @@
  * the general purpose registers (a0-a3) and these values will
  * call the appropriate SYSCALL (1-8)
  * */
-void SYSCALL(){
+void syscall(){
     int sysNum;
     state_t *procState;
-    cpu_t currentTime;
     int i; /*counter for copying states*/
 
     procState = (state_t *)BIOSDATAPAGE;
@@ -45,7 +44,8 @@ void SYSCALL(){
     currentProc -> p_s.s_pc = currentProc->p_s.s_pc +4;
     
     if (sysNum == 1){
-        int returnInt = SYS1();
+        int returnInt;
+        returnInt = SYS1();
         currentProc->p_s.s_v1 = returnInt;
         loadState(currentProc);
     }
@@ -94,14 +94,13 @@ void SYSCALL(){
  * When request this service creates a new process
  * */
 int SYS1(){
-    int i;
     pcb_t *newPcb; 
     support_t *supportData;
 
     newPcb = allocPcb();
 
     if(newPcb == NULL){
-        return(-1); /*put thiis in v0 */
+        return(FAILED); /*put thiis in v0 */
     }
     processCnt ++;
 
@@ -116,7 +115,7 @@ int SYS1(){
     insertProcQ(&readyQ, newPcb);
     insertChild(&currentProc, newPcb);
     /*time is set in pcb.c*/
-    return 0; /*put this in v0*/
+    return (OK); /*put this in v0*/
 }
 
 
@@ -169,7 +168,7 @@ void SYS3 (){
     *semAddr --;
 
     if(*semAddr < 0){
-        endTime = adjustTime(endTime);
+        endTime = timeCalc(endTime);
         currentProc->p_time = endTime;
         insertBlocked(&semAddr, currentProc);
         currentProc = NULL;
@@ -214,14 +213,14 @@ int SYS5(){
     /*lineNum = currentProc-> deviceNum = currentProc->*/
     /*convert device num to sema4 number*/
     /*if the interrupt is on line 7, then add dev num to devperint*/
-    if(deviceNum = 7){
+    if(deviceNum == 7){
         deviceNum = deviceNum + DEVPERINT;
         /*reduce number of devSem by 1*/
         deviceNum--;
         } 
     /*if no interrupt, then softblock++, block, do time shit, and invoke scheduler*/
     /*if it has occur, then load dev # to v0 and ldst*/
-    insertBlocked(& currentProc->p_semAdd, currentProc); 
+    insertBlocked(&(currentProc->p_semAdd), currentProc); 
     return;
     }
 
@@ -292,11 +291,16 @@ void TLBExceptHandler(){
  * is not NULL. Otherwise it will call SYS2 and terminate it. ("die")
  * */
 void passUpOrDie(int exceptNum){
-    if (currentProc->p_supportStruct == NULL)
-    {
+    if (currentProc->p_supportStruct == NULL){
         SYS2(currentProc);
-        /*use LDST*/
+        scheduleNext();
     }
+    copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
+    LDCXT(currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr,
+    currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_status,
+    currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_pc);
+    /*ask mikey about these*/
+
 }
 
 /*********************************** HELPER METHODS *********************************/

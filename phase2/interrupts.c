@@ -82,7 +82,7 @@ void interruptHandler(){
  * is a currrent process then it 
  * stops the clock and puts that process back on the readyQ.
 **/
-void localInterruptTimer(cpu_t stopTime){
+void localTimerInterrupt(cpu_t stopTime){
 
     if (currentProc == NULL){
         PANIC();

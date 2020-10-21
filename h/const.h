@@ -14,6 +14,8 @@
 #define MAXPROC           20
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
+#define ALLOFF            0x00000000
+#define STKPTR      0x20001000
 
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000
@@ -62,6 +64,10 @@
 /* device common COMMAND codes */
 #define RESET			    0
 #define ACK				    1
+#define ON                  1
+#define OFF                 0
+#define FAILED              -1
+#define OK                  1
 
 /* Memory related constants */
 #define KSEG0           0x00000000

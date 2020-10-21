@@ -13,7 +13,7 @@
 extern void programTrap();
 extern void TLBExceptHandler();
 extern void passUpOrDie();
-extern void SYSCALL();
+extern void syscall();
 extern int SYS1();
 extern void SYS2();
 extern void SYS3();
