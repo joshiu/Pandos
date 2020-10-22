@@ -19,7 +19,7 @@
  * Then we load the state of the current process and let it run
  * */
 void loadState(pcb_t *process){
-
+    debug(404);
     currentProc = process;
     LDST(&(process->p_s));
 }
@@ -38,23 +38,26 @@ void scheduleNext(){
     
     /* insert comment here*/
     if(readyQ != NULL){
-
+        debug(100);
         newProc = removeProcQ(&readyQ);
 
-        timeSlice = 500; /*make this a constant*/
-        STCK(startTime); /*ecord new timeslice as starttime*/
+        timeSlice = STANQUANTUM;
+        STCK(startTime); /*record new process' starttime*/
         setTIMER(timeSlice); /*set the quantum*/
-        
+
+        debug(101);
         loadState(newProc); 
     }
 
     /*if we have no processes then we are done!*/
     if(processCnt == 0){
+        debug(999);
         HALT(); /* we done! */
     }
 
     /*insert comment here*/
     if(processCnt > 0 && softBlockCnt > 0){
+        debug(0);
         currentProc = NULL;
         setTIMER(MAXINT); /*set timer to infinity*/
 
@@ -62,7 +65,7 @@ void scheduleNext(){
         /*turn on current interrupt bit, masking off, and te bit on*/ 
 
         setSTATUS(waitState);
-
+        debug(111);
         WAIT();
     }
     

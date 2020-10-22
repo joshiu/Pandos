@@ -38,7 +38,6 @@ int devSema4[DEVCNT+DEVPERINT+1]; /*array of device semaphores*/
 cpu_t startTime; /*beginning of a time unit*/
 cpu_t timeSlice; /*amount of time until the time slice*/
 
-#define clockSem devSema4[DEVCNT+DEVPERINT];
 /* END GLOBAL VARIABLES*/
 
 
@@ -51,12 +50,13 @@ void debug(int a){
  * This method is only executed once. It performs the Nucleus initialization to set up the system.
  * */
 int main(){
+    debug(10);
 
     /*local variables*/
     passupvector_t *passUpVec;
     int counter;
     pcb_t *newPcb;
-    memaddr TopRamAdd;
+    memaddr topRamAdd;
     /*end of local variables*/
 
     passUpVec = (passupvector_t *) PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
@@ -81,17 +81,17 @@ int main(){
         devSema4[counter] = 0;
     }
 
-    LDIT(100); /*load interval timer with 100 ms*/
+    LDIT(STANPSEUDOCLOCK); /*load interval timer with 1000 ms*/
 
     /*Need to get top of RAM address*/
-    RAMTOP(TopRamAdd);
+    RAMTOP(topRamAdd);
     newPcb = allocPcb();
     
     if(newPcb!=NULL){
         newPcb->p_s.s_pc = (memaddr) test;
         newPcb -> p_s.s_t9 = (memaddr) test;
-        newPcb->p_s.s_status = ALLOFF | 0x00000004|0x0000FF00|0x08000000; 
-        newPcb->p_s.s_sp = TopRamAdd;
+        newPcb->p_s.s_status = (ALLOFF | 0x00000004|0x0000FF00|0x08000000); 
+        newPcb->p_s.s_sp = topRamAdd;
         /* figure out how to turn on timer, interrupts, and keep kernel mode*/
         /* here, we turn all bits to 0, then turn on the previous interrupt enable it
         then turn on interrupt mask and timer enable bit*/
@@ -102,7 +102,7 @@ int main(){
         /*set p_time and p_supportStruct in pcb.c*/
 
         insertProcQ(&readyQ, newPcb);
-
+        debug(1);
         scheduleNext();
 
     }else{
@@ -124,22 +124,26 @@ void generalExceptHandler(){
     /*end of local variables*/
 
     programState = (state_t *) BIOSDATAPAGE;
-    causeNum = (int) (programState->s_cause & 0x0000007C) >> 2; 
-
+    causeNum = (int) ((programState->s_cause & 0x0000007C) >> 2); /*shift wrong?*/
+    debug(causeNum);
     /*we need to look at cause reg, then turn off all but bits 2-6 (from the back), then shift right 2*/
     if(causeNum == 8){
+        debug(888);
         syscall();
     }
 
     if(causeNum == 0){
+        debug(100);
         interruptHandler();
     }
 
     if(causeNum <= 3 && causeNum >0){
+        debug(321);
         TLBExceptHandler();
     }
 
     /*if all else fails*/
+    debug(66669);
     programTrap();
 
 }

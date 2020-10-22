@@ -23,6 +23,8 @@
 #define TODLOADDR		  0x1000001C
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
+#define STANQUANTUM     5000
+#define STANPSEUDOCLOCK 10000
 
 /* utility constants */
 #define	TRUE			    1

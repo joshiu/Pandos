@@ -347,7 +347,7 @@ void passUpOrDie(int exceptNum){ /*conflicting types*/
 
     /*insert comment here*/
     if (currentProc->p_supportStruct == NULL){
-        SYS2(currentProc);
+        sys_2(currentProc);
         scheduleNext();
     }
 

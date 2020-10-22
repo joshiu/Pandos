@@ -41,6 +41,7 @@ void interruptHandler(){
 
     STCK(stopTime);
     leftoverQTime = getTIMER();
+    debug(200);
 
     if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0){
         /*local timer interrupt*/
@@ -49,6 +50,7 @@ void interruptHandler(){
 
     if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0){
         /*timer interrupt*/
+        debug(202);
         pseudoClockInterrupt();
     }
 
@@ -61,7 +63,8 @@ void interruptHandler(){
         deviceInterrupt(FLASHINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0){ /*print interrupt*/
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0){ 
+        /*print interrupt*/
         deviceInterrupt(PRNTINT);
     }
 
@@ -69,13 +72,15 @@ void interruptHandler(){
         /*terminal interrupt*/
         deviceInterrupt(TERMINT);
     }
-
+    debug(203);
     if (currentProc != NULL){
+        debug(204);
 
         currentProc->p_time = currentProc->p_time + (stopTime - startTime);
-
+        debug(205);
         copyState((state_t *)BIOSDATAPAGE, currentProc->p_s);
 
+        debug(206);
         setSpecificQuantum(currentProc, leftoverQTime);
 
     }else{
@@ -111,15 +116,17 @@ void localTimerInterrupt(cpu_t stopTime){
  * the next process.
  * */
 void pseudoClockInterrupt(){
+    debug(2021);
 
     pcb_t *removedPcbs; /*local variable*/
 
-    LDIT(1000);
+    LDIT(STANPSEUDOCLOCK);
 
     removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
 
     
     while (removedPcbs != NULL){
+        debug(2022);
         insertProcQ(&readyQ, removedPcbs);
         softBlockCnt--;
         removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
@@ -128,9 +135,10 @@ void pseudoClockInterrupt(){
     devSema4[DEVPERINT + DEVCNT] = 0;
     
     if (currentProc == NULL){
+        debug(2023);
         scheduleNext();
     }
-
+    debug(2024);
 }
 
 /** 
