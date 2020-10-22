@@ -13,7 +13,4 @@
 
 extern void interruptHandler();
 
-/*To do: add functions here after you do more of .c file*/
-
-
 #endif

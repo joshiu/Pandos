@@ -15,11 +15,14 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+
 /************ FILE SPECIFIC METHODS *********************/
 HIDDEN void localTimerInterrupt(cpu_t time);
 HIDDEN void pseudoClockInterrupt();
 HIDDEN void deviceInterrupt(int deviceType);
 HIDDEN int terminalInterrupt(int *deviceSema4Num);
+
+/* end of file specific methods */
 
 /**
  * This method is used to determine the appropriate action
@@ -30,8 +33,11 @@ HIDDEN int terminalInterrupt(int *deviceSema4Num);
  *  if 3-7, then device interrupt 
  * */
 void interruptHandler(){
+
+    /*local variables*/
     cpu_t stopTime;
     cpu_t leftoverQTime;
+    /*end of local variables*/
 
     STCK(stopTime);
     leftoverQTime = getTIMER();
@@ -71,6 +77,7 @@ void interruptHandler(){
         copyState((state_t *)BIOSDATAPAGE, currentProc->p_s);
 
         setSpecificQuantum(currentProc, leftoverQTime);
+
     }else{
 
         /*if there is no current, then we have a problem!*/
@@ -104,7 +111,8 @@ void localTimerInterrupt(cpu_t stopTime){
  * the next process.
  * */
 void pseudoClockInterrupt(){
-    pcb_t *removedPcbs;
+
+    pcb_t *removedPcbs; /*local variable*/
 
     LDIT(1000);
 
@@ -195,10 +203,12 @@ void deviceInterrupt(int lineNum){
     if(lineNum == TERMINT){
         /*set the status to either receive or transmit*/
         devStatus = terminalInterrupt(&deviceSema4Num);
-    }
-    else{
+
+    }else{
+
         devStatus = (deviceRegister->devreg[deviceSema4Num]).d_status;/*copy status*/
         (deviceRegister->devreg[deviceSema4Num]).d_command = ACK; /*ACK interrupt*/
+
     }
 
     devSema4[deviceSema4Num] ++;
@@ -212,6 +222,7 @@ void deviceInterrupt(int lineNum){
             insertProcQ(&readyQ, pseudoSys4);
             softBlockCnt -=1;
             }
+
     }else{
         saveState[deviceSema4Num] = devStatus;/*save the state because there's no where else*/     
     }
@@ -222,18 +233,27 @@ void deviceInterrupt(int lineNum){
 
 }
 
+
+/**
+ * Method comment here
+ * */
 int terminalInterrupt(int *deviceSema4Num){
     /*return device status after distinguishing between transmit and receive case*/
+
+    /*local variables*/
     unsigned int statusRecord;
     volatile devregarea_t *devRegisters;
+    /*end of local variables*/
 
     devRegisters = (devregarea_t *) RAMBASEADDR;
 
     statusRecord = devRegisters->devreg[(*deviceSema4Num)].t_transm_status;
+
     if((statusRecord & 0x0F) != READY){
         devRegisters->devreg[(*deviceSema4Num)].t_transm_command = ACK;
-    }
-    else{
+
+    }else{
+        
         statusRecord = devRegisters->devreg[(*deviceSema4Num)].t_recv_status;
         devRegisters->devreg[(*deviceSema4Num)].t_recv_command = ACK;
         

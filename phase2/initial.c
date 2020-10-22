@@ -18,11 +18,16 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+
+/************ FILE SPECIFIC METHODS *********************/
+
 extern void uTLB_RefillHandler(); /*Address of the TLB Refill Event Handler*/
 extern void test(); /*sets up the nucleus calls that are to be tested*/
 HIDDEN void generalExceptHandler(); /* method for handling exceptions*/
 
-/* GLOBAL VARIABLES */
+/*end of file specific methods*/
+
+/** GLOBAL VARIABLES **/
 
 unsigned int saveState[DEVCNT+DEVPERINT]; /* this is where we save the state when IO*/
 int processCnt; /*number of pcbs that have been allocated*/
@@ -37,7 +42,7 @@ cpu_t timeSlice; /*amount of time until the time slice*/
 /* END GLOBAL VARIABLES*/
 
 
-/*--------------------------------------------------------------------------------------------------*/
+/*--------------------------Debug Method-------------------------------------------------------------------*/
 void debug(int a){
     return;
 }
@@ -46,10 +51,13 @@ void debug(int a){
  * This method is only executed once. It performs the Nucleus initialization to set up the system.
  * */
 int main(){
+
+    /*local variables*/
     passupvector_t *passUpVec;
     int counter;
     pcb_t *newPcb;
     memaddr TopRamAdd;
+    /*end of local variables*/
 
     passUpVec = (passupvector_t *) PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
 
@@ -68,6 +76,7 @@ int main(){
 
     /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
     devSema4[DEVCNT+DEVPERINT] = 0;
+
     for(counter = 0; counter < (DEVCNT+DEVPERINT); counter ++){
         devSema4[counter] = 0;
     }
@@ -95,32 +104,42 @@ int main(){
         insertProcQ(&readyQ, newPcb);
 
         scheduleNext();
-    }
-    else{
+
+    }else{
         PANIC();
     }
+
     return (0);
+
 }/*end of main*/
 
 /**
  * This method determines the case statement, whether it's an interrupt or syscall and calls the appropriate handler.
  * */
 void generalExceptHandler(){
+
+    /*local variables*/
     state_t *programState;
     int causeNum;
+    /*end of local variables*/
 
     programState = (state_t *) BIOSDATAPAGE;
     causeNum = (int) (programState->s_cause & 0x0000007C) >> 2; 
+
     /*we need to look at cause reg, then turn off all but bits 2-6 (from the back), then shift right 2*/
     if(causeNum == 8){
         syscall();
     }
+
     if(causeNum == 0){
         interruptHandler();
     }
+
     if(causeNum <= 3 && causeNum >0){
         TLBExceptHandler();
     }
+
     /*if all else fails*/
     programTrap();
+
 }

@@ -30,10 +30,13 @@ void loadState(pcb_t *process){
  * If the queue is empty, a deadlock is executed.
  * */
 void scheduleNext(){
+
+    /*local variables*/
     pcb_t *newProc;
     unsigned int waitState;
+    /*end of local variables*/
     
-    /* */
+    /* insert comment here*/
     if(readyQ != NULL){
 
         newProc = removeProcQ(&readyQ);
@@ -50,7 +53,7 @@ void scheduleNext(){
         HALT(); /* we done! */
     }
 
-    /* */
+    /*insert comment here*/
     if(processCnt > 0 && softBlockCnt > 0){
         currentProc = NULL;
         setTIMER(MAXINT); /*set timer to infinity*/
@@ -63,7 +66,7 @@ void scheduleNext(){
         WAIT();
     }
     
-    /**/
+    /*insert comment here*/
     if(processCnt > 0 && softBlockCnt == 0){
         PANIC();
     }
@@ -72,7 +75,9 @@ void scheduleNext(){
 }
 
 void setSpecificQuantum(pcb_t *process, cpu_t specificTime){
+
     STCK(startTime);
     setTIMER(specificTime); /*set the quantum*/
-    loadState(process); /*not really sure why this is angry*/
+    loadState(process); 
+
 }
