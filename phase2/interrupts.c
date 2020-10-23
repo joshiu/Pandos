@@ -122,6 +122,7 @@ void localTimerInterrupt(cpu_t stopTime)
 
     debug(2012);
     insertProcQ(&readyQ, currentProc);/*we hit an interrupt here*/
+    currentProc = NULL;
     debug(2013);
     scheduleNext();
 }
