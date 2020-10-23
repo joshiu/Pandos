@@ -91,7 +91,7 @@ void interruptHandler()
 
         currentProc->p_time = currentProc->p_time + (stopTime - startTime);
         debug(209);
-        copyState((state_t *)BIOSDATAPAGE, currentProc->p_s);
+        copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
         debug(210);
         setSpecificQuantum(currentProc, leftoverQTime);
@@ -111,17 +111,18 @@ void interruptHandler()
 **/
 void localTimerInterrupt(cpu_t stopTime)
 {
-
+    debug(2011);
     if (currentProc == NULL)
     {
         PANIC();
-        return;
     }
 
     currentProc->p_time = timeCalc(stopTime);
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
-    insertProcQ(&readyQ, currentProc);
+    debug(2012);
+    insertProcQ(&readyQ, currentProc);/*we hit an interrupt here*/
+    debug(2013);
     scheduleNext();
 }
 
@@ -263,7 +264,7 @@ void deviceInterrupt(int lineNum)
     /*we are done waiting for IO, so pop the pcb off*/
     if (devSema4[deviceSema4Num] <= 0)
     {
-        pseudoSys4 = removeBlocked(&deviceSema4Num);/*ask Mikey about this line*/
+        pseudoSys4 = removeBlocked(&(devSema4[deviceSema4Num]));/*ask Mikey about this line*/
         debug(7777);
         debug(deviceSema4Num);
 

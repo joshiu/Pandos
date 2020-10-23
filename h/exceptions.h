@@ -22,7 +22,7 @@ extern int sys_5();
 extern cpu_t sys_6();
 extern void sys_7();
 extern support_t sys_8();
-extern void copyState();
+extern void copyState(state_t *source, state_t *copy);
 extern cpu_t timeCalc();
 
 #endif

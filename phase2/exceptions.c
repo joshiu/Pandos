@@ -228,7 +228,7 @@ void sys_3()
         endTime = timeCalc(endTime); /*doesnt like the declaration of timeCalc here*/
         /*endTime’ may be used uninitialized in this function, same in sys5, sys7 and current time in sys6*/
         currentProc->p_time = endTime;
-        insertBlocked(&semAddr, currentProc);
+        insertBlocked(semAddr, currentProc);
         currentProc = NULL;
         debug(10133);
         scheduleNext();
@@ -284,7 +284,7 @@ void sys_5()
     /*if the interrupt is on line 7, then correct deviceNum*/
     if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3))
     {
-        deviceNum = deviceNum + DEVPERINT;
+        deviceNum += DEVPERINT;
     }
 
     devSema4[deviceNum]--;
@@ -295,7 +295,7 @@ void sys_5()
         softBlockCnt++;
         endTime = timeCalc(endTime);
         currentProc->p_time = endTime;
-        insertBlocked(&deviceNum, currentProc);
+        insertBlocked(&(devSema4[deviceNum]), currentProc);
         currentProc = NULL;
     }
 
