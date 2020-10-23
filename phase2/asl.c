@@ -134,9 +134,11 @@ pcb_PTR outBlocked (pcb_PTR p){
 pcb_PTR headBlocked (int *semAdd){
     semd_t *tempSemAdd = searchASL(semAdd);/*dummy pointer that points to address from find*/
     if(tempSemAdd->s_next->s_semAdd ==semAdd){/*If semd with semAdd is found*/
+
         if(emptyProcQ(tempSemAdd->s_next->s_procQ)){/*If semd queue is empty*/
             return NULL;
         }
+        
         return headProcQ(tempSemAdd->s_next->s_procQ);/*If queue not empty return head*/
     }
     return NULL;/*If semd not found*/
