@@ -88,7 +88,12 @@ int main()
     RAMTOP(topRamAdd);
     newPcb = allocPcb();
 
-    if (newPcb != NULL)
+    if (newPcb == NULL)
+    {
+        PANIC();
+    }
+
+    else
     {
         newPcb->p_s.s_pc = (memaddr)test;
         newPcb->p_s.s_t9 = (memaddr)test;
@@ -106,10 +111,6 @@ int main()
         insertProcQ(&readyQ, newPcb);
         debug(1);
         scheduleNext();
-    }
-    else
-    {
-        PANIC();
     }
 
     return (0);
@@ -137,19 +138,22 @@ void generalExceptHandler()
         syscall();
     }
 
-    if (causeNum == 0)
+    else if (causeNum == 0)
     {
         debug(200);
         interruptHandler();
     }
 
-    if (causeNum <= 3 && causeNum > 0)
+    else if (causeNum <= 3 && causeNum > 0)
     {
         debug(321);
         TLBExceptHandler();
     }
 
-    /*if all else fails*/
-    debug(66669);
-    programTrap();
+    else{
+         /*if all else fails*/
+         debug(66669);
+         programTrap();
+    }
+
 }

@@ -84,7 +84,9 @@ void interruptHandler()
         debug(206);
         deviceInterrupt(TERMINT);
     }
+
     debug(207);
+
     if (currentProc != NULL)
     {
         debug(208);
@@ -96,12 +98,14 @@ void interruptHandler()
         debug(210);
         setSpecificQuantum(currentProc, leftoverQTime);
     }
+
     else
     {
 
         /*if there is no current, then we have a problem!*/
         HALT();
     }
+    
 }
 
 /**

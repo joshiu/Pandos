@@ -98,6 +98,7 @@ void syscall()
     {
         debug(1017);
         sys_7();
+        scheduleNext();
     }
 
     if (sysNum == 8)
@@ -289,6 +290,7 @@ void sys_5()
 
     devSema4[deviceNum]--;
     debug(deviceNum);
+
     /*no interrupt happened, so block process and move on*/
     if (devSema4[deviceNum] < 0)
     {
@@ -338,10 +340,15 @@ void sys_7()
         endTime = timeCalc(endTime);
         currentProc->p_time = currentProc->p_time + endTime;
         insertBlocked(&(devSema4[DEVCNT + DEVPERINT]), currentProc); /*wait on clock semaphore*/
-        scheduleNext();
+
     }
+    
+    /*if we don't block, then we load the state and continue*/
+    else{
 
     loadState(currentProc);
+
+    }
 }
 
 /**
