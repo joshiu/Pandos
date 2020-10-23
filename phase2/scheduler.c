@@ -62,7 +62,7 @@ void scheduleNext()
     /*insert comment here*/
     if (processCnt > 0 && softBlockCnt > 0)
     {
-        debug(0);
+        debug(110);
         currentProc = NULL;
         setTIMER(MAXINT); /*set timer to infinity*/
 
