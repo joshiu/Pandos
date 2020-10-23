@@ -12,7 +12,7 @@
 #include "../h/types.h"
 
 extern void scheduleNext();
-extern void loadState();
-extern void setSpecificQuantum();
+extern void loadState(pcb_t *process);
+extern void setSpecificQuantum(pcb_t *process, cpu_t specificTime);
 
 #endif
