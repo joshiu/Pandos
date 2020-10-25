@@ -15,6 +15,8 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+
+
 /**
  * This System Call method occurs when the SYSCALL assembly 
  * intruction is executed. This places the appropriate values in 
@@ -49,6 +51,7 @@ void syscall()
     /*we are in kernel mode*/
     currentProc->p_s.s_pc += 4;
 
+    /*checks to see the approiate sys call it should go to*/
     if (sysNum == 1)
     {
         debug(1011);
@@ -125,6 +128,8 @@ int sys_1()
 
     newPcb = allocPcb();
     debug(10111);
+
+    /*if new PCB is null, it failed*/
     if (newPcb == NULL)
     {
         debug(10112);
@@ -136,6 +141,7 @@ int sys_1()
     supportData = (support_t *)currentProc->p_s.s_a2;
     debug(10113);
 
+    /*if the support data is no null or not o then put newPCB on the support data*/
     if (supportData != NULL || supportData != 0)
     {
         newPcb->p_supportStruct = supportData;
@@ -149,6 +155,7 @@ int sys_1()
 
     /*time is set in pcb.c*/
     return (OK); /*put this in v0*/
+
 }
 
 /**
@@ -158,6 +165,7 @@ int sys_1()
 void sys_2(pcb_t *runningProc)
 { /*it saids this is a conflicting type hmmm*/
     debug(10121);
+
     /* how to kll kids*/
     /*local variables*/
     pcb_t *blockedChild;
@@ -171,6 +179,7 @@ void sys_2(pcb_t *runningProc)
         sys_2(removeChild(runningProc));
     }
 
+    /*if the running is the currentProc, remove it*/
     if (runningProc = currentProc)
     { /*the running one is currentProc -> it suggests () here?? */
         debug(10125);
@@ -199,10 +208,13 @@ void sys_2(pcb_t *runningProc)
             /*update softblock count or v the semNum*/
         }
     }
+
     debug(10126);
+
     /*once the are pulled off ready Q/unblocked, free them*/
     freePcb(runningProc);
     processCnt--;
+
 }
 
 /**
@@ -216,14 +228,17 @@ void sys_3()
     int *semAddr;
     cpu_t endTime;
     /*end of local variables*/
+
     endTime = 0; /*initialize endTime to 0*/
 
     debug(10131);
-    semAddr = (int *)currentProc->p_s.s_a1; /* */
+    semAddr = (int *)currentProc->p_s.s_a1; 
+
     /*update CPU for current proc*/
     *semAddr--; /*value computed is not used*/
     debug(10132);
 
+    /*if semAddress is less than 0 then do P operation (i think)*/
     if (*semAddr < 0)
     {
         endTime = timeCalc(endTime); /*doesnt like the declaration of timeCalc here*/
@@ -234,8 +249,10 @@ void sys_3()
         debug(10133);
         scheduleNext();
     }
+
     debug(10134);
     loadState(currentProc);
+
 }
 
 /**
@@ -254,12 +271,14 @@ void sys_4()
     semAddr++;
     debug(10141);
 
+    /* if semaddress is less than or equal to 0 do the V operation*/
     if (semAddr <= 0)
     {
         removedPcb = removeBlocked(semAddr);
         insertProcQ(&readyQ, removedPcb);
         debug(10142);
     }
+
 }
 
 /**
@@ -306,6 +325,7 @@ void sys_5()
     {
         currentProc->p_s.s_v0 = saveState[deviceNum];
     }
+
 } /*"control reaches end of non-void function" what? */
 
 /**
@@ -333,7 +353,7 @@ void sys_7()
 
     devSema4[DEVCNT + DEVPERINT] -= 1;
 
-    /*insert comment here*/
+    /*insert comment here -> still unsure what this does :(*/
     if (devSema4[DEVCNT + DEVPERINT] < 0)
     {
         softBlockCnt++;
@@ -359,7 +379,7 @@ void sys_7()
 int sys_8()
 {
 
-    /*insert comment here*/
+    /*if current process on support Struct is Null retrun support_t (i think)*/
     if (currentProc->p_supportStruct == NULL)
     {
         return ((support_t *)NULL); /*it doesnt like this because of this wack words:
@@ -378,6 +398,7 @@ void programTrap()
 { /*conflicting types*/
 
     passUpOrDie(GENERALEXCEPT);
+
 }
 
 /**
@@ -387,6 +408,7 @@ void TLBExceptHandler()
 {
 
     passUpOrDie(PGFAULTEXCEPT);
+
 }
 
 /**
@@ -397,7 +419,7 @@ void TLBExceptHandler()
 void passUpOrDie(int exceptNum)
 { /*conflicting types*/
 
-    /*insert comment here*/
+    /*if current process on support struct is NULL, sys 2 on currentproc (i think)*/
     if (currentProc->p_supportStruct == NULL)
     {
         sys_2(currentProc);
@@ -405,6 +427,7 @@ void passUpOrDie(int exceptNum)
     }
 
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
+
     /*conflicitng types for copyState*/
     LDCXT(currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr,
           currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_status,
@@ -421,7 +444,7 @@ void copyState(state_t *source, state_t *copy)
 
     int i; /*local variable*/
 
-    /*insert comment here*/
+    /*insert comment here idk what this is doing honestly :(*/
     for (i = 0; i < STATEREGNUM; i++)
     {
         copy->s_reg[i] = source->s_reg[i];
@@ -431,6 +454,7 @@ void copyState(state_t *source, state_t *copy)
     copy->s_entryHI = source->s_entryHI;
     copy->s_status = source->s_status;
     copy->s_pc = source->s_pc;
+    
 }
 
 /**

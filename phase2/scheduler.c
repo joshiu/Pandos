@@ -14,6 +14,8 @@
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
+
+
 /**
  * This method loads a process and sets it equal to the currentProcess.
  * Then we load the state of the current process and let it run
@@ -24,6 +26,7 @@ void loadState(pcb_t *process)
     currentProc = process;
     LDST(&(process->p_s));
 }
+
 
 /**
  * * This function takes a process from the ready queue 
@@ -38,7 +41,7 @@ void scheduleNext()
     unsigned int waitState;
     /*end of local variables*/
 
-    /* insert comment here*/
+    /*if readyQ is not Null remove newProc from readyQ (?)*/
     if (readyQ != NULL)
     {
         debug(1000);
@@ -59,7 +62,7 @@ void scheduleNext()
         HALT(); /* we done! */
     }
 
-    /*insert comment here*/
+    /*if process is more than 0 and soft block is more than zero set timer to infinity (this could be better)*/
     if (processCnt > 0 && softBlockCnt > 0)
     {
         debug(110);
@@ -74,7 +77,7 @@ void scheduleNext()
         WAIT();
     }
 
-    /*insert comment here*/
+    /*something is wrong is softBlock is 0*/
     if (processCnt > 0 && softBlockCnt == 0)
     {
         PANIC();
@@ -84,7 +87,7 @@ void scheduleNext()
 }
 
 /**
- * Insert method comment here
+ * We set the quantuam with a specific time on the process.
  * */
 void setSpecificQuantum(pcb_t *process, cpu_t specificTime)
 {

@@ -18,6 +18,7 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+
 /************ FILE SPECIFIC METHODS *********************/
 
 extern void uTLB_RefillHandler();   /*Address of the TLB Refill Event Handler*/
@@ -76,7 +77,8 @@ int main()
 
     /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
     devSema4[DEVCNT + DEVPERINT] = 0;
-
+    
+    /*insert comment here? sorry idk what this is doing*/
     for (counter = 0; counter < (DEVCNT + DEVPERINT); counter++)
     {
         devSema4[counter] = 0;
@@ -88,11 +90,13 @@ int main()
     RAMTOP(topRamAdd);
     newPcb = allocPcb();
 
+    /*If the PCB is null, there is an issue*/
     if (newPcb == NULL)
     {
         PANIC();
     }
 
+    /*else we put on the PCB on top of the RAM*/
     else
     {
         newPcb->p_s.s_pc = (memaddr)test;
@@ -117,6 +121,7 @@ int main()
 
 } /*end of main*/
 
+
 /**
  * This method determines the case statement, whether it's an interrupt or syscall and calls the appropriate handler.
  * */
@@ -131,6 +136,7 @@ void generalExceptHandler()
     programState = (state_t *)BIOSDATAPAGE;
     causeNum = (int)((programState->s_cause & 0x0000007C) >> 2); /*shift wrong?*/
     debug(causeNum);
+    
     /*we need to look at cause reg, then turn off all but bits 2-6 (from the back), then shift right 2*/
     if (causeNum == 8)
     {

@@ -15,7 +15,7 @@
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
 #define ALLOFF            0x00000000
-#define STKPTR      0x20001000
+#define STKPTR            0x20001000
 
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000
