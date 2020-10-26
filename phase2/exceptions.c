@@ -233,8 +233,6 @@ void sys_3()
     cpu_t endTime;
     /*end of local variables*/
 
-    endTime = 0; /*initialize endTime to 0*/
-
     debug(10131);
     semAddr = (int *)currentProc->p_s.s_a1; 
 
@@ -245,8 +243,7 @@ void sys_3()
     /*if semAddress is less than 0 then do P operation (i think)*/
     if (*semAddr < 0)
     {
-        endTime = timeCalc(endTime); /*doesnt like the declaration of timeCalc here*/
-        currentProc->p_time = endTime;
+        currentProc->p_time = timeCalc(endTime);
         
         insertBlocked(semAddr, currentProc);
         currentProc = NULL;
@@ -323,10 +320,12 @@ void sys_5()
     if (devSema4[deviceNum] < 0)
     {
         softBlockCnt++;
-        endTime = timeCalc(endTime);
-        currentProc->p_time = endTime;
+
+        currentProc->p_time = timeCalc(endTime);
+
         insertBlocked(&(devSema4[deviceNum]), currentProc);
         currentProc = NULL;
+
         scheduleNext(); /*we don't return control after a block*/
     }
 
@@ -368,16 +367,18 @@ void sys_7()
     if (devSema4[DEVCNT + DEVPERINT] < 0)
     {
         softBlockCnt++;
-        endTime = timeCalc(endTime);
-        currentProc->p_time = currentProc->p_time + endTime;
-        insertBlocked(&(devSema4[DEVCNT + DEVPERINT]), currentProc); /*wait on clock semaphore*/
 
+        currentProc->p_time = timeCalc(endTime);
+
+        insertBlocked(&(devSema4[DEVCNT + DEVPERINT]), currentProc); /*wait on clock semaphore*/
+        
+        currentProc=NULL;
     }
     
     /*if we don't block, then we load the state and continue*/
     else{
 
-    loadState(currentProc);
+        loadState(currentProc);
 
     }
 }
