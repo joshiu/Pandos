@@ -15,8 +15,6 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
-
-
 /************ FILE SPECIFIC METHODS *********************/
 HIDDEN void localTimerInterrupt(cpu_t time);
 HIDDEN void pseudoClockInterrupt();
@@ -24,8 +22,6 @@ HIDDEN void deviceInterrupt(int deviceType);
 HIDDEN int terminalInterrupt(int *deviceSema4Num);
 
 /* end of file specific methods */
-
-
 
 /**
  * This method is used to determine the appropriate action
@@ -88,9 +84,7 @@ void interruptHandler()
         debug(206);
         deviceInterrupt(TERMINT);
     }
-
     debug(207);
-
     if (currentProc != NULL)
     {
         debug(208);
@@ -102,14 +96,12 @@ void interruptHandler()
         debug(210);
         setSpecificQuantum(currentProc, leftoverQTime);
     }
-
     else
     {
 
         /*if there is no current, then we have a problem!*/
         HALT();
     }
-    
 }
 
 /**
@@ -120,8 +112,6 @@ void interruptHandler()
 void localTimerInterrupt(cpu_t stopTime)
 {
     debug(2011);
-
-    /*something is wrong if the current is NULL*/
     if (currentProc == NULL)
     {
         PANIC();
@@ -131,11 +121,10 @@ void localTimerInterrupt(cpu_t stopTime)
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
     debug(2012);
-    insertProcQ(&readyQ, currentProc);/*we hit an interrupt here*/
+    insertProcQ(&readyQ, currentProc);
     currentProc = NULL;
     debug(2013);
     scheduleNext();
-
 }
 
 /** 
@@ -154,7 +143,6 @@ void pseudoClockInterrupt()
 
     removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
 
-    /*while the removedPCBS is not NULL intsertProcQ on the readQ*/
     while (removedPcbs != NULL)
     {
         debug(2022);
@@ -165,7 +153,6 @@ void pseudoClockInterrupt()
 
     devSema4[DEVPERINT + DEVCNT] = 0;
 
-    /*if the currentProc is NULL, call scheduler*/
     if (currentProc == NULL)
     {
         debug(2023);
@@ -265,7 +252,6 @@ void deviceInterrupt(int lineNum)
         /*set the status to either receive or transmit*/
         devStatus = terminalInterrupt(&deviceSema4Num);
     }
-
     else
     {
 
@@ -283,7 +269,6 @@ void deviceInterrupt(int lineNum)
         debug(7777);
         debug(deviceSema4Num);
 
-
         if (pseudoSys4 != NULL)
         {
             /*if there is a process, then unblock and set the status*/
@@ -292,15 +277,13 @@ void deviceInterrupt(int lineNum)
             insertProcQ(&readyQ, pseudoSys4);
             softBlockCnt--;
         }
-
         
     }
 
-    /*if there is no process*/
     else{ 
+        /*if there is no process*/
         debug(77776);
         saveState[deviceSema4Num] = devStatus; /*save the state because there's no where else*/
-
     }
 
     if (currentProc == NULL)
@@ -312,7 +295,7 @@ void deviceInterrupt(int lineNum)
 }
 
 /**
- * Method comment here: okay i dont know what this does, my brain is ded
+ * Method comment here
  * */
 int terminalInterrupt(int *devSema4Num)
 {
@@ -327,13 +310,10 @@ int terminalInterrupt(int *devSema4Num)
 
     statusRecord = devRegisters->devreg[(*devSema4Num)].t_transm_status;
 
-    /*not sure about this one too*/
     if ((statusRecord & 0x0F) != READY)
     {
         devRegisters->devreg[(*devSema4Num)].t_transm_command = ACK;
     }
-
-    /*not sure what this is doing tbh*/
     else
     {
 

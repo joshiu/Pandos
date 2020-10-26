@@ -149,8 +149,7 @@ int sys_1()
 
     debug(10114);
     insertProcQ(&readyQ, newPcb);
-    insertChild(&currentProc, newPcb); /* doesnt like the & but when I tried to do pcb_t **
-    like it suggested it dropped an error...*/
+    insertChild(currentProc, newPcb); 
     debug(10115);
 
     /*time is set in pcb.c*/
@@ -180,7 +179,7 @@ void sys_2(pcb_t *runningProc)
     }
 
     /*if the running is the currentProc, remove it*/
-    if (runningProc = currentProc)
+    if (runningProc == currentProc)
     { /*the running one is currentProc -> it suggests () here?? */
         debug(10125);
         removeChild(runningProc);
