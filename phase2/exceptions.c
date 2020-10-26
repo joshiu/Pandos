@@ -86,7 +86,6 @@ void syscall()
     {
         debug(1015);
         sys_5();
-        scheduleNext(); /*we don't return control after a block*/
     }
 
     if (sysNum == 6)
@@ -182,7 +181,7 @@ void sys_2(pcb_t *runningProc)
     if (runningProc == currentProc)
     { /*the running one is currentProc -> it suggests () here?? */
         debug(10125);
-        removeChild(runningProc);
+        outChild(runningProc);
     }
 
     /*if it is on the Q*/
@@ -201,10 +200,16 @@ void sys_2(pcb_t *runningProc)
         {
             debug(12124);
             semNum = blockedChild->p_semAdd;
-            softBlockCnt--;
-            semNum--;
-            runningProc->p_semAdd = semNum;
-            /*update softblock count or v the semNum*/
+
+            /*determine if you need to decrement softblockcnt*/
+            if(semNum >= &devSema4[0] && semNum <= &devSema4[DEVCNT+DEVPERINT] ){
+                softBlockCnt--;
+            }
+
+            /*v the semNum if you don't need to */
+            else{
+                semNum++;
+            }
         }
     }
 
@@ -241,16 +246,21 @@ void sys_3()
     if (*semAddr < 0)
     {
         endTime = timeCalc(endTime); /*doesnt like the declaration of timeCalc here*/
-        /*endTime’ may be used uninitialized in this function, same in sys5, sys7 and current time in sys6*/
         currentProc->p_time = endTime;
+        
         insertBlocked(semAddr, currentProc);
         currentProc = NULL;
+        
         debug(10133);
         scheduleNext();
     }
+    else{
 
-    debug(10134);
-    loadState(currentProc);
+        debug(10134);
+        loadState(currentProc);
+
+    }
+
 
 }
 
@@ -317,15 +327,17 @@ void sys_5()
         currentProc->p_time = endTime;
         insertBlocked(&(devSema4[deviceNum]), currentProc);
         currentProc = NULL;
+        scheduleNext(); /*we don't return control after a block*/
     }
 
     /*so interrupt happened and ACK-ed, so load savedState and return*/
     else
     {
         currentProc->p_s.s_v0 = saveState[deviceNum];
+        loadState(currentProc);
     }
 
-} /*"control reaches end of non-void function" what? */
+} 
 
 /**
  * When requested, this service requests the Nucleus records 
