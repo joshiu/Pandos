@@ -243,18 +243,20 @@ void sys_3()
     /*if semAddress is less than 0 then do P operation (i think)*/
     if (*semAddr < 0)
     {
+        debug(10133);
         currentProc->p_time = timeCalc(endTime);
         
         insertBlocked(semAddr, currentProc);
         currentProc = NULL;
         
-        debug(10133);
+        debug(10134);
         scheduleNext();
     }
     else{
 
-        debug(10134);
+        debug(10135);
         loadState(currentProc);
+        debug(10136);
 
     }
 
@@ -280,9 +282,10 @@ void sys_4()
     /* if semaddress is less than or equal to 0 do the V operation*/
     if (semAddr <= 0)
     {
+        debug(10142);
         removedPcb = removeBlocked(semAddr);
         insertProcQ(&readyQ, removedPcb);
-        debug(10142);
+        debug(10143);
     }
 
 }
@@ -306,19 +309,24 @@ void sys_5()
 
     deviceNum += ((lineNum - DISKINT) * DEVPERINT); /*find which device we in*/
     debug(deviceNum);
+    debug(10151);
 
     /*if the interrupt is on line 7, then correct deviceNum*/
     if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3))
     {
+        debug(10152);
         deviceNum += DEVPERINT;
+        debug(10153);
     }
 
     devSema4[deviceNum]--;
     debug(deviceNum);
+    debug(10154);
 
     /*no interrupt happened, so block process and move on*/
     if (devSema4[deviceNum] < 0)
     {
+        debug(10155);
         softBlockCnt++;
 
         currentProc->p_time = timeCalc(endTime);
@@ -327,13 +335,16 @@ void sys_5()
         currentProc = NULL;
 
         scheduleNext(); /*we don't return control after a block*/
+        debug(10156);
     }
 
     /*so interrupt happened and ACK-ed, so load savedState and return*/
     else
     {
+        debug(10157);
         currentProc->p_s.s_v0 = saveState[deviceNum];
         loadState(currentProc);
+        debug(10158);
     }
 
 } 
