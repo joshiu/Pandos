@@ -78,7 +78,7 @@ int main()
     /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
     devSema4[DEVCNT + DEVPERINT] = 0;
     
-    /*insert comment here? sorry idk what this is doing*/
+    /*Initializing the deviceSema4 list and setting everything in it to 0*/
     for (counter = 0; counter < (DEVCNT + DEVPERINT); counter++)
     {
         devSema4[counter] = 0;
