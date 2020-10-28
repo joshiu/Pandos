@@ -78,6 +78,7 @@ void scheduleNext()
     /*something is wrong is softBlock is 0*/
     if (processCnt > 0 && softBlockCnt == 0)
     {
+        debug(928600);
         PANIC();
     }
 
