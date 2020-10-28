@@ -46,7 +46,7 @@ void syscall()
     }
 
     debug(102);
-    copyState(procState, &(currentProc->p_s)); /*this could possibly be loadState instead??*/
+    copyState(procState, &(currentProc->p_s)); 
 
     /*we are in kernel mode*/
     currentProc->p_s.s_pc += 4;
@@ -57,7 +57,7 @@ void syscall()
         debug(1011);
         int returnInt;
         returnInt = sys_1(); /*doesnt like this declaration this is same for all the other sys*/
-        currentProc->p_s.s_v1 = returnInt;
+        currentProc->p_s.s_v0 = returnInt;
         loadState(currentProc);
     }
 
@@ -79,7 +79,6 @@ void syscall()
     {
         debug(1014);
         sys_4();
-        loadState(currentProc);
     }
 
     if (sysNum == 5)
@@ -201,15 +200,9 @@ void sys_2(pcb_t *runningProc)
             debug(12124);
             semNum = blockedChild->p_semAdd;
 
-            /*determine if you need to decrement softblockcnt*/
-            if(semNum >= &devSema4[0] && semNum <= &devSema4[DEVCNT+DEVPERINT] ){
-                softBlockCnt--;
-            }
+            softBlockCnt--;
 
-            /*v the semNum if you don't need to */
-            else{
-                semNum++;
-            }
+            semNum++;
         }
     }
 
@@ -244,7 +237,8 @@ void sys_3()
     if (*semAddr < 0)
     {
         debug(10133);
-        currentProc->p_time = timeCalc(endTime);
+        STCK(endTime);
+        currentProc->p_time += (endTime-startTime);
         
         insertBlocked(semAddr, currentProc);
         currentProc = NULL;
@@ -288,11 +282,13 @@ void sys_4()
         debug(10143);
     }
 
+    loadState(currentProc);
 }
 
 /**
- * When requested, this serivce is used to transition the 
- * Current Process from the “running” state to a “blocked”state.
+ * When requested, this serivce always transitions the 
+ * Current Process from the “running” state to a “blocked”state, waiting 
+ * for an interrupt to remove it. 
  * */
 void sys_5()
 {
@@ -308,11 +304,11 @@ void sys_5()
     deviceNum = currentProc->p_s.s_a2;
 
     deviceNum += ((lineNum - DISKINT) * DEVPERINT); /*find which device we in*/
-    debug(deviceNum);
     debug(10151);
+    debug(deviceNum);
 
-    /*if the interrupt is on line 7, then correct deviceNum*/
-    if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3))
+    /*if the interrupt is on line 7 and we are reading, then correct deviceNum*/
+    if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3 == TRUE))
     {
         debug(10152);
         deviceNum += DEVPERINT;
@@ -323,29 +319,32 @@ void sys_5()
     debug(deviceNum);
     debug(10154);
 
-    /*no interrupt happened, so block process and move on*/
+
+    /*block process and move on, since we have not blocked anything*/
     if (devSema4[deviceNum] < 0)
     {
         debug(10155);
         softBlockCnt++;
 
-        currentProc->p_time = timeCalc(endTime);
+        STCK(endTime);
+        currentProc->p_time += (endTime-startTime);
 
         insertBlocked(&(devSema4[deviceNum]), currentProc);
         currentProc = NULL;
 
-        scheduleNext(); /*we don't return control after a block*/
         debug(10156);
+
+        scheduleNext(); /*we don't return control after a block*/
     }
 
     /*so interrupt happened and ACK-ed, so load savedState and return*/
-    else
-    {
+
         debug(10157);
         currentProc->p_s.s_v0 = saveState[deviceNum];
-        loadState(currentProc);
         debug(10158);
-    }
+
+        loadState(currentProc);
+
 
 } 
 

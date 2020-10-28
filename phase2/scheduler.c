@@ -24,7 +24,7 @@ void loadState(pcb_t *process)
 {
     debug(404);
     currentProc = process;
-    LDST(&(process->p_s));
+    LDST(&process->p_s);
 }
 
 
@@ -47,10 +47,8 @@ void scheduleNext()
         debug(1000);
         newProc = removeProcQ(&readyQ);
 
-        timeSlice = STANQUANTUM;
         STCK(startTime);     /*record new process' starttime*/
-        setTIMER(timeSlice); /*set the quantum*/
-
+        setTIMER(STANQUANTUM); /*set the quantum*/
         debug(1001);
         loadState(newProc);
     }
@@ -87,12 +85,11 @@ void scheduleNext()
 }
 
 /**
- * We set the quantuam with a specific time on the process.
+ * We set the quantuam with a specific time on the process, then load that process.
  * */
-void setSpecificQuantum(pcb_t *process, cpu_t specificTime)
+void setSpecificQuantum(cpu_t specificTime)
 {
-
-    STCK(startTime);
+    STCK(startTime); /*record new start time*/
     setTIMER(specificTime); /*set the quantum*/
-    loadState(process);
+    loadState(currentProc);
 }

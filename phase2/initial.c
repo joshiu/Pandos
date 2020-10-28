@@ -36,7 +36,7 @@ pcb_t *readyQ;                              /*queue of processes ready to run*/
 pcb_t *currentProc;                         /*process that is currently running*/
 int devSema4[DEVCNT + DEVPERINT + 1];       /*array of device semaphores*/
 cpu_t startTime;                            /*beginning of a time unit*/
-cpu_t timeSlice;                            /*amount of time until the time slice*/
+cpu_t timeSlice;                            /*amount of time left in the time slice*/
 
 /* END GLOBAL VARIABLES*/
 
@@ -51,8 +51,6 @@ void debug(int a)
  * */
 int main()
 {
-    debug(10);
-
     /*local variables*/
     passupvector_t *passUpVec;
     int counter;
@@ -84,7 +82,7 @@ int main()
         devSema4[counter] = 0;
     }
 
-    LDIT(STANPSEUDOCLOCK); /*load interval timer with 1000 ms*/
+    LDIT(STANPSEUDOCLOCK); /*load interval timer with 10000 ms*/
 
     /*Need to get top of RAM address*/
     RAMTOP(topRamAdd);
@@ -109,7 +107,7 @@ int main()
         /*interrupt mask needs to be turned off(by changing to 1), so when we enable interrupts
          we need to disable the mask when we enable interrupts*/
 
-        processCnt += 1;
+        processCnt ++;
         /*set p_time and p_supportStruct in pcb.c*/
 
         insertProcQ(&readyQ, newPcb);

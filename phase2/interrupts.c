@@ -36,11 +36,10 @@ void interruptHandler()
 
     /*local variables*/
     cpu_t stopTime;
-    cpu_t leftoverQTime;
     /*end of local variables*/
 
     STCK(stopTime);
-    leftoverQTime = getTIMER();
+    timeSlice = getTIMER();
     debug(200);
 
     if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0)
@@ -84,17 +83,18 @@ void interruptHandler()
         debug(206);
         deviceInterrupt(TERMINT);
     }
+
     debug(207);
     if (currentProc != NULL)
     {
         debug(208);
 
-        currentProc->p_time = currentProc->p_time + (stopTime - startTime);
+        currentProc->p_time += (stopTime - startTime);
         debug(209);
         copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
         debug(210);
-        setSpecificQuantum(currentProc, leftoverQTime);
+        setSpecificQuantum(timeSlice);
     }
     else
     {
@@ -109,7 +109,7 @@ void interruptHandler()
  * is a currrent process then it 
  * stops the clock and puts that process back on the readyQ.
 **/
-void localTimerInterrupt(cpu_t stopTime)
+void localTimerInterrupt(cpu_t timeStop)
 {
     debug(2011);
     if (currentProc == NULL)
@@ -117,12 +117,13 @@ void localTimerInterrupt(cpu_t stopTime)
         PANIC();
     }
 
-    currentProc->p_time = timeCalc(stopTime);
+    currentProc->p_time += (timeStop-startTime);
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
     debug(2012);
     insertProcQ(&readyQ, currentProc);
     currentProc = NULL;
+
     debug(2013);
     scheduleNext();
 }
@@ -281,16 +282,19 @@ void deviceInterrupt(int lineNum)
     }
 
     else{ 
-        /*if there is no process*/
+        /*if there is nothing to unblock*/
         debug(77776);
         saveState[deviceSema4Num] = devStatus; /*save the state because there's no where else*/
     }
 
+    /*if there is no currentProc*/
     if (currentProc == NULL)
     {
         debug(7778);
         scheduleNext();
     }
+
+    /*go back to interruptHandler if there is a currentProc*/
     debug(7779);
 }
 
