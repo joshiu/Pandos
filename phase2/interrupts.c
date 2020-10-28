@@ -276,7 +276,7 @@ void deviceInterrupt(int lineNum)
             debug(77775);
             pseudoSys4->p_s.s_v0 = devStatus;
             insertProcQ(&readyQ, pseudoSys4);
-            softBlockCnt--;
+            softBlockCnt-=1;
         }
         
     }

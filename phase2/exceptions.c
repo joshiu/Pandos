@@ -326,7 +326,7 @@ void sys_5()
     if (devSema4[deviceNum] < 0)
     {
         debug(10155);
-        softBlockCnt++;
+        softBlockCnt+=1;
 
         STCK(endTime);
         currentProc->p_time += (endTime-startTime);
@@ -378,7 +378,7 @@ void sys_7()
     /*insert comment here -> still unsure what this does :(*/
     if (devSema4[DEVCNT + DEVPERINT] < 0)
     {
-        softBlockCnt++;
+        softBlockCnt+=1;
 
         currentProc->p_time = timeCalc(endTime);
 
