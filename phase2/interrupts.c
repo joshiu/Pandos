@@ -148,7 +148,7 @@ void pseudoClockInterrupt()
     {
         debug(2022);
         insertProcQ(&readyQ, removedPcbs);
-        softBlockCnt--;
+        softBlockCnt-=1;
         removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
     }
 

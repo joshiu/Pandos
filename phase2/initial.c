@@ -77,7 +77,7 @@ int main()
     devSema4[DEVCNT + DEVPERINT] = 0;
     
     /*Initializing the deviceSema4 list and setting everything in it to 0*/
-    for (counter = 0; counter < (DEVCNT + DEVPERINT); counter++)
+    for (counter = 0; counter < (DEVCNT + DEVPERINT); counter+=1)
     {
         devSema4[counter] = 0;
     }
@@ -107,7 +107,7 @@ int main()
         /*interrupt mask needs to be turned off(by changing to 1), so when we enable interrupts
          we need to disable the mask when we enable interrupts*/
 
-        processCnt ++;
+        processCnt +=1;
         /*set p_time and p_supportStruct in pcb.c*/
 
         insertProcQ(&readyQ, newPcb);

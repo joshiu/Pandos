@@ -134,7 +134,7 @@ int sys_1()
         return (FAILED); /*put thiis in v0 */
     }
 
-    processCnt++;
+    processCnt+=1;
     copyState(&(currentProc->p_s), &(newPcb->p_s)); /*copying states from parent to child*/
     supportData = (support_t *)currentProc->p_s.s_a2;
     debug(10113);
@@ -200,9 +200,9 @@ void sys_2(pcb_t *runningProc)
             debug(12124);
             semNum = blockedChild->p_semAdd;
 
-            softBlockCnt--;
+            softBlockCnt-=1;
 
-            semNum++;
+            semNum+=1;
         }
     }
 
@@ -210,7 +210,7 @@ void sys_2(pcb_t *runningProc)
 
     /*once the are pulled off ready Q/unblocked, free them*/
     freePcb(runningProc);
-    processCnt--;
+    processCnt-=1;
 
 }
 
@@ -317,7 +317,7 @@ void sys_5()
         debug(10153);
     }
 
-    devSema4[deviceNum]--;
+    devSema4[deviceNum]-=1;
     debug(deviceNum);
     debug(10154);
 
@@ -469,7 +469,7 @@ void copyState(state_t *source, state_t *copy)
     int i; /*local variable*/
 
     /*insert comment here idk what this is doing honestly :(*/
-    for (i = 0; i < STATEREGNUM; i++)
+    for (i = 0; i < STATEREGNUM; i+=1)
     {
         copy->s_reg[i] = source->s_reg[i];
     }
