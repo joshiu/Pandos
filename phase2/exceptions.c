@@ -230,7 +230,7 @@ void sys_3()
     semAddr = (int *)currentProc->p_s.s_a1; 
 
     /*update CPU for current proc*/
-    *semAddr--; /*value computed is not used*/
+    *semAddr-=1; /*value computed is not used*/
     debug(10132);
 
     /*if semAddress is less than 0 then do P operation (i think)*/
@@ -269,12 +269,14 @@ void sys_4()
     pcb_t *removedPcb;
     /*end of local variables*/
 
-    semAddr = (int *)currentProc->p_s.s_a1;
-    semAddr++;
     debug(10141);
 
+    semAddr = (int *)currentProc->p_s.s_a1;
+
+    *semAddr+=1;
+
     /* if semaddress is less than or equal to 0 do the V operation*/
-    if (semAddr <= 0)
+    if (*semAddr <= 0)
     {
         debug(10142);
         removedPcb = removeBlocked(semAddr);
