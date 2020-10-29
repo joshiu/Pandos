@@ -24,7 +24,7 @@ void loadState(pcb_t *process)
 {
     debug(404);
     currentProc = process;
-    LDST(&process->p_s);
+    LDST(&(process->p_s));
 }
 
 
@@ -75,7 +75,7 @@ void scheduleNext()
         WAIT();
     }
 
-    /*something is wrong is softBlock is 0*/
+    /*something is wrong if softBlock is 0*/
     if (processCnt > 0 && softBlockCnt == 0)
     {
         debug(928600);

@@ -246,7 +246,7 @@ void deviceInterrupt(int lineNum)
     /* and add deviceNumber to get to our device*/
 
     deviceSema4Num = ((lineNum - DISKINT) * DEVPERINT) + deviceNumber;
-    debug(deviceSema4Num);
+    debug(devSema4[deviceSema4Num]);
 
     if (lineNum == TERMINT)
     {
@@ -261,7 +261,7 @@ void deviceInterrupt(int lineNum)
     }
 
     devSema4[deviceSema4Num] += 1;
-    debug(deviceSema4Num);
+    debug(devSema4[deviceSema4Num]);
     
     /*we are done waiting for IO, so pop the pcb off*/
     if (devSema4[deviceSema4Num] <= 0)

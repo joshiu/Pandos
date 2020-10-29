@@ -200,9 +200,13 @@ void sys_2(pcb_t *runningProc)
             debug(12124);
             semNum = blockedChild->p_semAdd;
 
-            softBlockCnt-=1;
+            if(semNum>=devSema4[0] && semNum<=devSema4[DEVCNT+DEVPERINT]){
+                softBlockCnt-=1;
+            }
 
-            semNum+=1;
+            else{
+                semNum+=1;
+            }
         }
     }
 
@@ -228,9 +232,11 @@ void sys_3()
 
     debug(10131);
     semAddr = (int *)currentProc->p_s.s_a1; 
+    debug(*semAddr);
 
     /*update CPU for current proc*/
     *semAddr-=1; /*value computed is not used*/
+    debug(*semAddr);
     debug(10132);
 
     /*if semAddress is less than 0 then do P operation (i think)*/
@@ -250,8 +256,6 @@ void sys_3()
 
         debug(10135);
         loadState(currentProc);
-        debug(10136);
-
     }
 
 
@@ -272,8 +276,10 @@ void sys_4()
     debug(10141);
 
     semAddr = (int *)currentProc->p_s.s_a1;
-
+    debug(*semAddr);
+    
     *semAddr+=1;
+    debug(*semAddr);
 
     /* if semaddress is less than or equal to 0 do the V operation*/
     if (*semAddr <= 0)
@@ -307,7 +313,7 @@ void sys_5()
 
     deviceNum += ((lineNum - DISKINT) * DEVPERINT); /*find which device we in*/
     debug(10151);
-    debug(deviceNum);
+    debug(devSema4[deviceNum]);
 
     /*if the interrupt is on line 7 and we are reading, then correct deviceNum*/
     if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3 == TRUE))
@@ -318,7 +324,7 @@ void sys_5()
     }
 
     devSema4[deviceNum]-=1;
-    debug(deviceNum);
+    debug(devSema4[deviceNum]);
     debug(10154);
 
 
@@ -346,7 +352,6 @@ void sys_5()
         debug(10158);
 
         loadState(currentProc);
-
 
 } 
 
