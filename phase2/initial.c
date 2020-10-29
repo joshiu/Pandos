@@ -111,6 +111,7 @@ int main()
         /*set p_time and p_supportStruct in pcb.c*/
 
         insertProcQ(&readyQ, newPcb);
+        debug(newPcb->p_semAdd);
         debug(1);
         scheduleNext();
     }
@@ -130,6 +131,8 @@ void generalExceptHandler()
     state_t *programState;
     int causeNum;
     /*end of local variables*/
+
+    debug(processCnt);
 
     programState = (state_t *)BIOSDATAPAGE;
     causeNum = (int)((programState->s_cause & 0x0000007C) >> 2); /*shift wrong?*/

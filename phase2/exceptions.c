@@ -150,6 +150,7 @@ int sys_1()
     insertChild(currentProc, newPcb); 
     debug(10115);
 
+    debug(processCnt);
     /*time is set in pcb.c*/
     return (OK); /*put this in v0*/
 
@@ -231,6 +232,8 @@ void sys_3()
     /*end of local variables*/
 
     debug(10131);
+    debug(currentProc->p_semAdd);
+
     semAddr = (int *)currentProc->p_s.s_a1; 
     debug(*semAddr);
 
@@ -246,7 +249,10 @@ void sys_3()
         STCK(endTime);
         currentProc->p_time += (endTime-startTime);
         
+        debug(currentProc->p_semAdd);
         insertBlocked(semAddr, currentProc);
+        
+        debug(currentProc->p_semAdd);
         currentProc = NULL;
         
         debug(10134);
@@ -275,6 +281,8 @@ void sys_4()
 
     debug(10141);
 
+    debug(currentProc->p_semAdd);
+
     semAddr = (int *)currentProc->p_s.s_a1;
     debug(*semAddr);
     
@@ -287,6 +295,8 @@ void sys_4()
     {
         debug(10142);
         removedPcb = removeBlocked(semAddr);
+        debug(removedPcb->p_semAdd);
+
         insertProcQ(&readyQ, removedPcb);
         debug(10143);
     }
