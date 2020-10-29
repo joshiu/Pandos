@@ -280,6 +280,7 @@ void sys_4()
     
     *semAddr+=1;
     debug(*semAddr);
+    debug(* (int *)currentProc->p_s.s_a1);
 
     /* if semaddress is less than or equal to 0 do the V operation*/
     if (*semAddr <= 0)
