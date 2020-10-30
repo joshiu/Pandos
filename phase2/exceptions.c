@@ -238,7 +238,7 @@ void sys_3()
     debug(*semAddr);
 
     /*update CPU for current proc*/
-    *semAddr-=1; /*value computed is not used*/
+    *semAddr -= 1; /*value computed is not used*/
     debug(*semAddr);
     debug(10132);
 
@@ -286,7 +286,7 @@ void sys_4()
     semAddr = (int *)currentProc->p_s.s_a1;
     debug(*semAddr);
     
-    *semAddr+=1;
+    *semAddr += 1;
     debug(*semAddr);
     debug(* (int *)currentProc->p_s.s_a1);
 
@@ -297,8 +297,12 @@ void sys_4()
         removedPcb = removeBlocked(semAddr);
         debug(removedPcb->p_semAdd);
 
-        insertProcQ(&readyQ, removedPcb);
-        debug(10143);
+        /*make sure what we insert exists*/
+        if(removedPcb != NULL){
+            insertProcQ(&readyQ, removedPcb);
+            debug(10143);
+        }
+        
     }
 
     loadState(currentProc);
