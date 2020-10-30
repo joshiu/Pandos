@@ -49,35 +49,35 @@ void interruptHandler()
         localTimerInterrupt(stopTime);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0)
     {
         /*timer interrupt*/
         debug(202);
         pseudoClockInterrupt();
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000800) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000800) != 0)
     {
         /*disk interrupt*/
         debug(203);
         deviceInterrupt(DISKINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00001000) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00001000) != 0)
     {
         /*flash interrupt*/
         debug(204);
         deviceInterrupt(FLASHINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0)
     {
         /*print interrupt*/
         debug(205);
         deviceInterrupt(PRNTINT);
     }
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00008000) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00008000) != 0)
     {
         /*terminal interrupt*/
         debug(206);
