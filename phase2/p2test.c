@@ -130,6 +130,10 @@ void print(char *msg) {
 	SYSCALL(VERHOGEN, (int)&term_mut, 0, 0);				/* V(term_mut) */
 }
 
+void stopHere(){
+	int j;
+	j = 0;
+}
 
 /* TLB-Refill Handler */
 /* One can place debug calls here, but not calls to print */
@@ -235,9 +239,9 @@ void test() {
 	SYSCALL(CREATETHREAD, (int)&p2state, (int) NULL , 0);				/* start p2     */
 
 	print("p2 was started\n");
-
+	
 	SYSCALL(VERHOGEN, (int)&startp2, 0, 0);								/* V(startp2)   */
-
+	
 	SYSCALL(PASSERN, (int)&endp2, 0, 0);								/* P(endp2)     */
 
 	/* make sure we really blocked */

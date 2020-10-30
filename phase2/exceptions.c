@@ -32,7 +32,6 @@ void syscall()
     /*int i; counter for copying states -> this is unused*/
     /*end of local variables*/
 
-    procState = (state_t *)BIOSDATAPAGE;
     sysNum = procState->s_a0;
 
     /*are we in kernel mode?*/
@@ -46,7 +45,7 @@ void syscall()
     }
 
     debug(102);
-    copyState(procState, &(currentProc->p_s)); 
+    copyState(((state_t *)BIOSDATAPAGE), &(currentProc->p_s)); 
 
     /*we are in kernel mode*/
     currentProc->p_s.s_pc += 4;
@@ -489,7 +488,7 @@ void copyState(state_t *source, state_t *copy)
     int i; /*local variable*/
 
     /*insert comment here idk what this is doing honestly :(*/
-    for (i = 0; i < STATEREGNUM; i+=1)
+    for (i = 0; i < STATEREGNUM; i++)
     {
         copy->s_reg[i] = source->s_reg[i];
     }
