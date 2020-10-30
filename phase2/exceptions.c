@@ -32,15 +32,15 @@ void syscall()
     /*int i; counter for copying states -> this is unused*/
     /*end of local variables*/
 
-    sysNum = procState->s_a0;
+    sysNum = ((state_t *)BIOSDATAPAGE)->s_a0;
 
     /*are we in kernel mode?*/
-    if (sysNum >= 1 && sysNum <= 8 && (procState->s_status & 0x00000008) == 1)
+    if (sysNum >= 1 && sysNum <= 8 && (((state_t *)BIOSDATAPAGE)->s_status & 0x00000008) == 1)
     { /*doesnt like the = 1 here because bitwise comparison
     always = false for some reason?? */
         debug(101);
         /*if the program is not in kernel, then make the cause a not privileged instruction*/
-        procState->s_cause = (procState->s_cause & 0xFFFFF00) | (10 << 2);
+        ((state_t *)BIOSDATAPAGE)->s_cause = (((state_t *)BIOSDATAPAGE)->s_cause & 0xFFFFF00) | (10 << 2);
         programTrap(); /*doesnt like the program trap declaration here*/
     }
 
@@ -120,6 +120,7 @@ int sys_1()
 
     /*local variables*/
     pcb_t *newPcb;
+    state_t *allData;
     support_t *supportData;
     /*end of local variables*/
 
@@ -134,7 +135,9 @@ int sys_1()
     }
 
     processCnt+=1;
-    copyState(&(currentProc->p_s), &(newPcb->p_s)); /*copying states from parent to child*/
+    allData = currentProc->p_s.s_a1;
+    
+    copyState(allData, &(newPcb->p_s)); /*copying states from parent to child*/
     supportData = (support_t *)currentProc->p_s.s_a2;
     debug(10113);
 
@@ -488,7 +491,7 @@ void copyState(state_t *source, state_t *copy)
     int i; /*local variable*/
 
     /*insert comment here idk what this is doing honestly :(*/
-    for (i = 0; i < STATEREGNUM; i++)
+    for (i = 0; i < STATEREGNUM; i+=1)
     {
         copy->s_reg[i] = source->s_reg[i];
     }
