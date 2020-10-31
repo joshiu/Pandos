@@ -28,8 +28,7 @@ void syscall()
 
     /*local variables*/
     int sysNum;
-    state_t *procState;
-    /*int i; counter for copying states -> this is unused*/
+    
     /*end of local variables*/
 
     sysNum = ((state_t *)BIOSDATAPAGE)->s_a0;
@@ -98,7 +97,6 @@ void syscall()
     {
         debug(1017);
         sys_7();
-        scheduleNext();
     }
 
     if (sysNum == 8)
@@ -109,7 +107,7 @@ void syscall()
         loadState(currentProc);
     }
 
-    passUpOrDie(GENERALEXCEPT); /*doesnt like this declaration */
+    passUpOrDie(GENERALEXCEPT);
 }
 
 /**
@@ -380,8 +378,11 @@ cpu_t sys_6()
 {
 
     cpu_t currentTime; /*local variable*/
+    cpu_t endTime;
 
-    currentTime = timeCalc(currentTime);
+    STCK(endTime);
+
+    currentTime =currentProc->p_time+ (endTime-startTime);
 
     return currentTime;
 }
@@ -392,29 +393,34 @@ cpu_t sys_6()
  * */
 void sys_7()
 {
-
+    debug(10171);
     cpu_t endTime; /*local variable*/
 
+    debug(devSema4[DEVCNT+DEVPERINT]);
+
     devSema4[DEVCNT + DEVPERINT] -= 1;
+
+    debug(devSema4[DEVCNT+DEVPERINT]);
 
     /*insert comment here -> still unsure what this does :(*/
     if (devSema4[DEVCNT + DEVPERINT] < 0)
     {
         softBlockCnt+=1;
 
-        currentProc->p_time = timeCalc(endTime);
+        STCK(endTime);
+        currentProc->p_time += (endTime-startTime);
 
         insertBlocked(&(devSema4[DEVCNT + DEVPERINT]), currentProc); /*wait on clock semaphore*/
         
         currentProc=NULL;
+        scheduleNext();
+
     }
     
     /*if we don't block, then we load the state and continue*/
-    else{
+   
+    loadState(currentProc);
 
-        loadState(currentProc);
-
-    }
 }
 
 /**
