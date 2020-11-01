@@ -36,10 +36,12 @@ void interruptHandler()
 
     /*local variables*/
     cpu_t stopTime;
+    cpu_t quantumTimer;
     /*end of local variables*/
 
     STCK(stopTime);
-    timeSlice = getTIMER();
+    quantumTimer = getTIMER();
+
     debug(200);
 
     if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0)
@@ -94,7 +96,7 @@ void interruptHandler()
         copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
         debug(210);
-        setSpecificQuantum(timeSlice);
+        setSpecificQuantum(quantumTimer);
     }
     else
     {
@@ -157,6 +159,7 @@ void pseudoClockInterrupt()
     if (currentProc == NULL)
     {
         debug(2023);
+        
         scheduleNext();
     }
     debug(2024);

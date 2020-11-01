@@ -250,9 +250,9 @@ void test() {
 
 	SYSCALL(CREATETHREAD, (int)&p3state, (int) NULL, 0);				/* start p3     */
 
-	stopHere();
-
 	print("p3 is started\n");
+	
+	stopHere();
 
 	SYSCALL(PASSERN, (int)&endp3, 0, 0);								/* P(endp3)     */
 
