@@ -131,20 +131,20 @@ int sys_1()
     if (newPcb == NULL)
     {
         debug(10112);
-        return FAILED; /*put thiis in v0 */
+        return FAILED; /*put -1 in v0 when we can't make a process*/
     }
 
     processCnt+=1;
-    allData = currentProc->p_s.s_a1;
+    allData = (state_t *)currentProc->p_s.s_a1;
     
     copyState(allData, &(newPcb->p_s)); /*copying states from parent to child*/
     supportData = (support_t *)currentProc->p_s.s_a2;
     debug(10113);
 
     /*if the support data is no null or not o then put newPCB on the support data*/
-    if (supportData != NULL || supportData != 0)
+    if ((supportData != NULL) || (supportData != 0))
     {
-        debug(101145);
+        debug(101135);
         newPcb->p_supportStruct = supportData;
     }
 
@@ -154,8 +154,8 @@ int sys_1()
     debug(10115);
 
     debug(processCnt);
-    /*time is set in pcb.c*/
-    return OK; /*put this in v0*/
+
+    return OK; /*put 0 in v0 when we make a process*/
 
 }
 
