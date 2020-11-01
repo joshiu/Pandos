@@ -55,7 +55,9 @@ void syscall()
         debug(1011);
         int returnInt;
         returnInt = sys_1(); /*doesnt like this declaration this is same for all the other sys*/
+        debug(10110);
         currentProc->p_s.s_v0 = returnInt;
+        debug(10111);
         loadState(currentProc);
     }
 
@@ -129,7 +131,7 @@ int sys_1()
     if (newPcb == NULL)
     {
         debug(10112);
-        return (FAILED); /*put thiis in v0 */
+        return FAILED; /*put thiis in v0 */
     }
 
     processCnt+=1;
@@ -142,6 +144,7 @@ int sys_1()
     /*if the support data is no null or not o then put newPCB on the support data*/
     if (supportData != NULL || supportData != 0)
     {
+        debug(101145);
         newPcb->p_supportStruct = supportData;
     }
 
@@ -152,7 +155,7 @@ int sys_1()
 
     debug(processCnt);
     /*time is set in pcb.c*/
-    return (OK); /*put this in v0*/
+    return OK; /*put this in v0*/
 
 }
 

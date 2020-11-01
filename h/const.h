@@ -69,7 +69,7 @@
 #define ON                  1
 #define OFF                 0
 #define FAILED              -1
-#define OK                  1
+#define OK                  0
 
 /* Memory related constants */
 #define KSEG0           0x00000000
