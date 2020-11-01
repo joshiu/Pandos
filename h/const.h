@@ -24,7 +24,7 @@
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
 #define STANQUANTUM     5000
-#define STANPSEUDOCLOCK 10000
+#define STANPSEUDOCLOCK 100000
 
 /* utility constants */
 #define	TRUE			    1

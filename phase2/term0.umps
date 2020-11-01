@@ -4,3 +4,5 @@ p2 starts
 p2 v's successfully
 p2 is OK
 p3 is started
+p3 - WAITCLOCK OK
+p3 - CPU time correctly maintained

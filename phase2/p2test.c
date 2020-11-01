@@ -252,8 +252,6 @@ void test() {
 
 	print("p3 is started\n");
 	
-	stopHere();
-
 	SYSCALL(PASSERN, (int)&endp3, 0, 0);								/* P(endp3)     */
 
 	SYSCALL(CREATETHREAD, (int)&p4state, (int) NULL, 0);				/* start p4     */
@@ -266,6 +264,9 @@ void test() {
 	pFiveSupport.sup_exceptContext[PGFAULTEXCEPT].c_pc =  (memaddr) p5mm;
 	
 	SYSCALL(CREATETHREAD, (int)&p5state, (int) &(pFiveSupport), 0); 	/* start p5     */
+	
+	stopHere();
+
 
 	SYSCALL(CREATETHREAD, (int)&p6state, (int) NULL, 0);				/* start p6		*/
 
