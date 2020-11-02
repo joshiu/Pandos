@@ -252,7 +252,10 @@ void test() {
 
 	print("p3 is started\n");
 	
+	stopHere();
+
 	SYSCALL(PASSERN, (int)&endp3, 0, 0);								/* P(endp3)     */
+
 
 	SYSCALL(CREATETHREAD, (int)&p4state, (int) NULL, 0);				/* start p4     */
 
@@ -265,12 +268,10 @@ void test() {
 
 	SYSCALL(CREATETHREAD, (int)&p5state, (int) &(pFiveSupport), 0); 	/* start p5     */	
 
-	stopHere();
-
 	SYSCALL(CREATETHREAD, (int)&p6state, (int) NULL, 0);				/* start p6		*/
 
 	SYSCALL(CREATETHREAD, (int)&p7state, (int) NULL, 0);				/* start p7		*/
-
+	
 	SYSCALL(PASSERN, (int)&endp5, 0, 0);								/* P(endp5)		*/ 
 
 	print("p1 knows p5 ended\n");
