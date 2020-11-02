@@ -142,9 +142,12 @@ int sys_1()
     debug(10113);
 
     /*if the support data is no null or not o then put newPCB on the support data*/
-    if ((supportData != NULL) || (supportData != 0))
+    if (supportData != NULL)
     {
         debug(101135);
+        newPcb->p_supportStruct = supportData;
+    }
+    else if(supportData != 0){
         newPcb->p_supportStruct = supportData;
     }
 
