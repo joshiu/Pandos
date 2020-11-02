@@ -152,6 +152,7 @@ int sys_1()
     }
 
     debug(10114);
+    debug((int)newPcb);
     insertProcQ(&readyQ, newPcb);
     insertChild(currentProc, newPcb); 
     debug(10115);

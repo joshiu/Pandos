@@ -15,6 +15,11 @@
 HIDDEN pcb_PTR pcbFree_h; /*contains all unused free pcbs*/
 /*End of Global Variables*/
 
+void debugA(pcb_t *p, pcb_t *q){
+    int j;
+    j=1;
+}
+
 /*--------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------Below: methods for the queue----------------------------------------*/
 /*------------------------------------------------------------------------------------------------------*/
@@ -84,14 +89,17 @@ int emptyProcQ(pcb_t*tp){
  * Note the double indirection through tp to allow for the possible updating of the tail pointer as well.
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
+    debugA(tp,p);
     if(emptyProcQ(*tp)){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
         return;
     } 
+    debugA(tp, p);
     /*if the queue has one or more element(s) */
     pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
+    debugA(tp, p);
     p->p_next = head;
     head -> p_prev = p;
     (*tp) -> p_next = p;
