@@ -101,10 +101,15 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     pcb_t *head = (*tp) -> p_next; /*Dummy pointer to the head of the queue.*/
     debugA(tp, p);
     p->p_next = head;
+    debugA(tp,p);
     head -> p_prev = p;
+    debugA(tp,p);
     (*tp) -> p_next = p;
+    debugA(tp,p);
     p -> p_prev = (*tp);
+    debugA(tp, p);
     (*tp) = p;
+    debugA(tp,p);
     return;
 }
 
