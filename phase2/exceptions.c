@@ -55,9 +55,8 @@ void syscall()
         debug(1011);
         int returnInt;
         returnInt = sys_1(); /*doesnt like this declaration this is same for all the other sys*/
-        debug(10110);
         currentProc->p_s.s_v0 = returnInt;
-        debug(10111);
+
         loadState(currentProc);
     }
 
@@ -78,6 +77,7 @@ void syscall()
     if (sysNum == 4)
     {
         debug(1014);
+        debug(((state_t *)BIOSDATAPAGE)->s_a1);
         sys_4();
     }
 
@@ -90,9 +90,7 @@ void syscall()
     if (sysNum == 6)
     {
         debug(1016);
-        cpu_t timeReturn = sys_6();
-        currentProc->p_s.s_v0 = timeReturn;
-        loadState(currentProc);
+        sys_6();
     }
 
     if (sysNum == 7)
@@ -142,14 +140,12 @@ int sys_1()
     debug(10113);
 
     /*if the support data is no null or not o then put newPCB on the support data*/
-    if (supportData != NULL)
+    if (!((supportData == NULL) || (supportData == 0)))
     {
         debug(101135);
         newPcb->p_supportStruct = supportData;
     }
-    else if(supportData != 0){
-        newPcb->p_supportStruct = supportData;
-    }
+ 
 
     debug(10114);
     debug((int)newPcb);
@@ -186,9 +182,9 @@ void sys_2(pcb_t *runningProc)
 
     /*if the running is the currentProc, remove it*/
     if (runningProc == currentProc)
-    { /*the running one is currentProc -> it suggests () here?? */
+    { 
         debug(10125);
-        outChild(runningProc);
+        outChild(runningProc);/*detach any relations and leave*/
     }
 
     /*if it is on the Q*/
@@ -208,12 +204,12 @@ void sys_2(pcb_t *runningProc)
             debug(12124);
             semNum = blockedChild->p_semAdd;
 
-            if(semNum>=devSema4[0] && semNum<=devSema4[DEVCNT+DEVPERINT]){
+            if(semNum>= &devSema4[0] && semNum <= &devSema4[DEVCNT+DEVPERINT]){
                 softBlockCnt-=1;
             }
 
             else{
-                semNum+=1;
+                *semNum+=1;
             }
         }
     }
@@ -288,14 +284,15 @@ void sys_4()
 
     debug(10141);
 
-    debug(currentProc->p_semAdd);
+    debug(((state_t *)BIOSDATAPAGE)->s_a1);
+
+    debug(currentProc->p_s.s_a1);
 
     semAddr = (int *)currentProc->p_s.s_a1;
     debug(*semAddr);
     
     *semAddr += 1;
     debug(*semAddr);
-    debug(* (int *)currentProc->p_s.s_a1);
 
     /* if semaddress is less than or equal to 0 do the V operation*/
     if (*semAddr <= 0)
@@ -381,7 +378,7 @@ void sys_5()
  * When requested, this service requests the Nucleus records 
  * (in the pcb: p time) the amount of processor time used by each process.
  * */
-cpu_t sys_6()
+void sys_6()
 {
 
     cpu_t currentTime; /*local variable*/
@@ -391,7 +388,8 @@ cpu_t sys_6()
 
     currentTime =currentProc->p_time+ (endTime-startTime);
 
-    return currentTime;
+    currentProc->p_s.s_v0 = currentTime;
+    loadState(currentProc);
 }
 
 /**
