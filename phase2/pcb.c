@@ -98,7 +98,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     } 
     debugA(tp, p);
     /*if the queue has one or more element(s) */
-    pcb_t *head = (*tp)->p_next; /*Dummy pointer to the head of the queue.*/
+    pcb_t *head = headProcQ(*tp); /*Dummy pointer to the head of the queue.*/
     debugA(head, p);
     p->p_next = head;
     debugA(head, tp);
@@ -107,7 +107,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
 
-    (*tp) = p;
+    (*tp) = p; /*this is the issue*/
     return;
 }
 

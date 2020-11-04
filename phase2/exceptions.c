@@ -148,7 +148,9 @@ int sys_1()
  
 
     debug(10114);
-    debug((int)newPcb);
+    debug(readyQ);
+    debug((headProcQ(readyQ)));
+
     insertProcQ(&readyQ, newPcb);
     insertChild(currentProc, newPcb); 
     debug(10115);
@@ -512,18 +514,4 @@ void copyState(state_t *source, state_t *copy)
     copy->s_status = source->s_status;
     copy->s_pc = source->s_pc;
     
-}
-
-/**
- * This method to finds the total time used
- * */
-cpu_t timeCalc(cpu_t time)
-{
-
-    cpu_t totalTime; /*local variable*/
-
-    STCK(time);
-    totalTime = currentProc->p_time + (time - startTime);
-
-    return totalTime;
 }
