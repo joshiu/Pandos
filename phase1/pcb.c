@@ -15,6 +15,11 @@
 HIDDEN pcb_PTR pcbFree_h; /*contains all unused free pcbs*/
 /*End of Global Variables*/
 
+void debugA(pcb_t *p, pcb_t *q){
+    int j;
+    j=1;
+}
+
 /*--------------------------------------------------------------------------------------------------------*/
 /*-----------------------------------Below: methods for the queue----------------------------------------*/
 /*------------------------------------------------------------------------------------------------------*/
@@ -35,7 +40,7 @@ pcb_t* allocPcb(){
     if(pcbFree_h == NULL){/*if the pcbFree list is empty, return NULL*/
         return NULL;
     }
-    
+
     /*initialize all our pointers*/
     pcb_t *p=removeProcQ(&pcbFree_h);/*set the pointer to point to the removed pcb*/
     p->p_next =NULL;
@@ -45,6 +50,8 @@ pcb_t* allocPcb(){
     p->p_child = NULL;
     p->p_sib_next = NULL;
     p->p_sib_prev =NULL;
+    p->p_time = 0;
+    p->p_supportStruct = NULL;
     return (p);/*return the pointer*/
 }
 
@@ -79,23 +86,30 @@ int emptyProcQ(pcb_t*tp){
 
 /**
  * Insert the pcb pointed to by p into the process queue whose tail pointer is pointed to by tp. 
- * Note the double indirection through tp to allow for the possible updating of the tail pointer as well.
+ * Note the double indirection through tp to allow for the possible updating of the tail pointer 
+ * as well. Note: the last entry is the tail, while tp->p_next is the head and tp->p_prev is the
+ * previous ent
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
-    if(emptyProcQ(*tp)){ /*if queue is empty...*/
+    debugA(tp,p);
+    if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
         return;
     } 
-
+    debugA(tp, p);
     /*if the queue has one or more element(s) */
     pcb_t *head = headProcQ(*tp); /*Dummy pointer to the head of the queue.*/
-    p->p_next = head;
-    head -> p_prev = p;
-    (*tp) -> p_next = p;
-    p -> p_prev = (*tp);
-    (*tp) = p;
+    debugA(head, p);
+    p->p_prev = head;
+    debugA(head, tp);
+    head -> p_next = p;
+
+    (*tp) -> p_prev = p;
+    p -> p_next = (*tp);
+
+    (*tp) = p;/*this is the issue?*/
     return;
 }
 
@@ -104,7 +118,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
  * Return NULL if the process queue was initially empty; 
  * otherwise return the pointer to the removed element. Update the process queue’s tail pointer if necessary.
 **/
-pcb_t*removeProcQ(pcb_t**tp){
+pcb_t* removeProcQ(pcb_t**tp){
     if(emptyProcQ(*tp)){/*if there is nothing*/
         return NULL;
     }
@@ -118,10 +132,10 @@ pcb_t*removeProcQ(pcb_t**tp){
     }
 
     /*if we have more than one thing*/
-    pcb_t *newHead = head ->p_next;/*Dummy pointer to the new head*/
+    pcb_t *newHead = head ->p_prev;/*Dummy pointer to the new head*/
     head->p_prev = NULL; 
-    (*tp) -> p_next = newHead; 
-    newHead ->p_prev = (*tp);
+    (*tp) -> p_prev = newHead; 
+    newHead ->p_next = (*tp);
     head ->p_next =NULL;
     return(head);/*return old head*/
 }
@@ -141,10 +155,10 @@ pcb_t*outProcQ(pcb_t* *tp, pcb_t* p){
     if(headProcQ(*tp) == p){ /*if the head is the pointer then call removeProcQ on tp*/
         return removeProcQ(tp);
     }
-    for(i=0; i<MAXPROC; i++){
 
+    for(i=0; i<MAXPROC; i++){
         if(dumTail != p){
-            dumTail= dumTail->p_next;/*recursive call that shifts dumTail*/
+            dumTail= dumTail->p_prev;/*iterative call that shifts dumTail*/
             continue;
         }
 
@@ -168,7 +182,7 @@ pcb_t*headProcQ(pcb_t*tp){
     if(emptyProcQ(tp)){
         return(NULL);
     }
-    return(tp->p_next);
+    return(tp->p_prev);
 }
 
 
@@ -199,22 +213,22 @@ int emptyChild(pcb_t *p){
  * This method makes the pcb pointed to by p a child of the pcb pointed to by prnt.
 **/
 void insertChild(pcb_t *prnt, pcb_t *p){
-
     if(emptyChild(prnt)){ /*if no other children, point at new child*/
         prnt ->p_child = p;
         p -> p_prnt = prnt;
         p->p_sib_next = NULL;
         p->p_sib_prev = NULL;
         return;
-    }
 
-    pcb_t *currentChild = prnt->p_child; /*dummy pointer to current child*/
-    p->p_sib_prev = currentChild;
-    p->p_next = NULL;
-    currentChild->p_sib_next = p;
-    prnt->p_child = p;
-    p->p_prnt = prnt;
-    return;
+    }if(!emptyChild(prnt)){/*if there are children: parent points to new child and new child points to sibling + parent.*/
+        pcb_t *currentChild = prnt->p_child;/*dummy pointer to current child*/
+        p->p_sib_prev = currentChild;
+        p->p_next = NULL;
+        currentChild ->p_sib_next = p;
+        prnt ->p_child = p;
+        p->p_prnt = prnt;
+        return;
+    } 
 }
 
 /**
@@ -258,9 +272,13 @@ pcb_t* outChild(pcb_t *p){
     if(p->p_prnt ==NULL){ /*if you don't have a parent then you are already an orphan*/
         return NULL;
     }
-    
+
     pcb_t *parent = p->p_prnt;/*dummy pointer to the parent*/
     if(p == parent->p_child){/*if you are the first child*/
+        return(removeChild(parent));
+    }
+
+    if(p->p_sib_prev == NULL && p->p_sib_next == NULL && p == p->p_prnt->p_child){/*if you are only child*/
         return(removeChild(parent));
     }
 

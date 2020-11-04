@@ -102,7 +102,7 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     /*if the queue has one or more element(s) */
     pcb_t *head = headProcQ(*tp); /*Dummy pointer to the head of the queue.*/
     debugA(head, p);
-    p->p_next = head;
+    p->p_prev = head;
     debugA(head, tp);
     head -> p_next = p;
 
@@ -134,8 +134,8 @@ pcb_t* removeProcQ(pcb_t**tp){
     /*if we have more than one thing*/
     pcb_t *newHead = head ->p_prev;/*Dummy pointer to the new head*/
     head->p_prev = NULL; 
-    (*tp) -> p_next = newHead; 
-    newHead ->p_prev = (*tp);
+    (*tp) -> p_prev = newHead; 
+    newHead ->p_next = (*tp);
     head ->p_next =NULL;
     return(head);/*return old head*/
 }
@@ -182,7 +182,7 @@ pcb_t*headProcQ(pcb_t*tp){
     if(emptyProcQ(tp)){
         return(NULL);
     }
-    return(tp->p_next);
+    return(tp->p_prev);
 }
 
 
