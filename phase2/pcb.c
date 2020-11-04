@@ -86,19 +86,17 @@ int emptyProcQ(pcb_t*tp){
  * previous ent
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
-    debugA(tp,p);
+
     if(emptyProcQ(*tp)==TRUE){ /*if queue is empty...*/
         p-> p_next = p; /*the head points to what p points to*/
         p->p_prev =p;
         (*tp) = p;/*the tail is whatever p point to*/
         return;
     } 
-    debugA(tp, p);
+
     /*if the queue has one or more element(s) */
     pcb_t *head = headProcQ(*tp); /*Dummy pointer to the head of the queue.*/
-    debugA(head, p);
     p->p_prev = head;
-    debugA(head, tp);
     head -> p_next = p;
 
     (*tp) -> p_prev = p;
