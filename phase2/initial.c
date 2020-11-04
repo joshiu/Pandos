@@ -82,7 +82,7 @@ int main()
         devSema4[counter] = 0;
     }
 
-    LDIT(STANPSEUDOCLOCK); /*load interval timer with 10000 ms*/
+    LDIT(STANPSEUDOCLOCK); /*load interval timer with 100000 ms*/
 
     /*Need to get top of RAM address*/
     RAMTOP(topRamAdd);
