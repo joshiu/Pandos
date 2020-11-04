@@ -40,11 +40,6 @@ cpu_t timeSlice;                            /*amount of time left in the time sl
 
 /* END GLOBAL VARIABLES*/
 
-/*--------------------------Debug Method-------------------------------------------------------------------*/
-void debug(int a)
-{
-    return;
-}
 
 /**
  * This method is only executed once. It performs the Nucleus initialization to set up the system.
@@ -101,18 +96,11 @@ int main()
         newPcb->p_s.s_t9 = (memaddr)test;
         newPcb->p_s.s_status = (ALLOFF | 0x00000004 | 0x0000FF00 | 0x08000000);
         newPcb->p_s.s_sp = topRamAdd;
-        /* figure out how to turn on timer, interrupts, and keep kernel mode*/
-        /* here, we turn all bits to 0, then turn on the previous interrupt enable it
-        then turn on interrupt mask and timer enable bit*/
-        /*interrupt mask needs to be turned off(by changing to 1), so when we enable interrupts
-         we need to disable the mask when we enable interrupts*/
 
         processCnt +=1;
         /*set p_time and p_supportStruct in pcb.c*/
 
         insertProcQ(&readyQ, newPcb);
-        debug(newPcb->p_semAdd);
-        debug(1);
         scheduleNext();
     }
 
@@ -132,34 +120,27 @@ void generalExceptHandler()
     int causeNum;
     /*end of local variables*/
 
-    debug(processCnt);
-
     programState = (state_t *)BIOSDATAPAGE;
     causeNum = (int)((programState->s_cause & 0x0000007C) >> 2); /*shift wrong?*/
-    debug(causeNum);
     
     /*we need to look at cause reg, then turn off all but bits 2-6 (from the back), then shift right 2*/
     if (causeNum == 8)
     {
-        debug(100);
         syscall();
     }
 
     else if (causeNum == 0)
     {
-        debug(200);
         interruptHandler();
     }
 
     else if (causeNum <= 3 && causeNum > 0)
     {
-        debug(321);
         TLBExceptHandler();
     }
 
     else{
          /*if all else fails*/
-         debug(66669);
          programTrap();
     }
 

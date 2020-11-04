@@ -13,7 +13,6 @@
 
 extern int main();
 extern void generalExceptHandler();
-extern void debug(int a);
 
 /* GLOBAL VARIABLES*/
 extern pcb_t *currentProc;

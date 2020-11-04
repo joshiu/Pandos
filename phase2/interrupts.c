@@ -42,68 +42,58 @@ void interruptHandler()
     STCK(stopTime);
     quantumTimer = getTIMER();
 
-    debug(200);
-
     if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0)
     {
         /*local timer interrupt*/
-        debug(201);
         localTimerInterrupt(stopTime);
     }
 
     else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0)
     {
         /*timer interrupt*/
-        debug(202);
         pseudoClockInterrupt();
     }
 
     else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000800) != 0)
     {
         /*disk interrupt*/
-        debug(203);
         deviceInterrupt(DISKINT);
     }
 
     else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00001000) != 0)
     {
         /*flash interrupt*/
-        debug(204);
         deviceInterrupt(FLASHINT);
     }
 
     else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0)
     {
         /*print interrupt*/
-        debug(205);
         deviceInterrupt(PRNTINT);
     }
 
     else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00008000) != 0)
     {
         /*terminal interrupt*/
-        debug(206);
         deviceInterrupt(TERMINT);
     }
 
-    debug(207);
     if (currentProc != NULL)
     {
-        debug(208);
 
         currentProc->p_time += (stopTime - startTime);
-        debug(209);
         copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
-        debug(210);
         setSpecificQuantum(quantumTimer);
     }
+
     else
     {
 
         /*if there is no current, then we have a problem!*/
         HALT();
     }
+
 }
 
 /**
@@ -113,7 +103,7 @@ void interruptHandler()
 **/
 void localTimerInterrupt(cpu_t timeStop)
 {
-    debug(2011);
+
     if (currentProc == NULL)
     {
         PANIC();
@@ -122,11 +112,9 @@ void localTimerInterrupt(cpu_t timeStop)
     currentProc->p_time += (timeStop-startTime);
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
-    debug(2012);
     insertProcQ(&readyQ, currentProc);
     currentProc = NULL;
 
-    debug(2013);
     scheduleNext();
 }
 
@@ -138,7 +126,6 @@ void localTimerInterrupt(cpu_t timeStop)
  * */
 void pseudoClockInterrupt()
 {
-    debug(2021);
 
     pcb_t *removedPcbs; /*local variable*/
 
@@ -148,7 +135,6 @@ void pseudoClockInterrupt()
 
     while (removedPcbs != NULL)
     {
-        debug(2022);
         insertProcQ(&readyQ, removedPcbs);
         softBlockCnt-=1;
         removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
@@ -158,11 +144,9 @@ void pseudoClockInterrupt()
 
     if (currentProc == NULL)
     {
-        debug(2023);
-        
         scheduleNext();
     }
-    debug(2024);
+
 }
 
 /** 
@@ -197,65 +181,52 @@ void deviceInterrupt(int lineNum)
 
     if ((bitMap & 0x00000001) != 0)
     {
-        debug(2061);
         deviceNumber = 0;
     }
 
     else if ((bitMap & 0x00000002) != 0)
     {
-        debug(2062);
         deviceNumber = 1;
     }
 
     else if ((bitMap & 0x00000004) != 0)
     {
-        debug(2063);
         deviceNumber = 2;
     }
 
     else if ((bitMap & 0x00000008) != 0)
     {
-        debug(2064);
         deviceNumber = 3;
     }
 
     else if ((bitMap & 0x00000010) != 0)
     {
-        debug(2065);
         deviceNumber = 4;
     }
 
     else if ((bitMap & 0x00000020) != 0)
     {
-        debug(2066);
         deviceNumber = 5;
     }
 
     else if ((bitMap & 0x00000040) != 0)
     {
-        debug(2067);
         deviceNumber = 6;
     }
 
     else if ((bitMap & 0x00000080) != 0)
     {
-        debug(2068);
         deviceNumber = 7;
     }
 
-    /*in this line, we look at the device in relation to DISKINT*/
-    /*so, assume the first device in DISKINT is 0, and we work from there*/
-    /*if we not in DISKINT, then we go to the end device,*/
-    /* and add deviceNumber to get to our device*/
-
     deviceSema4Num = ((lineNum - DISKINT) * DEVPERINT) + deviceNumber;
-    debug(devSema4[deviceSema4Num]);
 
     if (lineNum == TERMINT)
     {
         /*set the status to either receive or transmit*/
         devStatus = terminalInterrupt(&deviceSema4Num);
     }
+
     else
     {
 
@@ -264,19 +235,15 @@ void deviceInterrupt(int lineNum)
     }
 
     devSema4[deviceSema4Num] += 1;
-    debug(devSema4[deviceSema4Num]);
     
     /*we are done waiting for IO, so pop the pcb off*/
     if (devSema4[deviceSema4Num] <= 0)
     {
         pseudoSys4 = removeBlocked(&(devSema4[deviceSema4Num]));/*ask Mikey about this line*/
-        debug(7777);
-        debug(deviceSema4Num);
 
         if (pseudoSys4 != NULL)
         {
             /*if there is a process, then unblock and set the status*/
-            debug(77775);
             pseudoSys4->p_s.s_v0 = devStatus;
             insertProcQ(&readyQ, pseudoSys4);
             softBlockCnt-=1;
@@ -286,19 +253,15 @@ void deviceInterrupt(int lineNum)
 
     else{ 
         /*if there is nothing to unblock*/
-        debug(77776);
         saveState[deviceSema4Num] = devStatus; /*save the state because there's no where else*/
     }
 
     /*if there is no currentProc*/
     if (currentProc == NULL)
     {
-        debug(7778);
         scheduleNext();
     }
 
-    /*go back to interruptHandler if there is a currentProc*/
-    debug(7779);
 }
 
 /**

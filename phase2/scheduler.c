@@ -22,14 +22,13 @@
  * */
 void loadState(pcb_t *process)
 {
-    debug(404);
     currentProc = process;
     LDST(&(process->p_s));
 }
 
 
 /**
- * * This function takes a process from the ready queue 
+ * This function takes a process from the ready queue 
  * and makes it the current running process.
  * If the queue is empty, a deadlock is executed.
  * */
@@ -44,26 +43,22 @@ void scheduleNext()
     /*if readyQ is not Null remove newProc from readyQ (?)*/
     if (readyQ != NULL)
     {
-        debug(1000);
         newProc = removeProcQ(&readyQ);
 
         STCK(startTime);     /*record new process' starttime*/
         setTIMER(STANQUANTUM); /*set the quantum*/
-        debug(1001);
         loadState(newProc);
     }
 
     /*if we have no processes then we are done!*/
     if (processCnt == 0)
     {
-        debug(999);
         HALT(); /* we done! */
     }
 
     /*if process is more than 0 and soft block is more than zero set timer to infinity (this could be better)*/
     if (processCnt > 0 && softBlockCnt > 0)
     {
-        debug(110);
         currentProc = NULL;
         setTIMER(MAXINT); /*set timer to infinity*/
 
@@ -71,14 +66,12 @@ void scheduleNext()
         /*turn on current interrupt bit, masking off, and te bit on*/
 
         setSTATUS(waitState);
-        debug(111);
         WAIT();
     }
 
     /*something is wrong if softBlock is 0*/
     if (processCnt > 0 && softBlockCnt == 0)
     {
-        debug(928600);
         PANIC();
     }
 
