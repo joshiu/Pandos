@@ -86,7 +86,9 @@ int emptyProcQ(pcb_t*tp){
 
 /**
  * Insert the pcb pointed to by p into the process queue whose tail pointer is pointed to by tp. 
- * Note the double indirection through tp to allow for the possible updating of the tail pointer as well.
+ * Note the double indirection through tp to allow for the possible updating of the tail pointer 
+ * as well. Note: the last entry is the tail, while tp->p_next is the head and tp->p_prev is the
+ * previous ent
 **/
 void insertProcQ(pcb_t* *tp, pcb_t* p){
     debugA(tp,p);
@@ -100,14 +102,14 @@ void insertProcQ(pcb_t* *tp, pcb_t* p){
     /*if the queue has one or more element(s) */
     pcb_t *head = headProcQ(*tp); /*Dummy pointer to the head of the queue.*/
     debugA(head, p);
-    p->p_next = head;
+    p->p_prev = head;
     debugA(head, tp);
     head -> p_prev = p;
 
     (*tp) -> p_next = p;
     p -> p_prev = (*tp);
 
-    (*tp) = p; /*this is the issue*/
+    (*tp) = p;/*this is the issue?*/
     return;
 }
 
