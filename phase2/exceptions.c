@@ -445,7 +445,7 @@ void copyState(state_t *source, state_t *copy)
  * */
 void blockAndTime(int *address)
 {
-    cpu_t endTime;
+    cpu_t endTime; /*local variable*/
 
     STCK(endTime);
     currentProc->p_time += (endTime - startTime);
