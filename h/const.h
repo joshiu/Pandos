@@ -11,9 +11,24 @@
 #define IEPREVON          0x00000004 /*previous interrupt bit on*/
 #define IMASKON           0x0000FF00 /*interrupt masking turned on*/
 #define TIMEREBITON       0x08000000 /*timer enable bit on*/
+#define IECURRENTON       0x00000001 /*current interrupt bit on*/
+#define USERPREVON        0x00000008 /*user bit previous is on*/
 
 /*Cause Register bit constants*/
 #define GETCAUSE          0x0000007C /*keep on cause bits*/
+#define CLEARCAUSE        0xFFFFF00 /*clear the cause bits*/
+#define SHIFTCAUSE        2
+#define NOTPRIVINSTRUCT   10    
+
+/*Exception Constants*/
+#define MAKEPROCESS       1
+#define KILLPROCESS       2
+#define PASSERN           3
+#define VERHOGEN          4
+#define WAITAWHILE        5
+#define GETCLOCK          6  
+#define CLOCKSEMA4        7
+#define SUPPORTDATA       8
 
 /* Hardware & software constants */
 #define PAGESIZE		  4096			/* page size in bytes	*/

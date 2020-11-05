@@ -65,17 +65,17 @@ int main()
     initPcbs(); /*initalize all pcbs and set up free list*/
     initASL(); /*create sema4 free list and ASL*/
 
+    processCnt = 0;   /*Initialize process count*/
+    softBlockCnt = 0; /*Initialize soft block count*/
+    readyQ = mkEmptyProcQ();/*create queue*/
+    currentProc = NULL; /*set current process*/
+
     passUpVec = (passupvector_t *)PASSUPVECTOR; /*pointer that points to the PASSUPVECTOR*/
 
     passUpVec->tlb_refll_handler = (memaddr)uTLB_RefillHandler; /*set refill handler*/
     passUpVec->tlb_refll_stackPtr = STKPTR;
     passUpVec->exception_handler = (memaddr)generalExceptHandler; /*set exception handler*/
     passUpVec->exception_stackPtr = STKPTR;
-
-    processCnt = 0;   /*Initialize process count*/
-    softBlockCnt = 0; /*Initialize soft block count*/
-    readyQ = mkEmptyProcQ();/*create queue*/
-    currentProc = NULL; /*set current process*/
 
    /*set clock sema4 to 0*/
     devSema4[DEVCNT + DEVPERINT] = 0;
@@ -102,11 +102,11 @@ int main()
     /*if something allocated, put it on top of the RAM*/
     else
     {
-        newPcb->p_s.s_pc = (memaddr)test;
+        newPcb->p_s.s_pc = (memaddr)test; /*link to test file*/
         newPcb->p_s.s_t9 = (memaddr)test;
 
-        newPcb->p_s.s_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        newPcb->p_s.s_sp = topRamAdd;
+        newPcb->p_s.s_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON); /*get status*/
+        newPcb->p_s.s_sp = topRamAdd;/*set top of RAM*/
 
         processCnt +=1;/*new process ready to go!*/
 

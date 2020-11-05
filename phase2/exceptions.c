@@ -8,17 +8,32 @@
 #include "../h/initial.h"
 
 /**
- * This file occurs when the SYSCALL assembly instruction is executed. 
- * It places the appropriate values into registers a0-a3 before executing 
- * the SYSCALL instruction and it will execute based on the value in a0.
+ * This file occurs when a syscall, TLBexception, or programTrap is executed. 
+ * All appropriate values are placed in registers a0-a3 before executing 
+ * the SYSCALL instruction and will execute based on the value in a0.
+ * Program traps and TLBexcepts are independent of the value in a0
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
 
+/*********************FILE SPECIFIC METHODS******************************/
 
+HIDDEN int sys_1();
+HIDDEN void sys_2(pcb_t *runningProc);
+HIDDEN void sys_3();
+HIDDEN void sys_4();
+HIDDEN void sys_5();
+HIDDEN void sys_6();
+HIDDEN void sys_7();
+HIDDEN int sys_8();
+HIDDEN void blockAndTime(int *address);
+
+/*end of file specific methods*/
+
+/************************************BEGIN METHOD DECLARATION************************************/
 
 /**
- * This System Call method occurs when the SYSCALL assembly 
+ * This System Call (syscall) method occurs when the SYSCALL assembly 
  * intruction is executed. This places the appropriate values in 
  * the general purpose registers (a0-a3) and these values will
  * call the appropriate SYSCALL (1-8)
@@ -31,20 +46,25 @@ void syscall()
     sysNum = ((state_t *)BIOSDATAPAGE)->s_a0;
 
     /*are we in kernel mode?*/
-    if (sysNum >= 1 && sysNum <= 8 && (((state_t *)BIOSDATAPAGE)->s_status & 0x00000008) == 1)
-    { 
-        /*if the program is not in kernel, then make the cause a not privileged instruction*/
-        ((state_t *)BIOSDATAPAGE)->s_cause = (((state_t *)BIOSDATAPAGE)->s_cause & 0xFFFFF00) | (10 << 2);
-        programTrap(); 
+    if (sysNum >= 1 && sysNum <= 8 && (((state_t *)BIOSDATAPAGE)->s_status & USERPREVON) == 1)
+    {
+        /*if the program is not in kernel, then make cause a not privileged instruction*/
+
+        ((state_t *)BIOSDATAPAGE)->s_cause =
+            (((state_t *)BIOSDATAPAGE)->s_cause & CLEARCAUSE) | (NOTPRIVINSTRUCT << SHIFTCAUSE);
+
+        programTrap();
     }
 
-    copyState(((state_t *)BIOSDATAPAGE), &(currentProc->p_s)); 
-
     /*we are in kernel mode*/
-    currentProc->p_s.s_pc += 4;
+
+    /*store the states in currentProc*/
+    copyState(((state_t *)BIOSDATAPAGE), &(currentProc->p_s));
+
+    currentProc->p_s.s_pc += 4; /*update stack pointer to prevent looping*/
 
     /*checks to see the approiate sys call it should go to*/
-    if (sysNum == 1)
+    if (sysNum == MAKEPROCESS)
     {
         int returnInt;
         returnInt = sys_1();
@@ -53,50 +73,53 @@ void syscall()
         loadState(currentProc);
     }
 
-    if (sysNum == 2)
+    if (sysNum == KILLPROCESS)
     {
         sys_2(currentProc);
 
         scheduleNext(); /* don't return control after a terminate*/
     }
 
-    if (sysNum == 3)
+    if (sysNum == PASSERN)
     {
         sys_3();
     }
 
-    if (sysNum == 4)
+    if (sysNum == VERHOGEN)
     {
         sys_4();
     }
 
-    if (sysNum == 5)
+    if (sysNum == WAITAWHILE)
     {
         sys_5();
     }
 
-    if (sysNum == 6)
+    if (sysNum == GETCLOCK)
     {
         sys_6();
     }
 
-    if (sysNum == 7)
+    if (sysNum == CLOCKSEMA4)
     {
         sys_7();
     }
 
-    if (sysNum == 8)
+    if (sysNum == SUPPORTDATA)
     {
         int info = sys_8();
         currentProc->p_s.s_v0 = info;
         loadState(currentProc);
     }
 
+    /*if none of the above, then passup*/
     passUpOrDie(GENERALEXCEPT);
 }
 
 /**
- * When request this service creates a new process
+ * When requested this service creates a new process
+ * that is a child of the currentprocess. Inserts the
+ * new process into the readyQ and the parent's process tree. 
  * */
 int sys_1()
 {
@@ -115,9 +138,9 @@ int sys_1()
         return FAILED; /*put -1 in v0 when we can't make a process*/
     }
 
-    processCnt+=1;
+    processCnt += 1;
     allData = (state_t *)currentProc->p_s.s_a1;
-    
+
     copyState(allData, &(newPcb->p_s)); /*copying states from parent to child*/
     supportData = (support_t *)currentProc->p_s.s_a2;
 
@@ -128,14 +151,13 @@ int sys_1()
     }
 
     insertProcQ(&readyQ, newPcb);
-    insertChild(currentProc, newPcb); 
+    insertChild(currentProc, newPcb);
     return OK; /*put 0 in v0 when we make a process*/
-
 }
 
 /**
  * When requested this service causes the executing process 
- * to cease to exist.
+ * and its children to be wiped from existence.
  * */
 void sys_2(pcb_t *runningProc)
 {
@@ -152,8 +174,8 @@ void sys_2(pcb_t *runningProc)
 
     /*if the running is the currentProc, remove it*/
     if (runningProc == currentProc)
-    { 
-        outChild(runningProc);/*detach any relations and leave*/
+    {
+        outChild(runningProc); /*detach any relations and leave*/
     }
 
     /*if it is on the Q*/
@@ -171,21 +193,23 @@ void sys_2(pcb_t *runningProc)
         {
             semNum = blockedChild->p_semAdd;
 
-            if(semNum>= &devSema4[0] && semNum <= &devSema4[DEVCNT+DEVPERINT]){
-                softBlockCnt-=1;
+            if (semNum >= &devSema4[0] && semNum <= &devSema4[DEVCNT + DEVPERINT])
+            {
+                /*if process was blocked and we removed it*/
+                softBlockCnt -= 1;
             }
 
-            else{
-                *semNum+=1;
+            else
+            {
+                /*if process wasn't blocked*/
+                *semNum += 1;
             }
-
         }
     }
 
-
     /*once the are pulled off ready Q/unblocked, free them*/
     freePcb(runningProc);
-    processCnt-=1;
+    processCnt -= 1;
 
 }
 
@@ -201,28 +225,21 @@ void sys_3()
     cpu_t endTime;
     /*end of local variables*/
 
-    semAddr = (int *)currentProc->p_s.s_a1; 
+    semAddr = (int *)currentProc->p_s.s_a1;
 
     /*update CPU for current proc*/
-    *semAddr -= 1; 
+    *semAddr -= 1;
 
     /*if semAddress is less than 0 then do P operation (i think)*/
     if (*semAddr < 0)
     {
-        STCK(endTime);
-        currentProc->p_time += (endTime-startTime);
-        
-        insertBlocked(semAddr, currentProc);
-        currentProc = NULL;
-        
-        scheduleNext();
+        blockAndTime(semAddr);
     }
-    else{
+    else
+    {
 
         loadState(currentProc);
     }
-
-
 }
 
 /**
@@ -246,10 +263,10 @@ void sys_4()
         removedPcb = removeBlocked(semAddr);
 
         /*make sure what we insert exists*/
-        if(removedPcb != NULL){
+        if (removedPcb != NULL)
+        {
             insertProcQ(&readyQ, removedPcb);
         }
-        
     }
 
     loadState(currentProc);
@@ -273,7 +290,7 @@ void sys_5()
     lineNum = currentProc->p_s.s_a1;
     deviceNum = currentProc->p_s.s_a2;
 
-    deviceNum += ((lineNum - DISKINT) * DEVPERINT); /*find which device we in*/
+    deviceNum += ((lineNum - DISKINT) * DEVPERINT); /*find which device we're in*/
 
     /*if the interrupt is on line 7 and we are reading, then correct deviceNum*/
     if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3 == TRUE))
@@ -281,32 +298,25 @@ void sys_5()
         deviceNum += DEVPERINT;
     }
 
-    devSema4[deviceNum]-=1;
+    devSema4[deviceNum] -= 1;
 
     /*block process and move on, since we have not blocked anything*/
     if (devSema4[deviceNum] < 0)
     {
-        softBlockCnt+=1;
+        softBlockCnt += 1;
 
-        STCK(endTime);
-        currentProc->p_time += (endTime-startTime);
-
-        insertBlocked(&(devSema4[deviceNum]), currentProc);
-        currentProc = NULL;
-
-        scheduleNext(); /*we don't return control after a block*/
+        blockAndTime(&devSema4[deviceNum]);
     }
-    
-    /*so interrupt happened and ACK-ed, so load savedState and return*/
-        currentProc->p_s.s_v0 = saveState[deviceNum];
 
-        loadState(currentProc);
+    /*interrupt happened and ACK-ed, so load savedState and return*/
+    currentProc->p_s.s_v0 = saveState[deviceNum];
 
-} 
+    loadState(currentProc);
+}
 
 /**
- * When requested, this service requests the Nucleus records 
- * (in the pcb: p time) the amount of processor time used by each process.
+ * When requested, this service gives the total amount 
+ * of processor time used by the current process.
  * */
 void sys_6()
 {
@@ -317,7 +327,7 @@ void sys_6()
 
     STCK(endTime);
 
-    currentTime =currentProc->p_time+ (endTime-startTime);
+    currentTime = currentProc->p_time + (endTime - startTime);
 
     currentProc->p_s.s_v0 = currentTime;
     loadState(currentProc);
@@ -336,27 +346,20 @@ void sys_7()
     /*insert comment here -> still unsure what this does :(*/
     if (devSema4[DEVCNT + DEVPERINT] < 0)
     {
-        softBlockCnt+=1;
+        softBlockCnt += 1;
 
-        STCK(endTime);
-        currentProc->p_time += (endTime-startTime);
-
-        insertBlocked(&(devSema4[DEVCNT + DEVPERINT]), currentProc); /*wait on clock semaphore*/
-        
-        currentProc=NULL;
-        scheduleNext();
+        blockAndTime(&devSema4[DEVCNT+DEVPERINT]);
 
     }
-    
+
     /*if we don't block, then we load the state and continue*/
     loadState(currentProc);
-
 }
 
 /**
- * This service requests a pointer to the Current Process’s Support Structure. 
- * Hence,this service returns the value of p supportStruct from the Current Process’s pcb.
- * If there is no value, it returns NULL.
+ * This service procides a pointer to currenProc's Support Structure. 
+ * Hence, this service returns the value of p_supportStruct 
+ * from the Current Process’s pcb. If there is no value, it returns NULL.
  * */
 int sys_8()
 {
@@ -367,18 +370,16 @@ int sys_8()
         return ((support_t *)NULL);
     }
 
-    return (currentProc->p_supportStruct);
+    return ((int)currentProc->p_supportStruct);
 }
 
 /**
- * This method will handle program traps by derring it 
- * to the support level or killing it. (calling passUpOrDie)
+ * This method will handle program traps by calling passUpOrDie.
  * */
 void programTrap()
 {
 
     passUpOrDie(GENERALEXCEPT);
-
 }
 
 /**
@@ -388,7 +389,6 @@ void TLBExceptHandler()
 {
 
     passUpOrDie(PGFAULTEXCEPT);
-
 }
 
 /**
@@ -416,7 +416,7 @@ void passUpOrDie(int exceptNum)
 /*********************************** HELPER METHODS *********************************/
 
 /** 
- * Method for copying the states of one entry into the other
+ * Method for copying the states in the source into the copy
  * */
 void copyState(state_t *source, state_t *copy)
 {
@@ -424,7 +424,7 @@ void copyState(state_t *source, state_t *copy)
     int i; /*local variable*/
 
     /*insert comment here idk what this is doing honestly :(*/
-    for (i = 0; i < STATEREGNUM; i+=1)
+    for (i = 0; i < STATEREGNUM; i += 1)
     {
         copy->s_reg[i] = source->s_reg[i];
     }
@@ -433,5 +433,21 @@ void copyState(state_t *source, state_t *copy)
     copy->s_entryHI = source->s_entryHI;
     copy->s_status = source->s_status;
     copy->s_pc = source->s_pc;
-    
+}
+
+/**
+ * Method called to stop time keeping, record the time
+ * and block the process to the given address. Then schedule next. 
+ * */
+void blockAndTime(int *address)
+{
+    cpu_t endTime;
+
+    STCK(endTime);
+    currentProc->p_time += (endTime - startTime);
+
+    insertBlocked(address, currentProc);
+    currentProc = NULL;
+
+    scheduleNext();
 }

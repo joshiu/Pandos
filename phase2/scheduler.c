@@ -9,7 +9,9 @@
 
 /**
  * In this file, the nucleus implements a simple preemptive round-robin 
- * scheduling algorithm with a set time slice value.
+ * scheduling algorithm with a set time slice value. If the queue is empty,
+ * this file halts, waits, or panics, depending on the process count and
+ * soft block count. 
  * 
  * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
@@ -17,20 +19,25 @@
 
 
 /**
- * This method loads a process and sets it equal to the currentProcess.
- * Then we load the state of the current process and let it run
+ * This method loads the process and sets the currentProcess equal to it.
+ * Then we load the state of the process and let it run.
  * */
 void loadState(pcb_t *process)
 {
     currentProc = process;
+
     LDST(&(process->p_s));
+
 }
 
 
 /**
- * This function takes a process from the ready queue 
- * and makes it the current running process.
- * If the queue is empty, a deadlock is executed.
+ * This method takes a process from the ready queue and makes
+ * it the current running process, assigning it a quantum and 
+ * start time.
+ * 
+ * If the queue is empty, a deadlock, wait, or halt is executed,
+ * depending on the process count and soft block count.
  * */
 void scheduleNext()
 {
@@ -40,13 +47,14 @@ void scheduleNext()
     unsigned int waitState;
     /*end of local variables*/
 
-    /*if readyQ is not Null remove newProc from readyQ (?)*/
+    /*if readyQ is not Null remove newProc from readyQ*/
     if (readyQ != NULL)
     {
-        newProc = removeProcQ(&readyQ);
+        newProc = removeProcQ(&readyQ);/*remove process from queue*/
 
         STCK(startTime);     /*record new process' starttime*/
         setTIMER(STANQUANTUM); /*set the quantum*/
+        
         loadState(newProc);
     }
 
@@ -56,16 +64,17 @@ void scheduleNext()
         HALT(); /* we done! */
     }
 
-    /*if process is more than 0 and soft block is more than zero set timer to infinity (this could be better)*/
+    /*wait if process is more than 0 and soft block is more than zero*/
     if (processCnt > 0 && softBlockCnt > 0)
     {
         currentProc = NULL;
-        setTIMER(MAXINT); /*set timer to infinity*/
-
-        waitState = (ALLOFF | 0x00000001 | 0x0000FF00 | 0x08000000);
-        /*turn on current interrupt bit, masking off, and te bit on*/
+        setTIMER(MAXINT); /*set timer to literal infinity*/
+    
+        /*turn on current interrupt bit, masking, and timer enable bit*/
+        waitState = (ALLOFF | IECURRENTON | IMASKON | TIMEREBITON);
 
         setSTATUS(waitState);
+
         WAIT();
     }
 
@@ -76,14 +85,17 @@ void scheduleNext()
     }
 
     return;
-}
+    
+}/*end scheduler*/
 
 /**
- * We set the quantuam with a specific time on the process, then load that process.
+ * This method sets the quantum of the current to 
+ * a specific time, then loads that process.
  * */
 void setSpecificQuantum(cpu_t specificTime)
 {
     STCK(startTime); /*record new start time*/
     setTIMER(specificTime); /*set the quantum*/
+
     loadState(currentProc);
 }
