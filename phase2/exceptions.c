@@ -49,7 +49,7 @@ void syscall()
 
     sysNum = ((state_t *)BIOSDATAPAGE)->s_a0;
 
-    /*are we in kernel mode?*/
+    /*check if we are in kernel mode*/
     if (sysNum >= 1 && sysNum <= 8 && (((state_t *)BIOSDATAPAGE)->s_status & USERPREVON) == 1)
     {
         /*if the program is not in kernel, then make cause a not privileged instruction*/
@@ -197,9 +197,10 @@ void sys_2(pcb_t *runningProc)
         {
             semNum = blockedChild->p_semAdd;
 
+            /*if the semNum is somewhere between the first deSema4 and clock sema4*/
             if (semNum >= &devSema4[0] && semNum <= &devSema4[DEVCNT + DEVPERINT])
             {
-                /*if process was blocked and we removed it*/
+                /*process was blocked and we removed it*/
                 softBlockCnt -= 1;
             }
 
@@ -233,7 +234,7 @@ void sys_3()
     /*update CPU for current proc*/
     *semAddr -= 1;
 
-    /*if semAddress is less than 0 then do P operation (i think)*/
+    /*if semAddress is less than 0 then do P operation*/
     if (*semAddr < 0)
     {
         blockAndTime(semAddr);
@@ -365,13 +366,15 @@ void sys_7()
 int sys_8()
 {
 
-    /*if current process on support Struct is Null retrun support_t (i think)*/
+    /*if current process' support Struct is Null, return nothing */
     if (currentProc->p_supportStruct == NULL)
     {
         return ( (int)NULL);
     }
 
+    /*return the support struct if not null*/
     return ((int)currentProc->p_supportStruct);
+
 }
 
 /**
@@ -400,7 +403,7 @@ void TLBExceptHandler()
 void passUpOrDie(int exceptNum)
 {
 
-    /*if current process on support struct is NULL, sys 2 on currentproc (i think)*/
+    /*if current process has no support struct, then kill it*/
     if (currentProc->p_supportStruct == NULL)
     {
         sys_2(currentProc);
