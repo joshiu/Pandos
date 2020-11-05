@@ -18,6 +18,10 @@
 
 /*********************FILE SPECIFIC METHODS******************************/
 
+extern void passUpOrDie(int exceptNum);
+extern void programTrap();
+extern void copyState(state_t *source, state_t *copy);
+
 HIDDEN int sys_1();
 HIDDEN void sys_2(pcb_t *runningProc);
 HIDDEN void sys_3();
@@ -222,7 +226,6 @@ void sys_3()
 
     /*local variables*/
     int *semAddr;
-    cpu_t endTime;
     /*end of local variables*/
 
     semAddr = (int *)currentProc->p_s.s_a1;
@@ -283,7 +286,6 @@ void sys_5()
     /*local variables*/
     int lineNum;
     int deviceNum;
-    cpu_t endTime;
     /*end of local variables*/
 
     /* find the line num and device num*/
@@ -339,11 +341,10 @@ void sys_6()
  * */
 void sys_7()
 {
-    cpu_t endTime; /*local variable*/
-
+    /*decrement the address*/
     devSema4[DEVCNT + DEVPERINT] -= 1;
 
-    /*insert comment here -> still unsure what this does :(*/
+    /*increase softblock count and block the process on clock sema4*/
     if (devSema4[DEVCNT + DEVPERINT] < 0)
     {
         softBlockCnt += 1;
@@ -367,7 +368,7 @@ int sys_8()
     /*if current process on support Struct is Null retrun support_t (i think)*/
     if (currentProc->p_supportStruct == NULL)
     {
-        return ((support_t *)NULL);
+        return ( (int)NULL);
     }
 
     return ((int)currentProc->p_supportStruct);
@@ -423,7 +424,7 @@ void copyState(state_t *source, state_t *copy)
 
     int i; /*local variable*/
 
-    /*insert comment here idk what this is doing honestly :(*/
+    /*cycle through all the states and copy them from source to copy*/
     for (i = 0; i < STATEREGNUM; i += 1)
     {
         copy->s_reg[i] = source->s_reg[i];
