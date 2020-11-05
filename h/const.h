@@ -18,7 +18,24 @@
 #define GETCAUSE          0x0000007C /*keep on cause bits*/
 #define CLEARCAUSE        0xFFFFF00 /*clear the cause bits*/
 #define SHIFTCAUSE        2
-#define NOTPRIVINSTRUCT   10    
+#define NOTPRIVINSTRUCT   10
+#define PLTINTERRUPT      0x00000200
+#define PSEUDOCLOCKINT    0x00000400
+#define DISKINTERRUPT     0x00000800
+#define FLASHINTERRUPT    0x00001000
+#define PRINTINTERRUPT    0x00004000
+#define TERMINALINTERRUPT 0x00008000
+#define TRANSMITBITS      0x0F
+
+/*Device Constants*/
+#define DEVICE0           0x00000001
+#define DEVICE1           0x00000002
+#define DEVICE2           0x00000004
+#define DEVICE3           0x00000008
+#define DEVICE4           0x00000010
+#define DEVICE5           0x00000020
+#define DEVICE6           0x00000040
+#define DEVICE7           0x00000080
 
 /*Exception Constants*/
 #define MAKEPROCESS       1

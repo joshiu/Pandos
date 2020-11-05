@@ -8,9 +8,10 @@
 #include "../h/scheduler.h"
 
 /**
- * This file occurs when either a previously initiated I/O request completes 
- * or when either a Processor Local Timer (PLT) or the Interval Timer 
- * makes a 0x0000.0000 ⇒ 0xFFFF.FFFF transition.
+ * This file occurs when the exception cause number is 0. 
+ * The reasons this file is called is either a previously 
+ * initiated I/O request completes, or the quantum finishes
+ * or the Interval Timer makes a 0x0000.0000 ⇒ 0xFFFF.FFFF transition. 
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
@@ -25,8 +26,7 @@ HIDDEN int terminalInterrupt(int *deviceSema4Num);
 
 /**
  * This method is used to determine the appropriate action
- * when the timer generates an interrupt. Look at who interrupted 
- * me, look at Cause.ExcCode.
+ * when the an interrupt is generated. Look at the Cause.ExcCode.
  *  if line 1, it's a local timer interrupt
  *  if line 2, it's pseudo clock interrupt
  *  if 3-7, then device interrupt 
@@ -42,37 +42,37 @@ void interruptHandler()
     STCK(stopTime);
     quantumTimer = getTIMER();
 
-    if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000200) != 0)
+    if (((((state_t *)BIOSDATAPAGE)->s_cause) & PLTINTERRUPT) != 0)
     {
         /*local timer interrupt*/
         localTimerInterrupt(stopTime);
     }
 
-    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000400) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & PSEUDOCLOCKINT) != 0)
     {
         /*timer interrupt*/
         pseudoClockInterrupt();
     }
 
-    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00000800) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & DISKINTERRUPT) != 0)
     {
         /*disk interrupt*/
         deviceInterrupt(DISKINT);
     }
 
-    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00001000) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & FLASHINTERRUPT) != 0)
     {
         /*flash interrupt*/
         deviceInterrupt(FLASHINT);
     }
 
-    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00004000) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & PRINTINTERRUPT) != 0)
     {
         /*print interrupt*/
         deviceInterrupt(PRNTINT);
     }
 
-    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & 0x00008000) != 0)
+    else if (((((state_t *)BIOSDATAPAGE)->s_cause) & TERMINALINTERRUPT) != 0)
     {
         /*terminal interrupt*/
         deviceInterrupt(TERMINT);
@@ -97,9 +97,10 @@ void interruptHandler()
 }
 
 /**
- * The current process's time is up so this method checks if there
- * is a currrent process then it 
- * stops the clock and puts that process back on the readyQ.
+ * The current process's quantum is up so the method
+ * checks to see if there is a process, then adjusts
+ * the time and puts the process back on the ready queue. 
+ * Then schedules next. 
 **/
 void localTimerInterrupt(cpu_t timeStop)
 {
@@ -120,9 +121,10 @@ void localTimerInterrupt(cpu_t timeStop)
 
 /** 
  * This method is called when the pseudo clock
- * has finished and it sys4 everything that we sys7 on the clock.
- * It then resets clock to 0 and calls the scheduler and loads
- * the next process.
+ * reaches 0 and it frees everything that we blocked
+ * on the pseudo clock sema4 and puts it back on the ready
+ * queue. It then resets clock to 100000 and calls the 
+ * scheduler and loads the current process, if there is one.
  * */
 void pseudoClockInterrupt()
 {
@@ -150,12 +152,13 @@ void pseudoClockInterrupt()
 }
 
 /** 
- * This method looks at the which device is called (Bus register)
- * It then finds the bit number for the device. (with priority: 1 has highest
- * 7 has the lowest) It then saves the status code and acknowledges the interrupt
- * (Writes acknowledgement in the device register)
+ * This method looks at the Bus register and the bitmap
+ * for the device that called the interrupt. Then it finds 
+ * the bit number for the device, keepng priority (1 has highest
+ * 7 has the lowest). It then saves the status code and 
+ * writes the acknowledgement in the device register. 
  * 
- * look at everything in relation to DISKINT 
+ * Note: look at everything in relation to DISKINT 
  * (we make DISKINT our "0th" line and continue from there)
  * */
 void deviceInterrupt(int lineNum)
@@ -179,42 +182,42 @@ void deviceInterrupt(int lineNum)
         PANIC();
     }
 
-    if ((bitMap & 0x00000001) != 0)
+    if ((bitMap & DEVICE0) != 0)
     {
         deviceNumber = 0;
     }
 
-    else if ((bitMap & 0x00000002) != 0)
+    else if ((bitMap & DEVICE1) != 0)
     {
         deviceNumber = 1;
     }
 
-    else if ((bitMap & 0x00000004) != 0)
+    else if ((bitMap & DEVICE2) != 0)
     {
         deviceNumber = 2;
     }
 
-    else if ((bitMap & 0x00000008) != 0)
+    else if ((bitMap & DEVICE3) != 0)
     {
         deviceNumber = 3;
     }
 
-    else if ((bitMap & 0x00000010) != 0)
+    else if ((bitMap & DEVICE4) != 0)
     {
         deviceNumber = 4;
     }
 
-    else if ((bitMap & 0x00000020) != 0)
+    else if ((bitMap & DEVICE5) != 0)
     {
         deviceNumber = 5;
     }
 
-    else if ((bitMap & 0x00000040) != 0)
+    else if ((bitMap & DEVICE6) != 0)
     {
         deviceNumber = 6;
     }
 
-    else if ((bitMap & 0x00000080) != 0)
+    else if ((bitMap & DEVICE7) != 0)
     {
         deviceNumber = 7;
     }
@@ -246,14 +249,16 @@ void deviceInterrupt(int lineNum)
             /*if there is a process, then unblock and set the status*/
             pseudoSys4->p_s.s_v0 = devStatus;
             insertProcQ(&readyQ, pseudoSys4);
+
             softBlockCnt-=1;
         }
         
     }
 
     else{ 
-        /*if there is nothing to unblock*/
-        saveState[deviceSema4Num] = devStatus; /*save the state because there's no where else*/
+        /*nothing to unblock*/
+        /*save the state because there's no where else*/
+        saveState[deviceSema4Num] = devStatus; 
     }
 
     /*if there is no currentProc*/
@@ -265,7 +270,11 @@ void deviceInterrupt(int lineNum)
 }
 
 /**
- * Method comment here
+ * This method, when called, distinguishes between the 
+ * transmit and recieve cases of a terminal interrupt.
+ * It then acknowldeges the correct one and adjusts the 
+ * sema4 number accordingly. Then control is returned to 
+ * deviceInterrupts with the status of the device. 
  * */
 int terminalInterrupt(int *devSema4Num)
 {
@@ -280,13 +289,13 @@ int terminalInterrupt(int *devSema4Num)
 
     statusRecord = devRegisters->devreg[(*devSema4Num)].t_transm_status;
 
-    if ((statusRecord & 0x0F) != READY)
+    if ((statusRecord & TRANSMITBITS) != TRUE)
     {
         devRegisters->devreg[(*devSema4Num)].t_transm_command = ACK;
     }
+
     else
     {
-
         statusRecord = devRegisters->devreg[(*devSema4Num)].t_recv_status;
         devRegisters->devreg[(*devSema4Num)].t_recv_command = ACK;
 
