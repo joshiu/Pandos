@@ -12,7 +12,6 @@
 #include "../h/types.h"
 
 extern int main();
-extern void generalExceptHandler();
 
 /* GLOBAL VARIABLES*/
 extern pcb_t *currentProc;

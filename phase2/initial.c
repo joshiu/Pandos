@@ -10,12 +10,18 @@
 /**
  * This file is the entry point and performs Nucleus initialization. 
  * This entry point (main) is only executed once. 
- * This includes the process count, soft-block count, ready queue, current process, device sema4s (array of integers). 
- * Populates the pass up vector which is part of the BIOS Data Page, initialization data structures 
- * and variables, loads the timer, and instantiates a single process. 
- * It also has a case statement that looks at the cause registers.
+ * This includes the creation and initialization of processCnt, 
+ * softBlockCnt, readyQ, currentproc, devicesema4s (array of integers). 
+ * Populates the pass up vector which is part of the BIOS Data Page, 
+ * initialization data structures and variables, loads the timer, 
+ * and instantiates a single process. It also has a case statement that
+ * looks at the cause registers.
  * 
- * Written by Umang Joshi and Amy Kelley
+ * Also contains a general exception handler that accesses the cause number
+ * to sort exceptions into syscall exceptions, interrupts, program traps, 
+ * and TLB exceptions.
+ * 
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G.
  * */
 
 
@@ -42,7 +48,10 @@ cpu_t timeSlice;                            /*amount of time left in the time sl
 
 
 /**
- * This method is only executed once. It performs the Nucleus initialization to set up the system.
+ * This method is only executed once. It performs the Nucleus initialization
+ * to set up the system.
+ * 
+ * Note: devSema4[DEVCNT+DEVPERINT] will be used as our clock sema4
  * */
 int main()
 {
@@ -53,22 +62,22 @@ int main()
     memaddr topRamAdd;
     /*end of local variables*/
 
-    passUpVec = (passupvector_t *)PASSUPVECTOR; /*a pointer that points to the PASSUPVECTOR*/
+    initPcbs(); /*initalize all pcbs and set up free list*/
+    initASL(); /*create sema4 free list and ASL*/
 
-    passUpVec->tlb_refll_handler = (memaddr)uTLB_RefillHandler;
+    passUpVec = (passupvector_t *)PASSUPVECTOR; /*pointer that points to the PASSUPVECTOR*/
+
+    passUpVec->tlb_refll_handler = (memaddr)uTLB_RefillHandler; /*set refill handler*/
     passUpVec->tlb_refll_stackPtr = STKPTR;
-    passUpVec->exception_handler = (memaddr)generalExceptHandler; /*have not created this yet*/
+    passUpVec->exception_handler = (memaddr)generalExceptHandler; /*set exception handler*/
     passUpVec->exception_stackPtr = STKPTR;
-
-    initPcbs();
-    initASL();
 
     processCnt = 0;   /*Initialize process count*/
     softBlockCnt = 0; /*Initialize soft block count*/
-    readyQ = mkEmptyProcQ();
-    currentProc = NULL;
+    readyQ = mkEmptyProcQ();/*create queue*/
+    currentProc = NULL; /*set current process*/
 
-    /*loop that initializes all devicesema4s to 0 (idk if this needed)*/
+   /*set clock sema4 to 0*/
     devSema4[DEVCNT + DEVPERINT] = 0;
     
     /*Initializing the deviceSema4 list and setting everything in it to 0*/
@@ -79,69 +88,77 @@ int main()
 
     LDIT(STANPSEUDOCLOCK); /*load interval timer with 100000 ms*/
 
-    /*Need to get top of RAM address*/
+    /*set the top of RAM address*/
     RAMTOP(topRamAdd);
-    newPcb = allocPcb();
 
-    /*If the PCB is null, there is an issue*/
+    newPcb = allocPcb();/*create a new process*/
+
+    /*If nothing allocated, we have an issue*/
     if (newPcb == NULL)
     {
         PANIC();
     }
 
-    /*else we put on the PCB on top of the RAM*/
+    /*if something allocated, put it on top of the RAM*/
     else
     {
         newPcb->p_s.s_pc = (memaddr)test;
         newPcb->p_s.s_t9 = (memaddr)test;
-        newPcb->p_s.s_status = (ALLOFF | 0x00000004 | 0x0000FF00 | 0x08000000);
+
+        newPcb->p_s.s_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
         newPcb->p_s.s_sp = topRamAdd;
 
-        processCnt +=1;
-        /*set p_time and p_supportStruct in pcb.c*/
+        processCnt +=1;/*new process ready to go!*/
 
-        insertProcQ(&readyQ, newPcb);
-        scheduleNext();
+        insertProcQ(&readyQ, newPcb); /*insert into readyQ*/
+        
+        scheduleNext(); /*schedule next process*/
+
     }
 
-    return (0);
+    return (0); /*we're done with main*/
 
 } /*end of main*/
 
 
 /**
- * This method determines the case statement, whether it's an interrupt or syscall and calls the appropriate handler.
+ * This method determines the case statement, whether it's an 
+ * interrupt, syscall, TLB exception, or program trap and calls
+ * the appropriate handler.
  * */
 void generalExceptHandler()
 {
-
     /*local variables*/
     state_t *programState;
     int causeNum;
     /*end of local variables*/
 
-    programState = (state_t *)BIOSDATAPAGE;
-    causeNum = (int)((programState->s_cause & 0x0000007C) >> 2); /*shift wrong?*/
+    programState = (state_t *)BIOSDATAPAGE; /*check state in BIOSDATAPAGE*/
+
+    causeNum = (int)((programState->s_cause & GETCAUSE) >> 2); /*get cause number*/
     
-    /*we need to look at cause reg, then turn off all but bits 2-6 (from the back), then shift right 2*/
-    if (causeNum == 8)
-    {
+    if (causeNum == GOTOSYSCALL)
+    { 
+        /*if cause is 8, go to syscall*/
         syscall();
     }
 
-    else if (causeNum == 0)
+    else if (causeNum == GOTOINTERRUPTS)
     {
+        /*if cause is 0, go to interrupts*/
         interruptHandler();
     }
 
-    else if (causeNum <= 3 && causeNum > 0)
+    else if (causeNum <= PGFAULTCAUSEMAX && causeNum > PGFAULTCAUSEMIN)
     {
+        /*if cause between 0 and 3, go to TLBexception*/
         TLBExceptHandler();
     }
 
     else{
-         /*if all else fails*/
+         /*if any other cause number*/
          programTrap();
+
     }
 
-}
+}/*end generalExceptHandler*/

@@ -6,6 +6,14 @@
  * This header file contains utility constants & macro definitions.
  * 
  ****************************************************************************/
+/*Status Register bit constants*/
+#define ALLOFF            0x00000000
+#define IEPREVON          0x00000004 /*previous interrupt bit on*/
+#define IMASKON           0x0000FF00 /*interrupt masking turned on*/
+#define TIMEREBITON       0x08000000 /*timer enable bit on*/
+
+/*Cause Register bit constants*/
+#define GETCAUSE          0x0000007C /*keep on cause bits*/
 
 /* Hardware & software constants */
 #define PAGESIZE		  4096			/* page size in bytes	*/
@@ -14,7 +22,6 @@
 #define MAXPROC           20
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
-#define ALLOFF            0x00000000
 #define STKPTR            0x20001000
 
 /* timer, timescale, TOD-LO and other bus regs */
@@ -43,14 +50,14 @@
 #define DEVINTNUM		  5		  /* interrupt lines used by devices */
 #define DEVPERINT		  8		  /* devices per interrupt line */
 #define DEVREGLEN		  4		  /* device register field length in bytes, and regs per dev */	
-#define DEVREGSIZE	  16 		/* device register size in bytes */
+#define DEVREGSIZE	      16 	  /* device register size in bytes */
 #define DEVCNT   (DEVINTNUM * DEVPERINT) /*total number of devices */
 
 /* device register field number for non-terminal devices */
 #define STATUS			  0
 #define COMMAND			  1
-#define DATA0			    2
-#define DATA1			    3
+#define DATA0			  2
+#define DATA1			  3
 
 /* device register field number for terminal devices */
 #define RECVSTATUS  	0
@@ -83,7 +90,10 @@
 /* Exceptions related constants */
 #define	PGFAULTEXCEPT	  0
 #define GENERALEXCEPT	  1
-
+#define GOTOSYSCALL       8
+#define GOTOINTERRUPTS    0
+#define PGFAULTCAUSEMAX   3
+#define PGFAULTCAUSEMIN   0
 
 /* operations */
 #define	MIN(A,B)		((A) < (B) ? A : B)
