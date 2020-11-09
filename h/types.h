@@ -22,6 +22,7 @@ typedef struct context_t {
 unsigned int 	c_stackPtr, /* stack pointer value */
 				c_status, /* status reg value*/
 				c_pc; /* PC address*/
+				
 } context_t;
 
 typedef struct state_t {
@@ -33,12 +34,26 @@ typedef struct state_t {
 
 } state_t, *state_PTR;
 
+typedef struct pgTableEntry_t{
+	unsigned int pgTE_entryHi,
+				 pgTE_entryLo;
+} pgTableEntry_t;
+
+
 typedef struct support_t {
 int 			sup_asid;/* Process Id (asid)*/
 state_t			sup_exceptState[2];/* stored excpt states */
 context_t		sup_exceptContext[2]; /* pass up context*/
-/*... other fields to be added later*/
+int				sup_asid;
+pgTableEntry_t	sup_pageTable;
 } support_t;
+
+typedef struct swap_t{
+	int        sw_asid;
+	int        sw_pageN;
+	pgTableEntry_t *sw_pte;
+} swap_t;
+
 
 /* Exceptions related constants */
 #define PGFAULTEXCEPT 0

@@ -20,7 +20,7 @@
 /**
  * Method comment here
  * */
-initTLBsupport(){
+void initTLBsupport(){
 
 }
 
@@ -28,7 +28,7 @@ initTLBsupport(){
 /**
  * Method comment here
  * */
-uTLB_RefillHandler(){
+void uTLB_RefillHandler(){
 
     /*Local Variables*/
     int pageNumber;
