@@ -242,7 +242,7 @@ void deviceInterrupt(int lineNum)
     /*we are done waiting for IO, so pop the pcb off*/
     if (devSema4[deviceSema4Num] <= 0)
     {
-        pseudoSys4 = removeBlocked(&(devSema4[deviceSema4Num]));/*ask Mikey about this line*/
+        pseudoSys4 = removeBlocked(&(devSema4[deviceSema4Num]));
 
         if (pseudoSys4 != NULL)
         {
