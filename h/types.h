@@ -44,7 +44,6 @@ typedef struct support_t {
 int 			sup_asid;/* Process Id (asid)*/
 state_t			sup_exceptState[2];/* stored excpt states */
 context_t		sup_exceptContext[2]; /* pass up context*/
-int				sup_asid;
 pgTableEntry_t	sup_pageTable;
 } support_t;
 

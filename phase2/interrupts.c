@@ -20,7 +20,6 @@
 HIDDEN void localTimerInterrupt(cpu_t time);
 HIDDEN void pseudoClockInterrupt();
 HIDDEN void deviceInterrupt(int deviceType);
-HIDDEN int terminalInterrupt(int *deviceSema4Num);
 
 /* end of file specific methods */
 
@@ -93,7 +92,6 @@ void interruptHandler()
         /*if there is no current, then we have a problem!*/
         HALT();
     }
-
 }
 
 /**
@@ -104,18 +102,20 @@ void interruptHandler()
 **/
 void localTimerInterrupt(cpu_t timeStop)
 {
-
+    /*if we don't have a process, something wrong*/
     if (currentProc == NULL)
     {
         PANIC();
     }
 
-    currentProc->p_time += (timeStop-startTime);
+    /*write time into p_time*/
+    currentProc->p_time += (timeStop - startTime);
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_s));
 
     insertProcQ(&readyQ, currentProc);
     currentProc = NULL;
 
+    /*put back on Q and schedule next*/
     scheduleNext();
 }
 
@@ -128,27 +128,31 @@ void localTimerInterrupt(cpu_t timeStop)
  * */
 void pseudoClockInterrupt()
 {
+    /*start local variable*/
+    pcb_t *removedPcbs; 
+    /*end local variable*/
 
-    pcb_t *removedPcbs; /*local variable*/
-
-    LDIT(STANPSEUDOCLOCK);
+    LDIT(STANPSEUDOCLOCK);/*reset psuedoclock*/
 
     removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
 
+    /*as long as something needs to be removed, remove it*/
     while (removedPcbs != NULL)
     {
         insertProcQ(&readyQ, removedPcbs);
-        softBlockCnt-=1;
+        softBlockCnt -= 1;
         removedPcbs = removeBlocked(&(devSema4[DEVPERINT + DEVCNT]));
     }
 
     devSema4[DEVPERINT + DEVCNT] = 0;
 
+    /*if no proc, scedule next*/
     if (currentProc == NULL)
     {
         scheduleNext();
     }
 
+    /*return back to interruptHandler*/
 }
 
 /** 
@@ -166,11 +170,11 @@ void deviceInterrupt(int lineNum)
 
     /*Local Variables*/
     int deviceNumber;
-    int deviceSema4Num;
     unsigned int devStatus;
     unsigned int bitMap;
     volatile devregarea_t *deviceRegister;
     pcb_t *pseudoSys4;
+    volatile devregarea_t *devRegisters;
     /* End of Local Variables*/
 
     deviceRegister = (devregarea_t *)RAMBASEADDR;
@@ -182,6 +186,7 @@ void deviceInterrupt(int lineNum)
         PANIC();
     }
 
+    /*see which device is on*/
     if ((bitMap & DEVICE0) != 0)
     {
         deviceNumber = 0;
@@ -222,27 +227,45 @@ void deviceInterrupt(int lineNum)
         deviceNumber = 7;
     }
 
-    deviceSema4Num = ((lineNum - DISKINT) * DEVPERINT) + deviceNumber;
+    /*adjust the device number*/
+
+    deviceNumber += ((lineNum - DISKINT) * DEVPERINT);
 
     if (lineNum == TERMINT)
     {
-        /*set the status to either receive or transmit*/
-        devStatus = terminalInterrupt(&deviceSema4Num);
+        /*check to see if transmit or receive*/ 
+
+        devRegisters = (devregarea_t *)RAMBASEADDR;
+
+        devStatus = devRegisters->devreg[(deviceNumber)].t_transm_status;
+
+        if ((devStatus & TRANSMITBITS) != TRUE)
+        {
+            devRegisters->devreg[(deviceNumber)].t_transm_command = ACK;
+        }
+
+        else
+        {
+            devStatus = devRegisters->devreg[(deviceNumber)].t_recv_status;
+            devRegisters->devreg[(deviceNumber)].t_recv_command = ACK;
+
+            deviceNumber += DEVPERINT;
+        }
     }
 
     else
     {
 
-        devStatus = (deviceRegister->devreg[deviceSema4Num]).d_status; /*copy status*/
-        (deviceRegister->devreg[deviceSema4Num]).d_command = ACK;      /*ACK interrupt*/
+        devStatus = (deviceRegister->devreg[deviceNumber]).d_status; /*copy status*/
+        (deviceRegister->devreg[deviceNumber]).d_command = ACK;      /*ACK interrupt*/
     }
 
-    devSema4[deviceSema4Num] += 1;
-    
-    /*we are done waiting for IO, so pop the pcb off*/
-    if (devSema4[deviceSema4Num] <= 0)
+    devSema4[deviceNumber] += 1;
+
+    /*we are done waiting for IO, so unblock pcb */
+    if (devSema4[deviceNumber] <= 0)
     {
-        pseudoSys4 = removeBlocked(&(devSema4[deviceSema4Num]));
+        pseudoSys4 = removeBlocked(&(devSema4[deviceNumber]));
 
         if (pseudoSys4 != NULL)
         {
@@ -250,15 +273,15 @@ void deviceInterrupt(int lineNum)
             pseudoSys4->p_s.s_v0 = devStatus;
             insertProcQ(&readyQ, pseudoSys4);
 
-            softBlockCnt-=1;
+            softBlockCnt -= 1;
         }
-        
     }
 
-    else{ 
+    else
+    {
         /*nothing to unblock*/
         /*save the state because there's no where else*/
-        saveState[deviceSema4Num] = devStatus; 
+        saveState[deviceNumber] = devStatus;
     }
 
     /*if there is no currentProc*/
@@ -266,41 +289,4 @@ void deviceInterrupt(int lineNum)
     {
         scheduleNext();
     }
-
-}
-
-/**
- * This method, when called, distinguishes between the 
- * transmit and recieve cases of a terminal interrupt.
- * It then acknowldeges the correct one and adjusts the 
- * sema4 number accordingly. Then control is returned to 
- * deviceInterrupts with the status of the device. 
- * */
-int terminalInterrupt(int *devSema4Num)
-{
-    /*return device status after distinguishing between transmit and receive case*/
-
-    /*local variables*/
-    unsigned int statusRecord;
-    volatile devregarea_t *devRegisters;
-    /*end of local variables*/
-
-    devRegisters = (devregarea_t *)RAMBASEADDR;
-
-    statusRecord = devRegisters->devreg[(*devSema4Num)].t_transm_status;
-
-    if ((statusRecord & TRANSMITBITS) != TRUE)
-    {
-        devRegisters->devreg[(*devSema4Num)].t_transm_command = ACK;
-    }
-
-    else
-    {
-        statusRecord = devRegisters->devreg[(*devSema4Num)].t_recv_status;
-        devRegisters->devreg[(*devSema4Num)].t_recv_command = ACK;
-
-        (*devSema4Num) += DEVPERINT;
-    }
-
-    return (statusRecord);
 }

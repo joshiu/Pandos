@@ -29,8 +29,9 @@ HIDDEN void sys_4();
 HIDDEN void sys_5();
 HIDDEN void sys_6();
 HIDDEN void sys_7();
-HIDDEN int sys_8();
+HIDDEN support_t * sys_8();
 HIDDEN void blockAndTime(int *address);
+HIDDEN cpu_t calcTime();
 
 /*end of file specific methods*/
 
@@ -92,26 +93,30 @@ void syscall()
     if (sysNum == VERHOGEN)
     {
         sys_4();
+        loadState(currentProc);
     }
 
     if (sysNum == WAITAWHILE)
     {
         sys_5();
+        loadState(currentProc);
     }
 
     if (sysNum == GETCLOCK)
     {
         sys_6();
+        loadState(currentProc);
     }
 
     if (sysNum == CLOCKSEMA4)
     {
         sys_7();
+        loadState(currentProc);
     }
 
     if (sysNum == SUPPORTDATA)
     {
-        int info = sys_8();
+        support_t *info = sys_8();
         currentProc->p_s.s_v0 = info;
         loadState(currentProc);
     }
@@ -272,8 +277,6 @@ void sys_4()
             insertProcQ(&readyQ, removedPcb);
         }
     }
-
-    loadState(currentProc);
 }
 
 /**
@@ -313,8 +316,6 @@ void sys_5()
 
     /*interrupt happened and ACK-ed, so load savedState and return*/
     currentProc->p_s.s_v0 = saveState[deviceNum];
-
-    loadState(currentProc);
 }
 
 /**
@@ -323,17 +324,9 @@ void sys_5()
  * */
 void sys_6()
 {
-    /*local variables*/
-    cpu_t currentTime;
-    cpu_t endTime;
-    /*end of local variables*/
+     /*calculate the total time and set to v0*/
 
-    STCK(endTime);
-
-    currentTime = currentProc->p_time + (endTime - startTime);
-
-    currentProc->p_s.s_v0 = currentTime;
-    loadState(currentProc);
+    currentProc->p_s.s_v0 = calcTime();
 }
 
 /**
@@ -354,8 +347,7 @@ void sys_7()
 
     }
 
-    /*if we don't block, then we load the state and continue*/
-    loadState(currentProc);
+    /*if we don't block, then return to syscall*/
 }
 
 /**
@@ -363,17 +355,17 @@ void sys_7()
  * Hence, this service returns the value of p_supportStruct 
  * from the Current Process’s pcb. If there is no value, it returns NULL.
  * */
-int sys_8()
+support_t* sys_8()
 {
 
-    /*if current process' support Struct is Null, return nothing */
-    if (currentProc->p_supportStruct == NULL)
+    /*if current process' support Struct is not Null, return pointer */
+    if (currentProc->p_supportStruct != NULL)
     {
-        return ( (int)NULL);
+        return (currentProc->p_supportStruct);
     }
 
-    /*return the support struct if not null*/
-    return ((int)currentProc->p_supportStruct);
+    /*return null if nothing there*/
+    return (NULL);
 
 }
 
@@ -402,19 +394,31 @@ void TLBExceptHandler()
  * */
 void passUpOrDie(int exceptNum)
 {
+    /*start local variables*/
+    unsigned int stackPtr;
+    unsigned int status;
+    unsigned int pc;
+    /*end local variables*/
 
-    /*if current process has no support struct, then kill it*/
-    if (currentProc->p_supportStruct == NULL)
+    
+
+    /*if current process has support struct, passup*/
+    if (currentProc->p_supportStruct != NULL)
     {
-        sys_2(currentProc);
-        scheduleNext();
+        copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
+
+        stackPtr = currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr;
+        status = currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_status;
+        pc = currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_pc;
+
+        LDCXT(stackPtr, status, pc);
     }
+    
+    /*otherwise die*/
+    sys_2(currentProc);
 
-    copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
-
-    LDCXT(currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr,
-          currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_status,
-          currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_pc);
+    scheduleNext();
+    
 }
 
 /*********************************** HELPER METHODS *********************************/
@@ -433,6 +437,8 @@ void copyState(state_t *source, state_t *copy)
         copy->s_reg[i] = source->s_reg[i];
     }
 
+    /*copy the last 4*/
+
     copy->s_cause = source->s_cause;
     copy->s_entryHI = source->s_entryHI;
     copy->s_status = source->s_status;
@@ -445,13 +451,28 @@ void copyState(state_t *source, state_t *copy)
  * */
 void blockAndTime(int *address)
 {
-    cpu_t endTime; /*local variable*/
+    /*time calculations*/
+    currentProc->p_time = calcTime();
 
-    STCK(endTime);
-    currentProc->p_time += (endTime - startTime);
-
+    /*block process*/
     insertBlocked(address, currentProc);
     currentProc = NULL;
 
     scheduleNext();
+}
+
+/** Method that calculates the total time used
+ * by an process and returns the time
+ * */
+cpu_t calcTime(){
+    cpu_t endtime;
+    cpu_t totalTime;
+
+    STCK(endtime);
+
+    totalTime = currentProc->p_time + (endtime-startTime);
+
+    return(totalTime);
+
+    
 }
