@@ -175,56 +175,67 @@ void deviceInterrupt(int lineNum)
     volatile devregarea_t *deviceRegister;
     pcb_t *pseudoSys4;
     volatile devregarea_t *devRegisters;
+    int foundDev;
     /* End of Local Variables*/
+
+    foundDev = FALSE; /*tells us if we found the deviceNum*/
 
     deviceRegister = (devregarea_t *)RAMBASEADDR;
     bitMap = deviceRegister->interrupt_dev[(lineNum - DISKINT)];
 
     /*if the bitMap has nothing in it, something is wrong*/
-    if (&(bitMap) == NULL)
+    if ((&(bitMap) == NULL) & !(foundDev))
     {
         PANIC();
     }
 
     /*see which device is on*/
-    if ((bitMap & DEVICE0) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev) )
     {
         deviceNumber = 0;
+        foundDev = TRUE; /*we found the device!*/
     }
 
-    else if ((bitMap & DEVICE1) != 0)
+    if (((bitMap & DEVICE1) != 0) & !(foundDev))
     {
         deviceNumber = 1;
+        foundDev = TRUE;
     }
 
-    else if ((bitMap & DEVICE2) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev))
     {
         deviceNumber = 2;
+        foundDev = TRUE;
     }
 
-    else if ((bitMap & DEVICE3) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev))
     {
         deviceNumber = 3;
+        foundDev = TRUE;
     }
 
-    else if ((bitMap & DEVICE4) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev))
     {
         deviceNumber = 4;
+        foundDev = TRUE;
     }
 
-    else if ((bitMap & DEVICE5) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev))
     {
         deviceNumber = 5;
+        foundDev = TRUE;
     }
 
-    else if ((bitMap & DEVICE6) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev))
     {
         deviceNumber = 6;
+        foundDev = TRUE;
     }
 
-    else if ((bitMap & DEVICE7) != 0)
+    if (((bitMap & DEVICE0) != 0) & !(foundDev))
     {
         deviceNumber = 7;
+        foundDev = TRUE;
     }
 
     /*adjust the device number*/

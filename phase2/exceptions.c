@@ -202,7 +202,7 @@ void sys_2(pcb_t *runningProc)
         {
             semNum = blockedChild->p_semAdd;
 
-            /*if the semNum is somewhere between the first deSema4 and clock sema4*/
+            /*if the semNum is valid*/
             if (semNum >= &devSema4[0] && semNum <= &devSema4[DEVCNT + DEVPERINT])
             {
                 /*process was blocked and we removed it*/
@@ -282,7 +282,8 @@ void sys_4()
 /**
  * When requested, this serivce always transitions the 
  * Current Process from the “running” state to a “blocked”state, waiting 
- * for an interrupt to remove it. 
+ * for an interrupt to remove it. If the interrupt already occurred, 
+ * the saved state is loaded and put in v0. 
  * */
 void sys_5()
 {
@@ -399,8 +400,6 @@ void passUpOrDie(int exceptNum)
     unsigned int status;
     unsigned int pc;
     /*end local variables*/
-
-    
 
     /*if current process has support struct, passup*/
     if (currentProc->p_supportStruct != NULL)
