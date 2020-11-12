@@ -94,7 +94,7 @@ void syscall()
         sys_4();
     }
 
-    if (sysNum == WAITAWHILE)
+    if (sysNum == WAITIO)
     {
         sys_5();
     }

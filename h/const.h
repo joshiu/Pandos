@@ -42,7 +42,7 @@
 #define KILLPROCESS       2
 #define PASSERN           3
 #define VERHOGEN          4
-#define WAITAWHILE        5
+#define WAITIO        5
 #define GETCLOCK          6  
 #define CLOCKSEMA4        7
 #define SUPPORTDATA       8
@@ -55,6 +55,8 @@
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
 #define STKPTR            0x20001000
+#define POOLSIZE          32
+#define MAXPAGE           32
 
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000

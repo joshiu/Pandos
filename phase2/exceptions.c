@@ -96,7 +96,7 @@ void syscall()
         loadState(currentProc);
     }
 
-    if (sysNum == WAITAWHILE)
+    if (sysNum == WAITIO)
     {
         sys_5();
         loadState(currentProc);
