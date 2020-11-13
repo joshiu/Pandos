@@ -4,23 +4,31 @@
 #include "../h/initial.h"
 
 /**
- * Insert file comment here :)
+ * This file is part of the Support Level of the Nucleus. It's job is 
+ * to support the address translation/virtual memory. Each U-proc will execute in
+ * its own identically structured logical address space (kuseg), with a unique
+ * ASID. (Address space identifiers: i.e. process ID)
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
 
 
+
+
 /****************GLOBAL VARIABLES****************/
 
-swap_t *swapPool[POOLSIZE];
-int swapSem;
+swap_t *swapPool[POOLSIZE]; /*declares the array for the swap pool */
+int swapSem; /*declares swap pool sema4*/
 
 /****************END OF GLOBALS*****************/
 
+
+
 /**
- * Method comment here
+ * This method initilzates the global shared page.
  * */
 void initTLBsupport(){
+
     /*Local Variables*/
     int counter;
     /*End local variables*/
@@ -34,7 +42,8 @@ void initTLBsupport(){
 
 
 /**
- * Method comment here
+ * This method is an event that occurs when there's a cache-miss and it's job is
+ * to insert the  the TLB the missing Page Table entry and restart the instruction.
  * */
 void uTLB_RefillHandler(){
 
@@ -60,10 +69,14 @@ void uTLB_RefillHandler(){
 }
 
 /**
- * Method comment here
+ * This method takes the passed up page faults. Then it will
+ * follow the appropriate steps to handle the page fault.
  * */
 void pageHandler(){
+
+    /*Local Variables*/
     support_t *suppData;
+    /*End of Local Varaibles*/
  
     SYSCALL(SUPPORTDATA, (int)NULL, (int)NULL, (int)NULL);
 
