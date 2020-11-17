@@ -46,6 +46,11 @@
 #define GETCLOCK          6  
 #define CLOCKSEMA4        7
 #define SUPPORTDATA       8
+#define TERMINATE         9
+#define GETTOD            10
+#define WRITETOPRINTER    11
+#define WRITETOTERMINAL   12
+#define READFROMTERMINAL  13
 
 /* Hardware & software constants */
 #define PAGESIZE		  4096			/* page size in bytes	*/
