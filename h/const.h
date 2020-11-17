@@ -42,7 +42,7 @@
 #define KILLPROCESS       2
 #define PASSERN           3
 #define VERHOGEN          4
-#define WAITIO        5
+#define WAITIO            5
 #define GETCLOCK          6  
 #define CLOCKSEMA4        7
 #define SUPPORTDATA       8
