@@ -15,9 +15,9 @@
 pramaters but I wanted to set everything up or maybe i just fucked everything up idk*/
 HIDDEN void sys_9();
 HIDDEN void sys_10();
-HIDDEN void sys_11();
-HIDDEN void sys_12();
-HIDDEN void sys_13();
+HIDDEN void sys_11(support_t *supportStruct);
+HIDDEN void sys_12(support_t *supportStruct);
+HIDDEN void sys_13(support_t *supportStruct);
 
 /**end of file specific methods**/
 
@@ -85,7 +85,7 @@ void sys_10(){
  * a line of output (string of characters) has been transmitted to the printer device
  * associated with the U-proc
  * */
-void sys_11(){
+void sys_11(support_t *supportStruct){
 
 }
 
@@ -95,7 +95,7 @@ void sys_11(){
  * a line of output (string of characters) has been transmitted to the terminal device
  * associated with the U-proc
  * */
-void sys_12(){
+void sys_12(support_t *supportStruct){
 
 }
 
@@ -105,6 +105,6 @@ void sys_12(){
  *  until a line of input (string of characters) has been transmitted from the 
  * terminal device associated with the U-proc.
  * */
-void sys_13(){
+void sys_13(support_t *supportStruct){
 
 }
