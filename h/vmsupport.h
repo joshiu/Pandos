@@ -10,8 +10,8 @@
 
 #include "../h/types.h"
 
-
-/* GLOBAL VARIABLES*/
-
+extern void initTLBsupport();
+extern void uTLB_RefillHandler();
+extern void pageHandler();
 
 #endif
