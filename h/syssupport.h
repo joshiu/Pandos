@@ -10,9 +10,7 @@
 
 #include "../h/types.h"
 
-
-
-/* GLOBAL VARIABLES*/
+extern void syscall();
 
 
 #endif
