@@ -4,7 +4,10 @@
 #include "../h/initial.h"
 
 /**
- * This file 
+ * This file provides the system support for SYS call 
+ * instructions. All appropriate values are placed in registers a0-a3 before executing 
+ * the SYSCALL instruction and will execute based on the value in a0. 
+ * This file also contains other support functions.
  * 
  * Written by Umang Joshi and Amy Kelley
  * */
