@@ -24,9 +24,12 @@ HIDDEN void sys_13(support_t *supportInfo);
 
 /**end of file specific methods**/
 
+
+
+
 /**
- * Insert method comment here
- * Gen except for u procs
+ * This is the generalExceptHandler for phase3 (or uProcs)
+ * It will do the same thing as the phase2 verison.
  * */
 void userGeneralExceptHandler(){
 
@@ -48,7 +51,7 @@ void userGeneralExceptHandler(){
 }
 
 /**
- * Comment here
+ * This method will kill the program.
  * */
 void uProgramTrap(support_t *supportInfo){
 
@@ -56,7 +59,7 @@ void uProgramTrap(support_t *supportInfo){
 }
 
 /**
- * Helper method comment
+ * This method will block the semAddr (using Passern)
  * */
 void block(int * semAddr){
 
@@ -65,7 +68,7 @@ void block(int * semAddr){
 }
 
 /**
- * Helper method comment
+ * This method will call a V on the semAddr
  * */
 void unblock(int *semAddr){
 
@@ -74,7 +77,8 @@ void unblock(int *semAddr){
 }
 
 /**
- * Helper method comment
+ * This method will kill the currentProc.
+ * This is needed for sys9.
  * */
 void killProc(int *semAddr){
 
@@ -89,7 +93,7 @@ void killProc(int *semAddr){
 }
 
 /**
- * Helper method comment
+ * This method enables interrupts for phase 3 which is required.
  * */
 void enableInterrupts(int turnON){
     unsigned int statusReg;
@@ -108,9 +112,8 @@ void enableInterrupts(int turnON){
 }
 
 /**
- * Helper method comment
+ *  This method will loadState.
  * */
-
 void userLoadState(state_t *loadState){
     
     LDST(loadState);
@@ -174,8 +177,6 @@ void userSyscall(support_t *supportInfo){
  * */
 void sys_9(){
 
-    /*READ ME: I understand what to do here, (similar to sys2) but I'm not 100% sure on the new
-    U-proc delcarations and everything. Which also make doing sys 10 weird*/
     killProc(NULL);
 
 }
