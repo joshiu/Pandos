@@ -17,7 +17,7 @@
 
 /****************GLOBAL VARIABLES****************/
 
-swap_t *swapPool[POOLSIZE]; /*declares the array for the swap pool */
+swap_t swapPool[POOLSIZE]; /*declares the array for the swap pool */
 int swapSem; /*declares swap pool sema4*/
 
 /****************END OF GLOBALS*****************/
@@ -36,7 +36,7 @@ void initTLBsupport(){
     swapSem = 1;
 
     for(counter = 0; counter < POOLSIZE; counter++){
-        swapPool[counter]->sw_asid = -1;
+        swapPool[counter].sw_asid = -1;
     }
 }
 
@@ -52,15 +52,13 @@ void uTLB_RefillHandler(){
     state_t *oldState;
     /*End of Local Variables*/
 
-    oldState = ((state_t *)BIOSDATAPAGE);
-    /*
-    pageNumber = ((oldState ->s_entryHI) & VMGETPG) >> VPNSHIFT;
-    note VMGETPG and VPNSHIFT are bit code
+    oldState = (state_t *)BIOSDATAPAGE;
+    
+    pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
     pageNumber %= MAXPAGE;
 
-    oldState->s_entryHI->sup_pageTable[pageNumber].entryHI; 
-    oldState->s_entryHI->sup_pageTable[pageNumber].entryLo;
-    */
+    setENTRYHI(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryHi);
+    setENTRYLO(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryLo);
 
     TLBWR();
 
@@ -105,5 +103,7 @@ void pageHandler(){
     /*then update backing, sys4 on swap sema4 and LDSTs*/
 
 }
+
+
 
 /**************HELPER FUNCTIONS BELOW*************/

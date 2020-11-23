@@ -293,7 +293,7 @@ void sys_12(support_t *supportInfo){
         deviceRegister->devreg[devSema4Num].d_data0 = *letterToPrint;
         deviceRegister -> devreg[devSema4Num].d_command = TRANSMITCHAR;
         
-        status = SYSCALL(WAITIO, PRNTINT, idNum-1, 0);
+        status = SYSCALL(WAITIO, TERMINT, idNum-1, 0);
 
         if((status & 0xFF) != OKCHARTRANS){
             error = TRUE;
