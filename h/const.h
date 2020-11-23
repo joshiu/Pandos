@@ -6,6 +6,15 @@
  * This header file contains utility constants & macro definitions.
  * 
  ****************************************************************************/
+/* Constants for Page Table*/
+#define ASIDBITS          6
+#define VPNBITS           12
+#define DIRTYON           0x00000400
+#define VALIDON           0x00000200
+#define GLOBALON          0x00000100
+#define GETPAGENUM        0x3FFFF000
+
+
 /*Status Register bit constants*/
 #define ALLOFF            0x00000000
 #define IEPREVON          0x00000004 /*previous interrupt bit on*/
@@ -13,6 +22,7 @@
 #define TIMEREBITON       0x08000000 /*timer enable bit on*/
 #define IECURRENTON       0x00000001 /*current interrupt bit on*/
 #define USERPREVON        0x00000008 /*user bit previous is on*/
+#define DISABLEALL        0xFFFFFFFE /*disable all interrupts*/
 
 /*Cause Register bit constants*/
 #define GETCAUSE          0x0000007C /*keep on cause bits*/
@@ -57,11 +67,16 @@
 #define WORDLEN			  4				  /* word size in bytes	*/
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
+#define UPROCMAX          8
+#define POOLSIZE          16
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
 #define STKPTR            0x20001000
-#define POOLSIZE          32
 #define MAXPAGE           32
+#define UPGTBSIZE         32
+#define USTKPTR           0xC0000000
+#define USTARTADDR        0x800000B0
+
 
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000
@@ -79,6 +94,7 @@
 #define EOS				    '\0'
 
 #define NULL 			    ((void *)0xFFFFFFFF)
+
 
 /* device interrupts */
 #define DISKINT			  3
