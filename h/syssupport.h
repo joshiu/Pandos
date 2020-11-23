@@ -10,7 +10,9 @@
 
 #include "../h/types.h"
 
-extern void syscall();
+extern void userGeneralExceptHandler();
+extern void block(int *semAddr);
+extern void unblock(int *semAddr);
 
 
 #endif
