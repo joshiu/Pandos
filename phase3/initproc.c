@@ -25,4 +25,15 @@
  * */
 void test(){
 
+    int w;
+    int endSem = 0;
+    static support_t procSupp[8];
+    static support_t uProc[8];
+
+    initMutex();
+
+    for(w = 0;w < 1; w++){
+        
+    }
+
 }
