@@ -3,16 +3,14 @@
 
 /************************** FILESUPPORT.H ******************************
 *
-*  The externals declaration file for filesupport.c 
+*  The externals declaration file for initproc.c 
 *
 *  Written by Umang J and Amy K
 */
 
 #include "../h/types.h"
 
-
-
-/* GLOBAL VARIABLES*/
+extern void test();
 
 
 #endif

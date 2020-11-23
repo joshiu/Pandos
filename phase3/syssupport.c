@@ -14,8 +14,6 @@
 
 /*********************FILE SPECIFIC METHODS******************************/
 
-/* NOTE: (READ ME): I know all of these aren't void and they don't have have the right 
-pramaters but I wanted to set everything up or maybe i just fucked everything up idk*/
 HIDDEN void userSyscall();
 HIDDEN void uProgramTrap(support_t *supportInfo);
 HIDDEN void sys_9();
@@ -31,6 +29,7 @@ HIDDEN void sys_13(support_t *supportInfo);
  * Gen except for u procs
  * */
 void userGeneralExceptHandler(){
+
     /*local variables*/
     support_t * supportInfo;
     int causeNum;
@@ -48,6 +47,9 @@ void userGeneralExceptHandler(){
 
 }
 
+/**
+ * Comment here
+ * */
 void uProgramTrap(support_t *supportInfo){
 
     killProc(NULL);
