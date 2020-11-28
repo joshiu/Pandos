@@ -12,5 +12,7 @@
 
 extern void test();
 
+extern pcb_t *master;
+
 
 #endif

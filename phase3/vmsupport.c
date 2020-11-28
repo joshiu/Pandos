@@ -40,6 +40,12 @@ void initTLBsupport(){
     }
 }
 
+/**
+ * Add method comment
+ * */
+void TLB_invalid(){
+
+}
 
 /**
  * This method is an event that occurs when there's a cache-miss and it's job is
@@ -57,7 +63,7 @@ void uTLB_RefillHandler(){
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
     pageNumber %= MAXPAGE;
 
-    setENTRYHI(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryHi);
+    setENTRYHI(currentProc->p_supportStruct.sup_pageTable[pageNumber].pgTE_entryHi);
     setENTRYLO(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryLo);
 
     TLBWR();
