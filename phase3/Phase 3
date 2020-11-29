@@ -6,6 +6,10 @@
     "bootstrap-rom": "/usr/local/share/umps3/coreboot.rom.umps",
     "clock-rate": 1,
     "devices": {
+        "flash0": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/strConcat.umps"
+        },
         "terminal0": {
             "enabled": true,
             "file": "term0.umps"
@@ -18,6 +22,6 @@
         "asid": 64,
         "file": "kernel.stab.umps"
     },
-    "tlb-floor-address": "0xffffffff",
+    "tlb-floor-address": "0x80000000",
     "tlb-size": 16
 }
