@@ -13,17 +13,13 @@
 
 /**********************GLOBAL VARIABLES*****************/
 
-
-
-
+int master;
+int deviceRegisterSema4[DEVCNT+DEVPERINT];
 
 /*end of globals*/
 
 extern userGeneralExceptHandler();
 extern pageHandler();
-
-int master;
-int deviceRegisterSema4[DEVCNT+DEVPERINT];
 
 /**
  * 
@@ -46,14 +42,14 @@ void test(){
 
         uProc[counter].sup_asid = counter+1;
         uProc[counter].sup_exceptContext[GENERALEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_stackPtr = USTKPTR; /*wrong*/
+        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_stackPtr = USTKPTR; /*wrong?*/
         uProc[counter].sup_exceptContext[GENERALEXCEPT].c_pc = (memaddr) userGeneralExceptHandler;
 
         uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = USTKPTR; /*wrong*/
+        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = USTKPTR; /*wrong?*/
         uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_pc = (memaddr) pageHandler;
 
-        uProc[counter].sup_pageTable[MAXPROC].pgTE_entryHi = (0xBFFFF <<VPNBITS);
+        uProc[counter].sup_pageTable[MAXPROC].pgTE_entryHi = (0xBFFFF <<VPNBITS) | ((counter+1)<<ASIDBITS);
 
         success = SYSCALL(MAKEPROCESS, (int)&procState, &(uProc[counter]), 0);
 

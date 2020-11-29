@@ -120,16 +120,16 @@ void pageHandler(){
         }
     }
 
-    newBlockNum = pageNum;
-    newBlockNum %= MAXPAGE;
+    blockNum = pageNum;
+    blockNum %= MAXPAGE;
 
-    status = readFlashOperation((procASID-1), newBlockNum, address);
+    status = readFlashOperation((procASID-1), blockNum, address);
 
     if(status != READY){
         killProc(&swapSem);
     }
 
-    pgTEntry = &(suppData->sup_pageTable[newBlockNum]);
+    pgTEntry = &(suppData->sup_pageTable[blockNum]);
 
     swapPool[frameNum].sw_asid = procASID;
     swapPool[frameNum].sw_pageN = pageNum;
@@ -144,7 +144,7 @@ void pageHandler(){
 
     unblock(&swapSem);
 
-    userReturn(&(suppData->sup_exceptState[PGFAULTEXCEPT]));
+    userLoadState(&(suppData->sup_exceptState[PGFAULTEXCEPT]));
     
 
 }

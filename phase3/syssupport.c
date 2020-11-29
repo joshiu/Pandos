@@ -166,7 +166,7 @@ void userSyscall(support_t *supportInfo){
     
     }/*end of switch statement*/
 
-    supportInfo ->sup_exceptState[GENERALEXCEPT].s_pc = supportInfo->sup_exceptState[GENERALEXCEPT];
+    supportInfo ->sup_exceptState[GENERALEXCEPT].s_pc += 4;
 
     userLoadState(&(supportInfo->sup_exceptState[GENERALEXCEPT]));
     
