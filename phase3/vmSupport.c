@@ -161,7 +161,8 @@ void pageHandler(){
 /**************HELPER FUNCTIONS BELOW*************/
 
 /**
- * round robin frame selector
+ * This helper function is a round robin frame selector.
+ * To get a frame in the POOLSIZE.
  * */
 int getFrame(){
     static int nextFrame = 0;
@@ -172,10 +173,17 @@ int getFrame(){
 }
 
 
+/**
+ * This method will read the flash operation
+ * from the current status (improve later)
+ * */
 int readFlashOperation(int deviceNum, int blockNum, int address){
+
+    /*local variables*/
     int status;
     devregarea_t *deviceRegister;
     unsigned int statusReg;
+    /*end of local variables*/
 
     deviceRegister = (devregarea_t *) RAMBASEADDR;
 
@@ -197,10 +205,18 @@ int readFlashOperation(int deviceNum, int blockNum, int address){
     return status;
 }
 
+
+/**
+ * This method will write the flash operation
+ * from the current status. (improve later if needed)
+ * */
 int writeFlashOperation(int deviceNum, int blockNum, int address){
+
+    /*local variables*/
     int status;
     devregarea_t *deviceRegister;
     unsigned int statusReg;
+    /*end of local variables*/
 
     deviceRegister = (devregarea_t *) RAMBASEADDR;
 

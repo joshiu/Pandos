@@ -13,6 +13,8 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
+
+
 /*********************FILE SPECIFIC METHODS******************************/
 
 HIDDEN void userSyscall();
@@ -51,6 +53,8 @@ void userGeneralExceptHandler(){
 
 }
 
+
+
 /**
  * This method will kill the program.
  * */
@@ -58,6 +62,8 @@ void uProgramTrap(support_t *supportInfo){
 
     killProc(NULL);
 }
+
+
 
 /**
  * This method will block the semAddr (using Passern)
@@ -68,6 +74,8 @@ void block(int * semAddr){
 
 }
 
+
+
 /**
  * This method will call a V on the semAddr
  * */
@@ -76,6 +84,8 @@ void unblock(int *semAddr){
     SYSCALL(VERHOGEN, (int)semAddr, 0, 0);
 
 }
+
+
 
 /**
  * This method will kill the currentProc.
@@ -93,6 +103,8 @@ void killProc(int *semAddr){
     SYSCALL(KILLPROCESS, 0, 0, 0);
 }
 
+
+
 /**
  *  This method will loadState.
  * */
@@ -101,6 +113,8 @@ void userLoadState(state_t *loadState){
     LDST(loadState);
 
 }
+
+
 
 /**
  * Not sure this is needed but just in case (method comment here)
@@ -153,6 +167,8 @@ void userSyscall(support_t *supportInfo){
     
 }
 
+
+
 /**
  * When requested, this service ceases the 
  * U-proc to exist.
@@ -162,6 +178,8 @@ void sys_9(){
     killProc(NULL);
 
 }
+
+
 
 /**
  * This method when requested places the number of
@@ -178,6 +196,8 @@ void sys_10(support_t *supportInfo){
 
     supportInfo->sup_exceptState[GENERALEXCEPT].s_v0 = timeEnded;
 }
+
+
 
 /**
  * When requested, this service causes the requesting U-proc to be suspended until
@@ -234,6 +254,8 @@ void sys_11(support_t *supportInfo){
     /*how many characters were printed*/
     supportInfo -> sup_exceptState[GENERALEXCEPT].s_v0 = counter; 
 }
+
+
 
 
 /**
@@ -299,6 +321,8 @@ void sys_12(support_t *supportInfo){
     /*how many characters were printed*/
     supportInfo -> sup_exceptState[GENERALEXCEPT].s_v0 = counter; 
 }
+
+
 
 
 /**

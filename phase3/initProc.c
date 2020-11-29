@@ -7,9 +7,10 @@
  * This file 
  * 
  * 
- * counter
- ritten by Umang Joshi and Amy Kelley
+ * Written by Umang Joshi and Amy Kelley
  * */
+
+
 
 /**********************GLOBAL VARIABLES*****************/
 
@@ -18,11 +19,16 @@ int deviceRegisterSema4[DEVCNT+DEVPERINT];
 
 /*end of globals*/
 
+
+
 extern userGeneralExceptHandler();
 extern pageHandler();
 
+
+
 /**
- * 
+ * This method will create all of our processes and
+ * will initialize all the user level processes. 
  * */
 void test(){
 
@@ -34,7 +40,7 @@ void test(){
 
     initTLBsupport();
 
-    for(counter = 0;counter < UPROCMAX ; counter++){
+    for(counter = 0;counter < UPROCMAX; counter++){
         procState.s_sp = USTKPTR;
         procState.s_entryHI = counter<<ASIDBITS;
         procState.s_pc = procState.s_t9 = USTARTADDR;
