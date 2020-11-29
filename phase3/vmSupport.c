@@ -2,8 +2,8 @@
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/initial.h"
-#include "../h/vmsupport.h"
-#include "../h/syssupport.h"
+#include "../h/vmSupport.h"
+#include "../h/sysSupport.h"
 
 /**
  * This file is part of the Support Level of the Nucleus. It's job is 

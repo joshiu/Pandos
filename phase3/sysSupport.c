@@ -2,7 +2,7 @@
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/initial.h"
-#include "../h/initproc.h"
+#include "../h/initProc.h"
 
 /**
  * This file provides the system support for SYS call 
