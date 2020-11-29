@@ -2,6 +2,8 @@
 #include "../h/const.h"
 #include "../h/types.h"
 #include "../h/initial.h"
+#include "../h/vmsupport.h"
+#include "../h/syssupport.h"
 
 /**
  * This file is part of the Support Level of the Nucleus. It's job is 
@@ -41,13 +43,6 @@ void initTLBsupport(){
 }
 
 /**
- * Add method comment
- * */
-void TLB_invalid(){
-
-}
-
-/**
  * This method is an event that occurs when there's a cache-miss and it's job is
  * to insert the  the TLB the missing Page Table entry and restart the instruction.
  * */
@@ -63,7 +58,7 @@ void uTLB_RefillHandler(){
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
     pageNumber %= MAXPAGE;
 
-    setENTRYHI(currentProc->p_supportStruct.sup_pageTable[pageNumber].pgTE_entryHi);
+    setENTRYHI(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryHi);
     setENTRYLO(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryLo);
 
     TLBWR();
@@ -79,37 +74,135 @@ void uTLB_RefillHandler(){
 void pageHandler(){
 
     /*Local Variables*/
+    int procASID;
+    int frameNum;
+    int pageNum;
+    int status;
     support_t *suppData;
+    int cause;
+    pgTableEntry_t *pgTEntry;
+    unsigned int address;
+    int blockNum;
+    int newBlockNum;
     /*End of Local Varaibles*/
  
-    SYSCALL(SUPPORTDATA, (int)NULL, (int)NULL, (int)NULL);
+    suppData = SYSCALL(SUPPORTDATA, 0, 0, 0);
 
-    /*supportstruct v0*/
+    cause = (suppData->sup_exceptState[PGFAULTEXCEPT].s_cause & GETCAUSE) >>2;
+    procASID = suppData->sup_asid;
+
+    if((cause != 2) && (cause != 3)){
+        /*TLB invalid numbers*/
+        killProc(NULL);
+    }
+
+    pageNum = ((suppData->sup_exceptState[PGFAULTEXCEPT].s_entryHI) & GETPAGENUM);
+
+    block(&swapSem);
+
+    frameNum = getFrame();
+    address = FRAMEPOOLSTART + (frameNum*PAGESIZE);
+
+    if(swapPool[frameNum].sw_asid != -1){
+        /*disable interrupts*/
+
+        swapPool[frameNum].sw_pte->pgTE_entryLo = swapPool[frameNum].sw_pte->pgTE_entryLo & 0xFFFFFDFF;
+        TLBCLR();
+        /*enable interrupts*/
+
+        blockNum = swapPool[frameNum].sw_pageN;
+        blockNum %= MAXPAGE;
+
+        status = writeFlashOperation(((swapPool[frameNum].sw_asid)-1), blockNum, address);
+
+        if(status != READY){
+            killProc(&swapSem);
+        }
+    }
+
+    newBlockNum = pageNum;
+    newBlockNum %= MAXPAGE;
+
+    status = readFlashOperation((procASID-1), newBlockNum, address);
+
+    if(status != READY){
+        killProc(&swapSem);
+    }
+
+    pgTEntry = &(suppData->sup_pageTable[newBlockNum]);
+
+    swapPool[frameNum].sw_asid = procASID;
+    swapPool[frameNum].sw_pageN = pageNum;
+    swapPool[frameNum].sw_pte = pgTEntry;
+
+    /*disable interrupts*/
+
+    swapPool[frameNum].sw_pte->pgTE_entryLo = (address | DIRTYON | VALIDON);
+    TLBCLR();
     
-    /*suppData = &(((state_t *)BIOSDATAPAGE)->s_reg.s_v0); copy the struct over*/
+    /*enable interrupts*/
 
-    /*get asid*/
+    unblock(&swapSem);
+
+    userReturn(&(suppData->sup_exceptState[PGFAULTEXCEPT]));
     
-    /*check to see pgFault*/
-    /*if it isn't we die, else continue*/
-
-    /*get missing page num and do SYS3 on swap sema4*/
-    /*we get a victim (round robin portion)*/
-    /*get the real address*/
-    /*if not empty, then we turn off interrupts, adjust valid
-    nuke TLB, and enable interrupts*/
-
-    /*refresh backing store and write*/
-    /*is write not ready, then killllllllllllllllll*/
-
-    /*find missing page number, and mod with MAXPAGE*/
-    /*read it (if not ready, then die)*/
-
-    /*update pg talbe, TLB (interrupts off)*/
-    /*then update backing, sys4 on swap sema4 and LDSTs*/
 
 }
 
 
 
 /**************HELPER FUNCTIONS BELOW*************/
+
+/**
+ * round robin frame selector
+ * */
+int getFrame(){
+    static int nextFrame = 0;
+
+    nextFrame = (nextFrame +1) % POOLSIZE;
+    return(nextFrame);
+
+}
+
+
+int readFlashOperation(int deviceNum, int blockNum, int address){
+    int status;
+    devregarea_t *deviceRegister;
+
+    deviceRegister = (devregarea_t *) RAMBASEADDR;
+
+    /*disable interrupts*/
+    deviceRegister->devreg[deviceNum+8].d_data0 = address;
+    deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBWRITE);
+
+    status = SYSCALL(WAITIO, FLASHINT, deviceNum, 0);
+
+    /*enable interrupts*/
+
+    if(status != READY){
+        status = 0 - status;
+    }
+
+    return status;
+}
+
+int writeFlashOperation(int deviceNum, int blockNum, int address){
+    int status;
+    devregarea_t *deviceRegister;
+
+    deviceRegister = (devregarea_t *) RAMBASEADDR;
+
+    /*disable interrupts*/
+    deviceRegister->devreg[deviceNum+8].d_data0 = address;
+    deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBREAD);
+
+    status = SYSCALL(WAITIO, FLASHINT, deviceNum, 0);
+
+    /*enable interrupts*/
+
+    if(status != READY){
+        status = 0 - status;
+    }
+
+    return status;
+}

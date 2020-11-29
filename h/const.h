@@ -36,6 +36,9 @@
 #define PRINTINTERRUPT    0x00004000
 #define TERMINALINTERRUPT 0x00008000
 #define TRANSMITBITS      0x0F
+#define CHARTRANSGOOD     5
+#define CHARTRANSMIT      2
+#define BYTELENGTH        8
 
 /*Device Constants*/
 #define DEVICE0           0x00000001
@@ -64,7 +67,7 @@
 
 /* Hardware & software constants */
 #define PAGESIZE		  4096			/* page size in bytes	*/
-#define WORDLEN			  4				  /* word size in bytes	*/
+#define MAXWORDLEN        128  		  
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
 #define UPROCMAX          8
@@ -76,7 +79,9 @@
 #define UPGTBSIZE         32
 #define USTKPTR           0xC0000000
 #define USTARTADDR        0x800000B0
-
+#define FRAMEPOOLSTART    ((( RAMSTART + (MAXPAGE * PAGESIZE))+ (DEVPERINT * PAGESIZE))+ (DEVPERINT *PAGESIZE))
+#define TLBWRITE           3
+#define TLBREAD            2
 
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000

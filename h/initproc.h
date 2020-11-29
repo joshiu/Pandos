@@ -12,7 +12,8 @@
 
 extern void test();
 
-extern pcb_t *master;
+extern int master;
+extern int deviceRegisterSema4[DEVCNT +DEVPERINT];
 
 
 #endif

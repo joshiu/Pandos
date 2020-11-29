@@ -223,11 +223,11 @@ void sys_11(support_t *supportInfo){
     letterToPrint = (char *)supportInfo->sup_exceptState[GENERALEXCEPT].s_a1;
     length = supportInfo->sup_exceptState[GENERALEXCEPT].s_a2;
 
-    if(((int)letterToPrint < KUSEG) || (length<=0) || (length >WORDLEN)){
+    if(((int)letterToPrint < KUSEG) || (length<=0) || (length >MAXWORDLEN)){
         killProc(NULL);
     }
 
-    block(&globalDevSemReg[devSema4Num]);
+    block(&deviceRegisterSema4[devSema4Num]);
 
     counter = 0;
     error = FALSE;
@@ -235,7 +235,7 @@ void sys_11(support_t *supportInfo){
     while((counter<length) && (!error)){
 
         deviceRegister->devreg[devSema4Num].d_data0 = *letterToPrint;
-        deviceRegister -> devreg[devSema4Num].d_command = TRANSMITCHAR;
+        deviceRegister -> devreg[devSema4Num].d_command = CHARTRANSMIT;
         status = SYSCALL(WAITIO, PRNTINT, idNum-1, 0);
 
         if(status != READY){
@@ -248,7 +248,7 @@ void sys_11(support_t *supportInfo){
         letterToPrint++;
     }
 
-    unblock(&globalDevSemReg[devSema4Num]);
+    unblock(&deviceRegisterSema4[devSema4Num]);
 
     /*how many characters were printed*/
     supportInfo -> sup_exceptState[GENERALEXCEPT].s_v0 = counter; 
@@ -280,11 +280,11 @@ void sys_12(support_t *supportInfo){
     letterToPrint = (char *)supportInfo->sup_exceptState[GENERALEXCEPT].s_a1;
     length = supportInfo->sup_exceptState[GENERALEXCEPT].s_a2;
 
-    if(((int)letterToPrint < KUSEG) || (length<=0) || (length >WORDLEN)){
+    if(((int)letterToPrint < KUSEG) || (length<=0) || (length >MAXWORDLEN)){
         killProc(NULL);
     }
 
-    block(&globalDevSemReg[devSema4Num]);
+    block(&deviceRegisterSema4[devSema4Num]);
 
     counter = 0;
     error = FALSE;
@@ -292,14 +292,14 @@ void sys_12(support_t *supportInfo){
     while((counter<length) && (!error)){
         /*can we do 2 separate here*/
 
-        deviceRegister->devreg[devSema4Num].t_transm_command = *letterToPrint <<BYTELENGTH |TRANSMITCHAR;
+        deviceRegister->devreg[devSema4Num].t_transm_command = *letterToPrint <<BYTELENGTH |CHARTRANSMIT;
         
         deviceRegister->devreg[devSema4Num].d_data0 = *letterToPrint;
-        deviceRegister -> devreg[devSema4Num].d_command = TRANSMITCHAR;
+        deviceRegister -> devreg[devSema4Num].d_command = CHARTRANSMIT;
         
         status = SYSCALL(WAITIO, TERMINT, idNum-1, 0);
 
-        if((status & 0xFF) != OKCHARTRANS){
+        if((status & 0xFF) != CHARTRANSGOOD){
             error = TRUE;
         }
         else{
@@ -309,7 +309,7 @@ void sys_12(support_t *supportInfo){
         letterToPrint++;
     }
 
-    unblock(&globalDevSemReg[devSema4Num]);
+    unblock(&deviceRegisterSema4[devSema4Num]);
 
     if(error){
         counter = 0 - (status & 0xFF);
@@ -348,7 +348,7 @@ void sys_13(support_t *supportInfo){
         killProc(NULL);
     }
 
-    block(&globalDevSemReg[devSema4Num +DEVPERINT]);
+    block(&deviceRegisterSema4[devSema4Num +DEVPERINT]);
 
     counter = 0;
     error = FALSE;
@@ -357,11 +357,11 @@ void sys_13(support_t *supportInfo){
     while((!done) && (!error)){
         /*can we do 2 separate here*/
 
-        deviceRegister ->devreg[devSema4Num].t_recv_command = TRANSMITCHAR;
+        deviceRegister ->devreg[devSema4Num].t_recv_command = CHARTRANSMIT;
         
         status = SYSCALL(WAITIO, TERMINT, idNum-1, TRUE);
 
-        if((status & 0xFF) != OKCHARTRANS){
+        if((status & 0xFF) != CHARTRANSGOOD){
             error = TRUE;
         }
         else{
@@ -374,7 +374,7 @@ void sys_13(support_t *supportInfo){
         }
     }
 
-    unblock(&globalDevSemReg[devSema4Num+DEVPERINT]);
+    unblock(&deviceRegisterSema4[devSema4Num+DEVPERINT]);
 
     if(error){
         counter = 0 - (status & 0xFF);

@@ -20,10 +20,10 @@
 /*end of globals*/
 
 extern userGeneralExceptHandler();
-extern TLB_invalid();
+extern pageHandler();
 
-pcb_t *master;
-int deviceRegisterSema4[UPROCMAX];
+int master;
+int deviceRegisterSema4[DEVCNT+DEVPERINT];
 
 /**
  * 
@@ -39,19 +39,19 @@ void test(){
     initTLBsupport();
 
     for(counter = 0;counter < UPROCMAX ; counter++){
-        procState.s_sp = 0xC0000000;
+        procState.s_sp = USTKPTR;
         procState.s_entryHI = counter<<ASIDBITS;
-        procState.s_pc = procState.s_t9 = 0x800000B0;
+        procState.s_pc = procState.s_t9 = USTARTADDR;
         procState.s_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON | USERPREVON);
 
         uProc[counter].sup_asid = counter+1;
         uProc[counter].sup_exceptContext[GENERALEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_stackPtr = ??;
+        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_stackPtr = USTKPTR; /*wrong*/
         uProc[counter].sup_exceptContext[GENERALEXCEPT].c_pc = (memaddr) userGeneralExceptHandler;
 
         uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = ??;
-        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_pc = (memaddr) TLB_invalid;
+        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = USTKPTR; /*wrong*/
+        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_pc = (memaddr) pageHandler;
 
         uProc[counter].sup_pageTable[MAXPROC].pgTE_entryHi = (0xBFFFF <<VPNBITS);
 
@@ -62,7 +62,7 @@ void test(){
         }
     }
 
-    for(counter = 0; counter < UPROCMAX, counter ++){
+    for(counter = 0; counter < UPROCMAX; counter ++){
         SYSCALL(PASSERN, (int)&master, 0, 0);
     }
 
