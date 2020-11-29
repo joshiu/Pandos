@@ -94,25 +94,6 @@ void killProc(int *semAddr){
 }
 
 /**
- * This method enables interrupts for phase 3 which is required.
- * */
-void enableInterrupts(int turnON){
-    unsigned int statusReg;
-
-    statusReg = getSTATUS();
-
-    if(turnON){
-        statusReg = statusReg|0x1;
-    }
-    else{
-        statusReg = statusReg & DISABLEALL;
-    }
-
-    setSTATUS(statusReg);
-
-}
-
-/**
  *  This method will loadState.
  * */
 void userLoadState(state_t *loadState){

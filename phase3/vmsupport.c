@@ -84,6 +84,7 @@ void pageHandler(){
     unsigned int address;
     int blockNum;
     int newBlockNum;
+    unsigned int statusReg;
     /*End of Local Varaibles*/
  
     suppData = SYSCALL(SUPPORTDATA, 0, 0, 0);
@@ -92,7 +93,7 @@ void pageHandler(){
     procASID = suppData->sup_asid;
 
     if((cause != 2) && (cause != 3)){
-        /*TLB invalid numbers*/
+        /*TLB invalid*/
         killProc(NULL);
     }
 
@@ -104,11 +105,15 @@ void pageHandler(){
     address = FRAMEPOOLSTART + (frameNum*PAGESIZE);
 
     if(swapPool[frameNum].sw_asid != -1){
-        /*disable interrupts*/
+        
+        statusReg = getSTATUS();
+        setSTATUS((statusReg & DISABLEALL));
 
         swapPool[frameNum].sw_pte->pgTE_entryLo = swapPool[frameNum].sw_pte->pgTE_entryLo & 0xFFFFFDFF;
         TLBCLR();
-        /*enable interrupts*/
+        
+        statusReg = getSTATUS();
+        setSTATUS((statusReg|0x1));
 
         blockNum = swapPool[frameNum].sw_pageN;
         blockNum %= MAXPAGE;
@@ -135,12 +140,14 @@ void pageHandler(){
     swapPool[frameNum].sw_pageN = pageNum;
     swapPool[frameNum].sw_pte = pgTEntry;
 
-    /*disable interrupts*/
+    statusReg = getSTATUS();
+    setSTATUS((statusReg & DISABLEALL));
 
     swapPool[frameNum].sw_pte->pgTE_entryLo = (address | DIRTYON | VALIDON);
     TLBCLR();
     
-    /*enable interrupts*/
+    statusReg = getSTATUS();
+    setSTATUS((statusReg|0x1));
 
     unblock(&swapSem);
 
@@ -168,16 +175,20 @@ int getFrame(){
 int readFlashOperation(int deviceNum, int blockNum, int address){
     int status;
     devregarea_t *deviceRegister;
+    unsigned int statusReg;
 
     deviceRegister = (devregarea_t *) RAMBASEADDR;
 
-    /*disable interrupts*/
+    statusReg = getSTATUS();
+    setSTATUS((statusReg & DISABLEALL));
+
     deviceRegister->devreg[deviceNum+8].d_data0 = address;
     deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBWRITE);
 
     status = SYSCALL(WAITIO, FLASHINT, deviceNum, 0);
 
-    /*enable interrupts*/
+    statusReg = getSTATUS();
+    setSTATUS((statusReg | 0x1));
 
     if(status != READY){
         status = 0 - status;
@@ -189,16 +200,20 @@ int readFlashOperation(int deviceNum, int blockNum, int address){
 int writeFlashOperation(int deviceNum, int blockNum, int address){
     int status;
     devregarea_t *deviceRegister;
+    unsigned int statusReg;
 
     deviceRegister = (devregarea_t *) RAMBASEADDR;
 
-    /*disable interrupts*/
+    statusReg = getSTATUS();
+    setSTATUS((statusReg & DISABLEALL));
+    
     deviceRegister->devreg[deviceNum+8].d_data0 = address;
     deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBREAD);
 
     status = SYSCALL(WAITIO, FLASHINT, deviceNum, 0);
 
-    /*enable interrupts*/
+    statusReg = getSTATUS();
+    setSTATUS((statusReg | 0x1));
 
     if(status != READY){
         status = 0 - status;
