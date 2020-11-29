@@ -1,5 +1,5 @@
-#ifndef syssupport
-#define syssupport
+#ifndef sysSupport
+#define sysSupport
 
 /************************** SYSSUPPORT.H ******************************
 *
