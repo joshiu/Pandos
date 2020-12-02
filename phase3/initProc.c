@@ -4,7 +4,9 @@
 #include "../h/initial.h"
 
 /**
- * This file 
+ * This file will create all of our needed processes for phase3
+ * and it will also initialize all these processes at the user level.
+ * (add more)
  * 
  * 
  * Written by Umang Joshi and Amy Kelley
@@ -28,15 +30,17 @@ extern pageHandler();
 
 /**
  * This method will create all of our processes and
- * will initialize all the user level processes. 
+ * will initialize all the user level processes. (likely need more)
  * */
 void test(){
 
+    /*local variables*/
     int counter;
     int success;
     master = 0;
     state_t procState;
     static support_t uProc[8];
+    /*end of local variables*/
 
     initTLBsupport();
 

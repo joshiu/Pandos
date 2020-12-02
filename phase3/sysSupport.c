@@ -121,6 +121,7 @@ void userLoadState(state_t *loadState){
  * We also may need a new name for this, but I wasn't sure if it mattered
  * */
 void userSyscall(support_t *supportInfo){
+    
     /*local variables*/
     int uSysNum; 
     /*end local variables*/
@@ -189,7 +190,7 @@ void sys_9(){
 void sys_10(support_t *supportInfo){
     
     /*local variables*/
-    cpu_t timeEnded; /*time the system was last booted/reset
+    cpu_t timeEnded; /*time the system was last booted/reset*/
     /*end of local variables*/
 
     STCK(timeEnded); /*is this how we read the clock for UProc? or is there something else?*/
@@ -205,6 +206,7 @@ void sys_10(support_t *supportInfo){
  * associated with the U-proc
  * */
 void sys_11(support_t *supportInfo){
+
     /*local variables*/
     int counter;
     int length;
@@ -264,6 +266,7 @@ void sys_11(support_t *supportInfo){
  * associated with the U-proc
  * */
 void sys_12(support_t *supportInfo){
+
     /*local variables*/
     int counter;
     int length;
@@ -331,6 +334,7 @@ void sys_12(support_t *supportInfo){
  * terminal device associated with the U-proc.
  * */
 void sys_13(support_t *supportInfo){
+
     /*local variables*/
     int counter;
     int status;
