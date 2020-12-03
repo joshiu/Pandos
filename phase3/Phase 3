@@ -8,7 +8,7 @@
     "devices": {
         "flash0": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/strConcat.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/printerTest.umps"
         },
         "terminal0": {
             "enabled": true,

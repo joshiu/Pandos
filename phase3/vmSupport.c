@@ -87,7 +87,7 @@ void pageHandler(){
     unsigned int statusReg;
     /*End of Local Varaibles*/
  
-    suppData = SYSCALL(SUPPORTDATA, 0, 0, 0);
+    suppData = (support_t *) SYSCALL(SUPPORTDATA, 0, 0, 0);
 
     cause = (suppData->sup_exceptState[PGFAULTEXCEPT].s_cause & GETCAUSE) >>2;
     procASID = suppData->sup_asid;
@@ -144,7 +144,7 @@ void pageHandler(){
     setSTATUS((statusReg & DISABLEALL));
 
     swapPool[frameNum].sw_pte->pgTE_entryLo = (address | DIRTYON | VALIDON);
-    TLBCLR();
+    TLBWI();
     
     statusReg = getSTATUS();
     setSTATUS((statusReg|0x1));
