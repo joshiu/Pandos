@@ -200,7 +200,7 @@ int readFlashOperation(int deviceNum, int blockNum, int address){
     setSTATUS((statusReg & DISABLEALL));
 
     deviceRegister->devreg[deviceNum+8].d_data0 = address;
-    deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBWRITE);
+    deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBREAD);
 
     status = SYSCALL(WAITIO, FLASHINT, deviceNum, 0);
 
@@ -233,7 +233,7 @@ int writeFlashOperation(int deviceNum, int blockNum, int address){
     setSTATUS((statusReg & DISABLEALL));
     
     deviceRegister->devreg[deviceNum+8].d_data0 = address;
-    deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBREAD);
+    deviceRegister->devreg[deviceNum+8].d_command = ((blockNum << 8) | TLBWRITE);
 
     status = SYSCALL(WAITIO, FLASHINT, deviceNum, 0);
 
