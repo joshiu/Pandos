@@ -24,6 +24,10 @@ int swapSem; /*declares swap pool sema4*/
 
 /****************END OF GLOBALS*****************/
 
+void debug(int a){
+    int j;
+    j =1;
+}
 
 
 /**
@@ -58,6 +62,8 @@ void uTLB_RefillHandler(){
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
     pageNumber %= MAXPAGE;
 
+    debug(pageNumber);
+
     setENTRYHI(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryHi);
     setENTRYLO(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryLo);
 
@@ -83,7 +89,6 @@ void pageHandler(){
     pgTableEntry_t *pgTEntry;
     unsigned int address;
     int blockNum;
-    int newBlockNum;
     unsigned int statusReg;
     /*End of Local Varaibles*/
  
@@ -98,6 +103,8 @@ void pageHandler(){
     }
 
     pageNum = ((suppData->sup_exceptState[PGFAULTEXCEPT].s_entryHI) & GETPAGENUM);
+
+    debug(pageNum);
 
     block(&swapSem);
 
@@ -144,7 +151,7 @@ void pageHandler(){
     setSTATUS((statusReg & DISABLEALL));
 
     swapPool[frameNum].sw_pte->pgTE_entryLo = (address | DIRTYON | VALIDON);
-    TLBWI();
+    TLBCLR();
     
     statusReg = getSTATUS();
     setSTATUS((statusReg|0x1));
