@@ -4,6 +4,7 @@
 #include "../h/initial.h"
 #include "../h/initProc.h"
 
+
 /**
  * This file provides the system support for SYS call 
  * instructions. All appropriate values are placed in registers a0-a3 before executing 
@@ -27,7 +28,10 @@ HIDDEN void sys_13(support_t *supportInfo);
 
 /**end of file specific methods**/
 
-
+void debugKill(int b){
+    int w;
+    w = 2;
+}
 
 
 /**
@@ -60,6 +64,7 @@ void userGeneralExceptHandler(){
  * */
 void uProgramTrap(support_t *supportInfo){
 
+    debugKill(2);
     killProc(NULL);
 }
 
@@ -156,6 +161,7 @@ void userSyscall(support_t *supportInfo){
     }
 
     default: {
+        debugKill(2);
         killProc(NULL);
         break;
     }
@@ -175,7 +181,8 @@ void userSyscall(support_t *supportInfo){
  * U-proc to exist.
  * */
 void sys_9(){
-
+    
+    debugKill(2);
     killProc(NULL);
 
 }
@@ -227,6 +234,7 @@ void sys_11(support_t *supportInfo){
     length = supportInfo->sup_exceptState[GENERALEXCEPT].s_a2;
 
     if(((int)letterToPrint < KUSEG) || (length<=0) || (length >MAXWORDLEN)){
+        debugKill(2);
         killProc(NULL);
     }
 
@@ -287,6 +295,7 @@ void sys_12(support_t *supportInfo){
     length = supportInfo->sup_exceptState[GENERALEXCEPT].s_a2;
 
     if(((int)letterToPrint < KUSEG) || (length<=0) || (length >MAXWORDLEN)){
+        debugKill(2);
         killProc(NULL);
     }
 
@@ -354,6 +363,7 @@ void sys_13(support_t *supportInfo){
     letterToPrint = (char *)supportInfo->sup_exceptState[GENERALEXCEPT].s_a1;
 
     if(((int)letterToPrint < KUSEG)){
+        debugKill(2);
         killProc(NULL);
     }
 

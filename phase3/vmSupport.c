@@ -29,6 +29,11 @@ void debug(int a){
     j =1;
 }
 
+void debugKillV(int b){
+    int w;
+    w = 2;
+}
+
 
 /**
  * This method initilzates the global shared page.
@@ -99,6 +104,7 @@ void pageHandler(){
 
     if((cause != 2) && (cause != 3)){
         /*TLB invalid*/
+        debugKillV(2);
         killProc(NULL);
     }
 
@@ -128,6 +134,7 @@ void pageHandler(){
         status = writeFlashOperation(((swapPool[frameNum].sw_asid)-1), blockNum, address);
 
         if(status != READY){
+            debug(1);
             killProc(&swapSem);
         }
     }
@@ -138,6 +145,7 @@ void pageHandler(){
     status = readFlashOperation((procASID-1), blockNum, address);
 
     if(status != READY){
+        debugKillV(2);
         killProc(&swapSem);
     }
 
