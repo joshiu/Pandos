@@ -13,5 +13,6 @@
 extern void initTLBsupport();
 extern void uTLB_RefillHandler();
 extern void pageHandler();
-
+extern swap_t swapPool[POOLSIZE]; /*declares the array for the swap pool */
+extern int swapSem; /*declares swap pool sema4*/
 #endif

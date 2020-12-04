@@ -109,7 +109,7 @@ void pageHandler(){
         statusReg = getSTATUS();
         setSTATUS((statusReg & DISABLEALL));
 
-        swapPool[frameNum].sw_pte->pgTE_entryLo = swapPool[frameNum].sw_pte->pgTE_entryLo & 0xFFFFFDFF;
+        swapPool[frameNum].sw_pte->pgTE_entryLo = ((swapPool[frameNum].sw_pte->pgTE_entryLo) & 0xFFFFFDFF);
         TLBCLR();
         
         statusReg = getSTATUS();
