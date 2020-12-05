@@ -8,11 +8,67 @@
     "devices": {
         "flash0": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/printerTest.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/fibEight.umps"
+        },
+        "flash1": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/fibEleven.umps"
+        },
+        "flash2": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/fibNine.umps"
+        },
+        "flash3": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/fibTen.umps"
+        },
+        "flash4": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/terminalTest1.umps"
+        },
+        "flash5": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/terminalTest5.umps"
+        },
+        "flash6": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/terminalTest4.umps"
+        },
+        "flash7": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/terminalTest8.umps"
         },
         "terminal0": {
             "enabled": true,
             "file": "term0.umps"
+        },
+        "terminal1": {
+            "enabled": true,
+            "file": "term1.umps"
+        },
+        "terminal2": {
+            "enabled": true,
+            "file": "term2.umps"
+        },
+        "terminal3": {
+            "enabled": true,
+            "file": "term3.umps"
+        },
+        "terminal4": {
+            "enabled": true,
+            "file": "term4.umps"
+        },
+        "terminal5": {
+            "enabled": true,
+            "file": "term5.umps"
+        },
+        "terminal6": {
+            "enabled": true,
+            "file": "term6.umps"
+        },
+        "terminal7": {
+            "enabled": true,
+            "file": "term7.umps"
         }
     },
     "execution-rom": "/usr/local/share/umps3/exec.rom.umps",

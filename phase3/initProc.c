@@ -31,6 +31,7 @@ void test(){
 
     /*local variables*/
     int counter;
+    int counter2;
     int success;
     int asid;
     master = 0;
@@ -60,14 +61,14 @@ void test(){
         uProc[asid].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = (int) &(uProc[asid].sup_PGFaultStack[500]);
         uProc[asid].sup_exceptContext[PGFAULTEXCEPT].c_pc = (memaddr) pageHandler;
 
-        for(counter = 0; counter < UPGTBSIZE; counter ++){
-            uProc[asid].sup_pageTable[counter].pgTE_entryHi = ((0x80000 +counter) <<VPNBITS) | (asid <<ASIDBITS);
-            uProc[asid].sup_pageTable[counter].pgTE_entryLo = ALLOFF | DIRTYON;
+        for(counter2 = 0; counter2 < UPGTBSIZE; counter2 ++){
+            uProc[asid].sup_pageTable[counter2].pgTE_entryHi = ((0x80000 +counter2) <<VPNBITS) | (asid <<ASIDBITS);
+            uProc[asid].sup_pageTable[counter2].pgTE_entryLo = ALLOFF | DIRTYON;
         }
 
         uProc[asid].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0x000BFFFF <<VPNBITS) | (asid<<ASIDBITS);
 
-        success = SYSCALL(MAKEPROCESS, (int)&procState, (unsigned int) &(uProc[asid]), 0);
+        success = SYSCALL(MAKEPROCESS, (int)&procState, &(uProc[asid]), 0);
 
         if(success != OK){
             SYSCALL(KILLPROCESS, 0, 0, 0);

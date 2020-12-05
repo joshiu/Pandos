@@ -70,7 +70,7 @@
 #define MAXWORDLEN        128  		  
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
-#define UPROCMAX          1
+#define UPROCMAX          8
 #define POOLSIZE          16
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
@@ -89,7 +89,7 @@
 #define TODLOADDR		  0x1000001C
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
-#define STANQUANTUM     5000
+#define STANQUANTUM     50000
 #define STANPSEUDOCLOCK 100000
 
 /* utility constants */
