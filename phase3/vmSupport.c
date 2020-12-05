@@ -65,7 +65,10 @@ void uTLB_RefillHandler(){
     oldState = (state_t *)BIOSDATAPAGE;
     
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
-    pageNumber %= MAXPAGE;
+
+    debug(pageNumber);
+
+    pageNumber = pageNumber % MAXPAGE;
 
     debug(pageNumber);
 
@@ -108,7 +111,7 @@ void pageHandler(){
         killProc(NULL);
     }
 
-    pageNum = ((suppData->sup_exceptState[PGFAULTEXCEPT].s_entryHI) & GETPAGENUM);
+    pageNum = ((suppData->sup_exceptState[PGFAULTEXCEPT].s_entryHI) & GETPAGENUM)>> VPNBITS;
 
     debug(pageNum);
 
@@ -129,7 +132,7 @@ void pageHandler(){
         setSTATUS((statusReg|0x1));
 
         blockNum = swapPool[frameNum].sw_pageN;
-        blockNum %= MAXPAGE;
+        blockNum = blockNum % MAXPAGE;
 
         status = writeFlashOperation(((swapPool[frameNum].sw_asid)-1), blockNum, address);
 
@@ -140,7 +143,9 @@ void pageHandler(){
     }
 
     blockNum = pageNum;
-    blockNum %= MAXPAGE;
+    blockNum = blockNum % MAXPAGE;
+    
+      debug(blockNum);
 
     status = readFlashOperation((procASID-1), blockNum, address);
 

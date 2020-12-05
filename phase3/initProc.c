@@ -65,7 +65,7 @@ void test(){
             uProc[asid].sup_pageTable[counter].pgTE_entryLo = ALLOFF | DIRTYON;
         }
 
-        uProc[asid].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0xBFFFF <<VPNBITS) | (asid<<ASIDBITS);
+        uProc[asid].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0x000BFFFF <<VPNBITS) | (asid<<ASIDBITS);
 
         success = SYSCALL(MAKEPROCESS, (int)&procState, (unsigned int) &(uProc[asid]), 0);
 
