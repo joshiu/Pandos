@@ -103,8 +103,8 @@ void killProc(int *semAddr){
         unblock(semAddr);
     }
     
-    unblock(&master); /*we need to make this in initproc.c*/
-    
+    unblock(&master); 
+        
     SYSCALL(KILLPROCESS, 0, 0, 0);
 }
 

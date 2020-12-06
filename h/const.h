@@ -65,12 +65,21 @@
 #define WRITETOTERMINAL   12
 #define READFROMTERMINAL  13
 
+/* Memory related constants */
+#define KSEG0           0x00000000
+#define KSEG1           0x20000000
+#define KSEG2           0x40000000
+#define KUSEG           0x80000000
+#define RAMSTART        0x20000000
+#define BIOSDATAPAGE    0x0FFFF000
+#define	PASSUPVECTOR	  0x0FFFF900
+
 /* Hardware & software constants */
 #define PAGESIZE		  4096			/* page size in bytes	*/
 #define MAXWORDLEN        128  		  
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
-#define UPROCMAX          1
+#define UPROCMAX          7
 #define POOLSIZE          16
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
@@ -89,7 +98,7 @@
 #define TODLOADDR		  0x1000001C
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
-#define STANQUANTUM     50000
+#define STANQUANTUM     5000
 #define STANPSEUDOCLOCK 100000
 
 /* utility constants */
@@ -138,14 +147,6 @@
 #define FAILED              -1
 #define OK                  0
 
-/* Memory related constants */
-#define KSEG0           0x00000000
-#define KSEG1           0x20000000
-#define KSEG2           0x40000000
-#define KUSEG           0x80000000
-#define RAMSTART        0x20000000
-#define BIOSDATAPAGE    0x0FFFF000
-#define	PASSUPVECTOR	  0x0FFFF900
 
 /* Exceptions related constants */
 #define	PGFAULTEXCEPT	  0
