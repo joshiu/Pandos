@@ -14,7 +14,10 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
-
+void debuga(int a){
+    int j;
+    j =1;
+}
 
 /**********************GLOBAL VARIABLES*****************/
 
@@ -66,7 +69,7 @@ void test(){
             uProc[asid].sup_pageTable[counter2].pgTE_entryLo = ALLOFF | DIRTYON;
         }
 
-        uProc[asid].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0x000BFFFF <<VPNBITS) | (asid<<ASIDBITS);
+        uProc[asid].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0xBFFFF <<VPNBITS) | (asid<<ASIDBITS);
 
         success = SYSCALL(MAKEPROCESS, (int)&procState, &(uProc[asid]), 0);
 
@@ -75,9 +78,8 @@ void test(){
         }
     }
 
-    for(counter = 0; counter < UPROCMAX; counter ++){
-        SYSCALL(PASSERN, (int)&master, 0, 0);
-    }
+    SYSCALL(PASSERN, (int)&master, 0, 0);
 
-    SYSCALL(KILLPROCESS, 0, 0, 0);
+    debuga(999);
+
 }

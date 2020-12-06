@@ -102,8 +102,6 @@ void killProc(int *semAddr){
         /*if blocked, then unblock it*/    
         unblock(semAddr);
     }
-    
-    unblock(&master); 
         
     SYSCALL(KILLPROCESS, 0, 0, 0);
 }
