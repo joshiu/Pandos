@@ -79,8 +79,8 @@
 #define MAXWORDLEN        128  		  
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
-#define UPROCMAX          8
-#define POOLSIZE          16
+#define UPROCMAX          7
+#define POOLSIZE          40
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
 #define STKPTR            0x20001000
