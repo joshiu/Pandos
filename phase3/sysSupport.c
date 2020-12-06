@@ -374,7 +374,6 @@ void sys_13(support_t *supportInfo){
     done = FALSE;
 
     while((!done) && (!error)){
-        /*can we do 2 separate here*/
 
         deviceRegister ->devreg[devSema4Num].t_recv_command = CHARTRANSMIT;
         
@@ -384,7 +383,7 @@ void sys_13(support_t *supportInfo){
             error = TRUE;
         }
         else{
-            counter+=1;
+            counter++;
             *letterToPrint = status >>8;
             letterToPrint++;
             if((status>>8) == 0x0A){

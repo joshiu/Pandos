@@ -8,7 +8,7 @@
     "devices": {
         "flash0": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/fibEight.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/strConcat.umps"
         },
         "flash1": {
             "enabled": true,
