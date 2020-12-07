@@ -8,7 +8,8 @@
 /**
  * This file will create all of our needed processes for phase3
  * and it will also initialize all these processes at the user level.
- * (add more)
+ * It will implement and execute the test(); method once. It also 
+ * exports the Support level's global variabes and a masterSemaphore.
  * 
  * 
  * Written by Umang Joshi and Amy Kelley
@@ -28,7 +29,11 @@ int deviceRegisterSema4[DEVCNT+DEVPERINT];
 
 /**
  * This method will create all of our processes and
- * will initialize all the user level processes. (likely need more)
+ * will initialize all the user level processes. 
+ * It will also initialize the swap pool table
+ * and swap pool semaphore. It will also create (via sys1), 
+ * initalize and launch 1-8 Uprocs. Then, it will block the master.
+ * Since the master is blocked, it will die in kernel panic()
  * */
 void test(){
 

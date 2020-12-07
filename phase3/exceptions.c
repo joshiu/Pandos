@@ -160,6 +160,7 @@ int sys_1()
     insertProcQ(&readyQ, newPcb);
     insertChild(currentProc, newPcb);
     debugE(&newPcb->p_supportStruct->sup_exceptState[PGFAULTEXCEPT]);
+    debugE(&newPcb->p_supportStruct->sup_exceptState[GENERALEXCEPT]);
     return OK; /*put 0 in v0 when we make a process*/
 }
 

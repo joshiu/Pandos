@@ -60,7 +60,7 @@ void userGeneralExceptHandler(){
 
 
 /**
- * This method will kill the program.
+ * This method will kill the user program.
  * */
 void uProgramTrap(support_t *supportInfo){
 
@@ -71,7 +71,8 @@ void uProgramTrap(support_t *supportInfo){
 
 
 /**
- * This method will block the semAddr (using Passern)
+ * This method will block the process with the
+ * given semAddr (using Passern)
  * */
 void block(int * semAddr){
 
@@ -82,7 +83,8 @@ void block(int * semAddr){
 
 
 /**
- * This method will call a V on the semAddr
+ * This method will call a Verhogen on the
+ * process with the given semAddr
  * */
 void unblock(int *semAddr){
 
@@ -93,8 +95,9 @@ void unblock(int *semAddr){
 
 
 /**
- * This method will kill the currentProc.
- * This is needed for sys9.
+ * This method will kill the process
+ * with the given semAddr. It will unblock
+ * if necessary
  * */
 void killProc(int *semAddr){
 
@@ -109,7 +112,7 @@ void killProc(int *semAddr){
 
 
 /**
- *  This method will loadState.
+ *  This method is our phase 3 loadState.
  * */
 void userLoadState(state_t *loadState){
     
@@ -120,8 +123,12 @@ void userLoadState(state_t *loadState){
 
 
 /**
- * Not sure this is needed but just in case (method comment here)
- * We also may need a new name for this, but I wasn't sure if it mattered
+ * This is the user level syscall handler. It will
+ * handle syscall 9 through 13. Sys 9 is terminate, 
+ * sys 10 gets the clock, sys 11 writes to 
+ * the printer, sys 12 write to terminal,
+ * sys 13 reads from the terminal. If none of these, 
+ * it kills the process. 
  * */
 void userSyscall(support_t *supportInfo){
     
@@ -175,8 +182,8 @@ void userSyscall(support_t *supportInfo){
 
 
 /**
- * When requested, this service ceases the 
- * U-proc to exist.
+ * When requested, this service kills the 
+ * U-proc.
  * */
 void sys_9(){
     
@@ -198,7 +205,7 @@ void sys_10(support_t *supportInfo){
     cpu_t timeEnded; /*time the system was last booted/reset*/
     /*end of local variables*/
 
-    STCK(timeEnded); /*is this how we read the clock for UProc? or is there something else?*/
+    STCK(timeEnded);
 
     supportInfo->sup_exceptState[GENERALEXCEPT].s_v0 = timeEnded;
 }
@@ -303,7 +310,6 @@ void sys_12(support_t *supportInfo){
     error = FALSE;
 
     while((counter<length) && (!error)){
-        /*can we do 2 separate here*/
 
         deviceRegister->devreg[devSema4Num].t_transm_command = *letterToPrint <<BYTELENGTH |CHARTRANSMIT;
         
@@ -363,7 +369,7 @@ void sys_13(support_t *supportInfo){
     if(((int)letterToPrint < KUSEG)){
 
         killProc(NULL);
-        
+
     }
 
     block(&deviceRegisterSema4[devSema4Num +DEVPERINT]);
