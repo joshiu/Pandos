@@ -159,6 +159,7 @@ int sys_1()
 
     insertProcQ(&readyQ, newPcb);
     insertChild(currentProc, newPcb);
+    debugE(&newPcb->p_s.s_reg[0]);
     return OK; /*put 0 in v0 when we make a process*/
 }
 
@@ -413,6 +414,8 @@ void passUpOrDie(int exceptNum)
         scheduleNext();
     }
 
+    debugE(&currentProc->p_s.s_reg[0]);
+
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
 
     LDCXT(currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr,
@@ -433,8 +436,8 @@ void copyState(state_t *source, state_t *copy)
     /*cycle through all the states and copy them from source to copy*/
     for (i = 0; i < STATEREGNUM; i += 1)
     {
-        debugE(source);
-        debugE(copy);
+        debugE(&source->s_reg[i]);
+        debugE(&copy->s_reg[i]);
 
         copy->s_reg[i] = source->s_reg[i];
     }

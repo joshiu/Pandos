@@ -24,7 +24,7 @@ int swapSem; /*declares swap pool sema4*/
 
 /****************END OF GLOBALS*****************/
 
-void debug(int a){
+void debug(state_t *a){
     int j;
     j =1;
 }
@@ -58,12 +58,12 @@ void uTLB_RefillHandler(){
     /*End of Local Variables*/
 
     oldState = (state_t *)BIOSDATAPAGE;
+
+    debug(&currentProc->p_s.s_reg[0]);
     
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
 
     pageNumber = pageNumber % MAXPAGE;
-
-    debug(pageNumber);
 
     setENTRYHI(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryHi);
     setENTRYLO(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryLo);
@@ -106,14 +106,10 @@ void pageHandler(){
 
     pageNum = ((suppData->sup_exceptState[PGFAULTEXCEPT].s_entryHI) & GETPAGENUM)>> VPNBITS;
 
-    debug(pageNum);
-
     block(&swapSem);
 
     frameNum = getFrame();
     address = FRAMEPOOLSTART + (frameNum*PAGESIZE);
-
-    debug(address);
 
     if(swapPool[frameNum].sw_asid != -1){
         
@@ -139,8 +135,6 @@ void pageHandler(){
 
     blockNum = pageNum;
     blockNum = blockNum % MAXPAGE;
-    
-      debug(blockNum);
 
     status = readFlashOperation((procASID-1), blockNum, address);
 

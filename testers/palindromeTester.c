@@ -35,7 +35,7 @@ void main() {
     }
 
     print(WRITETERMINAL, &buf[0]);
-    print(WRITETERMINAL, "\n\n Not a palindrome\n")
+    print(WRITETERMINAL, "\n\n Not a palindrome\n");
 	print(WRITETERMINAL, "\n\n End of Palindrome Tester\n");	
 	/* Terminate normally */	
 	SYSCALL(TERMINATE, 0, 0, 0);
