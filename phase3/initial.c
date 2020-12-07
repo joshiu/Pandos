@@ -35,6 +35,7 @@ HIDDEN void generalExceptHandler(); /* method for handling exceptions*/
 
 /** GLOBAL VARIABLES **/
 
+unsigned int saveState[DEVCNT + DEVPERINT]; /* this is where we save the state when IO*/
 int processCnt;                             /*number of pcbs that have been allocated*/
 int softBlockCnt;                           /*number of processes that have been blocked*/
 pcb_t *readyQ;                              /*queue of processes ready to run*/

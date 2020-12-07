@@ -361,8 +361,9 @@ void sys_13(support_t *supportInfo){
     letterToPrint = (char *)supportInfo->sup_exceptState[GENERALEXCEPT].s_a1;
 
     if(((int)letterToPrint < KUSEG)){
-        debugKill(2);
+
         killProc(NULL);
+        
     }
 
     block(&deviceRegisterSema4[devSema4Num +DEVPERINT]);

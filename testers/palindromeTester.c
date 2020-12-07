@@ -6,8 +6,9 @@
 
 
 void main() {
+    
 	int status, i;
-	char buf[40];
+	char palindrome[40];
     int test;
 
     test = TRUE;
@@ -15,26 +16,27 @@ void main() {
 	print(WRITETERMINAL, "Palindrome Checker Started\n");
 	print(WRITETERMINAL, "Enter a palindrome to check: ");
 		
-	status = SYSCALL(READTERMINAL, (int)&buf[0], 0, 0);
-	buf[status] = EOS;
+	status = SYSCALL(READTERMINAL, (int)&palindrome[0], 0, 0);
+	palindrome[status] = EOS;
 	
 	
 	for( i = 0; i < (int)(status/2); i++ )
 	{
-        if(buf[i] != buf[status-1-i]){
+        if(palindrome[i] != palindrome[status-1-i]){
             test = FALSE;
         }
 	}
 
     if(test){
-        print(WRITETERMINAL, &buf[0]);
+        print(WRITETERMINAL, &palindrome[0]);
         print(WRITETERMINAL, "\n\nThis is a palindrome!\n");
         print(WRITETERMINAL, "\n\n End of Palindrome Tester\n");	
-        /* Terminate normally */	
+        
+        /* Terminate */	
         SYSCALL(TERMINATE, 0, 0, 0);
     }
 
-    print(WRITETERMINAL, &buf[0]);
+    print(WRITETERMINAL, &palindrome[0]);
     print(WRITETERMINAL, "\n\n Not a palindrome\n");
 	print(WRITETERMINAL, "\n\n End of Palindrome Tester\n");	
 	/* Terminate normally */	

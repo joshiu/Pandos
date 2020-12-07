@@ -159,7 +159,7 @@ int sys_1()
 
     insertProcQ(&readyQ, newPcb);
     insertChild(currentProc, newPcb);
-    debugE(&newPcb->p_s.s_reg[0]);
+    debugE(&newPcb->p_supportStruct->sup_exceptState[PGFAULTEXCEPT]);
     return OK; /*put 0 in v0 when we make a process*/
 }
 
@@ -315,6 +315,9 @@ void sys_5()
         blockAndTime(&devSema4[deviceNum]);
     }
 
+    /*interrupt happened and ACK-ed, so load savedState and return*/
+    currentProc->p_s.s_v0 = saveState[deviceNum];
+
     loadState(currentProc);
 }
 
@@ -411,7 +414,7 @@ void passUpOrDie(int exceptNum)
         scheduleNext();
     }
 
-    debugE(&currentProc->p_s.s_reg[0]);
+    debugE(&currentProc->p_supportStruct->sup_exceptState[exceptNum]);
 
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
 
@@ -433,9 +436,6 @@ void copyState(state_t *source, state_t *copy)
     /*cycle through all the states and copy them from source to copy*/
     for (i = 0; i < STATEREGNUM; i += 1)
     {
-        debugE(&source->s_reg[i]);
-        debugE(&copy->s_reg[i]);
-
         copy->s_reg[i] = source->s_reg[i];
     }
 
