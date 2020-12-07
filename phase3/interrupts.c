@@ -155,8 +155,7 @@ void pseudoClockInterrupt()
  * This method looks at the Bus register and the bitmap
  * for the device that called the interrupt. Then it finds 
  * the bit number for the device, keepng priority (1 has highest
- * 7 has the lowest). It then saves the status code and 
- * writes the acknowledgement in the device register. 
+ * 7 has the lowest). It then writes the status code into v0. 
  * 
  * Note: look at everything in relation to DISKINT 
  * (we make DISKINT our "0th" line and continue from there)
@@ -253,12 +252,6 @@ void deviceInterrupt(int lineNum)
             softBlockCnt-=1;
         }
         
-    }
-
-    else{ 
-        /*nothing to unblock*/
-        /*save the state because there's no where else*/
-        saveState[deviceSema4Num] = devStatus; 
     }
 
     /*if there is no currentProc*/

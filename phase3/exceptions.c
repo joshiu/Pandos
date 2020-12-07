@@ -315,9 +315,6 @@ void sys_5()
         blockAndTime(&devSema4[deviceNum]);
     }
 
-    /*interrupt happened and ACK-ed, so load savedState and return*/
-    currentProc->p_s.s_v0 = saveState[deviceNum];
-
     loadState(currentProc);
 }
 

@@ -288,13 +288,6 @@ void deviceInterrupt(int lineNum)
         }
     }
 
-    else
-    {
-        /*nothing to unblock*/
-        /*save the state because there's no where else*/
-        saveState[deviceNumber] = devStatus;
-    }
-
     /*if there is no currentProc*/
     if (currentProc == NULL)
     {

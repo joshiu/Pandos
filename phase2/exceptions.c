@@ -316,7 +316,6 @@ void sys_5()
     }
 
     /*interrupt happened and ACK-ed, so load savedState and return*/
-    currentProc->p_s.s_v0 = saveState[deviceNum];
 }
 
 /**

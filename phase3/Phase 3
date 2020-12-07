@@ -8,7 +8,7 @@
     "devices": {
         "flash0": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/swapStress.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/palindromeTester.umps"
         },
         "flash1": {
             "enabled": true,
