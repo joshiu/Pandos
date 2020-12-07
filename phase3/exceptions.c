@@ -415,8 +415,6 @@ void passUpOrDie(int exceptNum)
         scheduleNext();
     }
 
-    debugE(&currentProc->p_supportStruct->sup_exceptState[exceptNum]);
-
     copyState((state_t *)BIOSDATAPAGE, &(currentProc->p_supportStruct->sup_exceptState[exceptNum]));
 
     LDCXT(currentProc->p_supportStruct->sup_exceptContext[exceptNum].c_stackPtr,
