@@ -74,13 +74,25 @@
 #define BIOSDATAPAGE    0x0FFFF000
 #define	PASSUPVECTOR	  0x0FFFF900
 
+/* device interrupts */
+#define DISKINT			  3
+#define FLASHINT 		  4
+#define NETWINT 		  5
+#define PRNTINT 		  6
+#define TERMINT			  7
+#define DEVINTNUM		  5		  /* interrupt lines used by devices */
+#define DEVPERINT		  8		  /* devices per interrupt line */
+#define DEVREGLEN		  4		  /* device register field length in bytes, and regs per dev */	
+#define DEVREGSIZE	      16 	  /* device register size in bytes */
+#define DEVCNT   (DEVINTNUM * DEVPERINT) /*total number of devices */
+
 /* Hardware & software constants */
 #define PAGESIZE		  4096			/* page size in bytes	*/
 #define MAXWORDLEN        128  		  
 #define pcb_PTR           pcb_t*
 #define MAXPROC           20
 #define UPROCMAX          8
-#define POOLSIZE          40
+#define POOLSIZE          16
 #define semd_PTR          semd_t*
 #define MAXINT            0xFFFFFFFF
 #define STKPTR            0x20001000
@@ -88,14 +100,14 @@
 #define UPGTBSIZE         32
 #define USTKPTR           0xC0000000
 #define USTARTADDR        0x800000B0
-#define FRAMEPOOLSTART    ((( RAMSTART + (MAXPAGE * PAGESIZE))+ (DEVPERINT * PAGESIZE))+ (DEVPERINT *PAGESIZE))
+#define FRAMEPOOLSTART    (( RAMSTART + (MAXPAGE * PAGESIZE)))
 #define TLBWRITE           3
 #define TLBREAD            2
 
 /* timer, timescale, TOD-LO and other bus regs */
 #define RAMBASEADDR		0x10000000
 #define RAMBASESIZE		0x10000004
-#define TODLOADDR		  0x1000001C
+#define TODLOADDR		0x1000001C
 #define INTERVALTMR		0x10000020	
 #define TIMESCALEADDR	0x10000024
 #define STANQUANTUM     5000
@@ -110,17 +122,6 @@
 #define NULL 			    ((void *)0xFFFFFFFF)
 
 
-/* device interrupts */
-#define DISKINT			  3
-#define FLASHINT 		  4
-#define NETWINT 		  5
-#define PRNTINT 		  6
-#define TERMINT			  7
-#define DEVINTNUM		  5		  /* interrupt lines used by devices */
-#define DEVPERINT		  8		  /* devices per interrupt line */
-#define DEVREGLEN		  4		  /* device register field length in bytes, and regs per dev */	
-#define DEVREGSIZE	      16 	  /* device register size in bytes */
-#define DEVCNT   (DEVINTNUM * DEVPERINT) /*total number of devices */
 
 /* device register field number for non-terminal devices */
 #define STATUS			  0
