@@ -51,6 +51,7 @@ void test(){
     for(counter = 0;counter < UPROCMAX; counter++){
         asid = counter +1;
         procState.s_sp = (int) USTKPTR;
+        debuga(&procState);
         procState.s_entryHI = asid <<ASIDBITS;
         procState.s_pc = procState.s_t9 = (memaddr) USTARTADDR;
         procState.s_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON | USERPREVON);

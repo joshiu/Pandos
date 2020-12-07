@@ -430,10 +430,11 @@ void copyState(state_t *source, state_t *copy)
 
     int i; /*local variable*/
 
+    debugE(&currentProc);
+
     /*cycle through all the states and copy them from source to copy*/
     for (i = 0; i < STATEREGNUM; i += 1)
     {
-        debugE(i);
         copy->s_reg[i] = source->s_reg[i];
     }
 

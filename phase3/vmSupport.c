@@ -61,12 +61,9 @@ void uTLB_RefillHandler(){
     
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
 
-    debug(pageNumber);
-
     pageNumber = pageNumber % MAXPAGE;
 
-    debug(getENTRYHI());
-    debug(getENTRYLO());
+    debug(pageNumber);
 
     setENTRYHI(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryHi);
     setENTRYLO(currentProc->p_supportStruct->sup_pageTable[pageNumber].pgTE_entryLo);
@@ -115,6 +112,8 @@ void pageHandler(){
 
     frameNum = getFrame();
     address = FRAMEPOOLSTART + (frameNum*PAGESIZE);
+
+    debug(address);
 
     if(swapPool[frameNum].sw_asid != -1){
         
