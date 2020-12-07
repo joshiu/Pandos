@@ -17,7 +17,7 @@
  * */
 
 /*********************FILE SPECIFIC METHODS******************************/
-void debugE(int a){
+void debugE(state_t *a){
     int j;
     j =1;
 }
@@ -430,11 +430,12 @@ void copyState(state_t *source, state_t *copy)
 
     int i; /*local variable*/
 
-    debugE(&currentProc);
-
     /*cycle through all the states and copy them from source to copy*/
     for (i = 0; i < STATEREGNUM; i += 1)
     {
+        debugE(source);
+        debugE(copy);
+
         copy->s_reg[i] = source->s_reg[i];
     }
 
