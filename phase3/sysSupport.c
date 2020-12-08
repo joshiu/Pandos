@@ -11,7 +11,7 @@
  * the SYSCALL instruction and will execute based on the value in a0. 
  * This file also contains other support functions.
  * 
- * Written by Umang Joshi and Amy Kelley
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G and Paul K.
  * */
 
 

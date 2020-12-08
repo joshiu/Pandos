@@ -12,7 +12,7 @@
  * exports the Support level's global variabes and a masterSemaphore.
  * 
  * 
- * Written by Umang Joshi and Amy Kelley
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G and Paul K.
  * */
 
 

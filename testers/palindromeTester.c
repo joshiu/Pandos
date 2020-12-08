@@ -17,33 +17,62 @@ void main()
     print(WRITETERMINAL, "Enter a palindrome to check: ");
 
     status = SYSCALL(READTERMINAL, (int)&palindrome[0], 0, 0);
-    palindrome[status] = EOS;
 
-    
-    for (i = 0; i < (int)(status / 2); i++)
+    if (status == 1)
     {
-        /*if status is an odd number, the middle term is excluded*/
+        /*if nothing is entered*/
 
-        if (palindrome[i] != palindrome[status - 1 - i])
+        print(WRITETERMINAL, "\nUmmmm, you entered nothing? Is nothing even a palindrome?\n");
+        print(WRITETERMINAL, " End of Palindrome Tester");
+
+        /* Terminate */
+        SYSCALL(TERMINATE, 0, 0, 0);
+    }
+
+    if ((status - 1) > 1)
+    {
+        /*if there are more than 1 chars*/
+
+        if ((status - 1) % 2 == 0)
+        { 
+            /*if the length is even*/
+
+            for (i = 0; i < ((status - 1) / 2); i++)
+            {
+                if (palindrome[i] != palindrome[status - 2 - i])
+                {
+                    /*if the ends are not equal, not a palindrome*/
+                    test = FALSE;
+                }
+            }
+        }
+
+        for (i = 0; i < (int)((status - 1) / 2) + 1; i++)
         {
-            /*if the ends are not equal, not a palindrome*/
-            test = FALSE;
+            /*if the length is odd*/
+
+            if (palindrome[i] != palindrome[status - 2 - i])
+            {
+                /*if the ends are not equal, not a palindrome*/
+                test = FALSE;
+            }
         }
     }
 
-    if (test)
+    if (test == TRUE)
     {
         print(WRITETERMINAL, &palindrome[0]);
-        print(WRITETERMINAL, "\n\nThis is a palindrome!\n");
-        print(WRITETERMINAL, "\n\n End of Palindrome Tester\n");
+        print(WRITETERMINAL, "\nThis is a palindrome!\n");
+        print(WRITETERMINAL, " End of Palindrome Tester");
 
         /* Terminate */
         SYSCALL(TERMINATE, 0, 0, 0);
     }
 
     print(WRITETERMINAL, &palindrome[0]);
-    print(WRITETERMINAL, "\n\n Not a palindrome\n");
-    print(WRITETERMINAL, "\n\n End of Palindrome Tester\n");
+    print(WRITETERMINAL, "\n Not a palindrome\n");
+    print(WRITETERMINAL, " End of Palindrome Tester");
     /* Terminate  */
     SYSCALL(TERMINATE, 0, 0, 0);
+    
 }

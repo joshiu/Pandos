@@ -13,7 +13,7 @@
  * the SYSCALL instruction and will execute based on the value in a0.
  * Program traps and TLBexcepts are independent of the value in a0
  * 
- * Written by Umang Joshi and Amy Kelley
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G and Paul K.
  * */
 
 /*********************FILE SPECIFIC METHODS******************************/
@@ -297,9 +297,9 @@ void sys_5()
     deviceNum += ((lineNum - DISKINT) * DEVPERINT); /*find which device we're in*/
 
     /*if the interrupt is on line 7 and we are reading, then correct deviceNum*/
-    if ((deviceNum == TERMINT) && (currentProc->p_s.s_a3 == TRUE))
+    if ((lineNum == TERMINT) && (currentProc->p_s.s_a3 == TRUE))
     {
-        deviceNum += DEVPERINT;
+        deviceNum = deviceNum + DEVPERINT;
     }
 
     devSema4[deviceNum] -= 1;
