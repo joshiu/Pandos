@@ -1,6 +1,3 @@
-Palindrome Checker Started
-Enter a palindrome to check: a
-a
-
-This is a palindrome!
- End of Palindrome Tester
+Instructions for validating printer output:
+Using a standard Xterm, change the font size to Unreadable, then execute 'cat printer0.umps'.
+Please note: the terminal should be black text on a white background.

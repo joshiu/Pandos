@@ -12,7 +12,7 @@
         },
         "flash1": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/palindromeTester.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/asciiArt.umps"
         },
         "flash2": {
             "enabled": true,
