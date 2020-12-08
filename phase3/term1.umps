@@ -1,5 +1,6 @@
 Palindrome Checker Started
-Enter a palindrome to check: 
+Enter a palindrome to check: a
+a
 
-Ummmm, you entered nothing? Is nothing even a palindrome?
+This is a palindrome!
  End of Palindrome Tester

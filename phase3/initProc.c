@@ -16,7 +16,8 @@
  * device registers. 
  * 
  * 
- * Written by Umang Joshi and Amy Kelley with help from Mikey G and Paul K.
+ * Written by Umang Joshi and Amy Kelley with help from Mikey G and Paul K 
+ * in debugging.
  * */
 
 

@@ -100,7 +100,7 @@
 #define UPGTBSIZE         32
 #define USTKPTR           0xC0000000
 #define USTARTADDR        0x800000B0
-#define FRAMEPOOLSTART    (( RAMSTART + (MAXPAGE * PAGESIZE))+ (DEVPERINT*PAGESIZE)+(DEVPERINT*PAGESIZE))
+#define FRAMEPOOLSTART    (( RAMSTART + (MAXPAGE * PAGESIZE)))
 #define TLBWRITE           3
 #define TLBREAD            2
 
