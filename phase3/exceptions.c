@@ -53,7 +53,7 @@ void syscall()
     sysNum = ((state_t *)BIOSDATAPAGE)->s_a0;
 
     /*check if we are in kernel mode*/
-    if (sysNum >= 1 && sysNum <= 8 && (((state_t *)BIOSDATAPAGE)->s_status & USERPREVON) == 1)
+    if ((sysNum >= 1) && (sysNum <= 8) && (((state_t *)BIOSDATAPAGE)->s_status & USERPREVON) == 1)
     {
         /*if the program is not in kernel, then make cause a not privileged instruction*/
 

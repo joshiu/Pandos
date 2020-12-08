@@ -56,28 +56,27 @@ void test(){
     for(counter = 0;counter < UPROCMAX; counter++){
         asid = counter +1;
         procState.s_sp = (int) USTKPTR;
-        debuga(&procState);
         procState.s_entryHI = asid <<ASIDBITS;
         procState.s_pc = procState.s_t9 = (memaddr) USTARTADDR;
         procState.s_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON | USERPREVON);
 
-        uProc[asid].sup_asid = asid;
-        uProc[asid].sup_exceptContext[GENERALEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        uProc[asid].sup_exceptContext[GENERALEXCEPT].c_stackPtr = (int) &(uProc[asid].sup_GeneralStack[500]);
-        uProc[asid].sup_exceptContext[GENERALEXCEPT].c_pc = (memaddr) userGeneralExceptHandler;
+        uProc[counter].sup_asid = asid;
+        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
+        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_stackPtr = (int) &(uProc[counter].sup_GeneralStack[500]);
+        uProc[counter].sup_exceptContext[GENERALEXCEPT].c_pc = (memaddr) userGeneralExceptHandler;
 
-        uProc[asid].sup_exceptContext[PGFAULTEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
-        uProc[asid].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = (int) &(uProc[asid].sup_PGFaultStack[500]);
-        uProc[asid].sup_exceptContext[PGFAULTEXCEPT].c_pc = (memaddr) pageHandler;
+        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_status = (ALLOFF | IEPREVON | IMASKON | TIMEREBITON);
+        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_stackPtr = (int) &(uProc[counter].sup_PGFaultStack[500]);
+        uProc[counter].sup_exceptContext[PGFAULTEXCEPT].c_pc = (memaddr) pageHandler;
 
         for(counter2 = 0; counter2 < UPGTBSIZE; counter2 ++){
-            uProc[asid].sup_pageTable[counter2].pgTE_entryHi = ((0x80000 +counter2) <<VPNBITS) | (asid <<ASIDBITS);
-            uProc[asid].sup_pageTable[counter2].pgTE_entryLo = ALLOFF | DIRTYON;
+            uProc[counter].sup_pageTable[counter2].pgTE_entryHi = ((0x80000 +counter2) <<VPNBITS) | (asid <<ASIDBITS);
+            uProc[counter].sup_pageTable[counter2].pgTE_entryLo = ALLOFF | DIRTYON;
         }
 
-        uProc[asid].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0xBFFFF <<VPNBITS) | (asid<<ASIDBITS);
+        uProc[counter].sup_pageTable[UPGTBSIZE-1].pgTE_entryHi = (0xBFFFF <<VPNBITS) | (asid<<ASIDBITS);
 
-        success = SYSCALL(MAKEPROCESS, (int)&procState, &(uProc[asid]), 0);
+        success = SYSCALL(MAKEPROCESS, (int)&procState, &(uProc[counter]), 0);
 
         if(success != OK){
             SYSCALL(KILLPROCESS, 0, 0, 0);

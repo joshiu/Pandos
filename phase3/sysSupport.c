@@ -355,7 +355,7 @@ void sys_13(support_t *supportInfo){
     int devSema4Num;
     int idNum;
     int error;
-    char *letterToPrint;
+    char *letterAddr;
     devregarea_t *deviceRegister;
     /*end local variables*/
 
@@ -364,9 +364,9 @@ void sys_13(support_t *supportInfo){
     deviceRegister = (devregarea_t *) RAMBASEADDR;
     devSema4Num = ((TERMINT-DISKINT) *DEVPERINT) +(idNum - 1);
     
-    letterToPrint = (char *)supportInfo->sup_exceptState[GENERALEXCEPT].s_a1;
+    letterAddr = (char *)supportInfo->sup_exceptState[GENERALEXCEPT].s_a1;
 
-    if(((int)letterToPrint < KUSEG)){
+    if(((int)letterAddr < KUSEG)){
 
         killProc(NULL);
 
@@ -388,9 +388,11 @@ void sys_13(support_t *supportInfo){
             error = TRUE;
         }
         else{
-            counter++;
-            *letterToPrint = status >>8;
-            letterToPrint++;
+            counter+=1;
+
+            *letterAddr = status >>8;
+            letterAddr++;
+            
             if((status>>8) == 0x0A){
                 done =TRUE;
             }

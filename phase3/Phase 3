@@ -8,7 +8,7 @@
     "devices": {
         "flash0": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/palindromeTester.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/factorial15.umps"
         },
         "flash1": {
             "enabled": true,
@@ -73,7 +73,7 @@
     },
     "execution-rom": "/usr/local/share/umps3/exec.rom.umps",
     "num-processors": 1,
-    "num-ram-frames": 128,
+    "num-ram-frames": 64,
     "symbol-table": {
         "asid": 64,
         "file": "kernel.stab.umps"

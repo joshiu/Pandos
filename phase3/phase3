@@ -6,9 +6,69 @@
     "bootstrap-rom": "/usr/local/share/umps3/coreboot.rom.umps",
     "clock-rate": 1,
     "devices": {
+        "flash0": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/timeOfDay.umps"
+        },
+        "flash1": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/fibEight.umps"
+        },
+        "flash2": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/swapStress.umps"
+        },
+        "flash3": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/factorial10.umps"
+        },
+        "flash4": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/fibNine.umps"
+        },
+        "flash5": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/terminalTest8.umps"
+        },
+        "flash6": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/printerTest.umps"
+        },
+        "flash7": {
+            "enabled": true,
+            "file": "/home/joshi/Documents/Pandos/testers/fibEleven.umps"
+        },
         "terminal0": {
             "enabled": true,
             "file": "term0.umps"
+        },
+        "terminal1": {
+            "enabled": true,
+            "file": "term1.umps"
+        },
+        "terminal2": {
+            "enabled": true,
+            "file": "term2.umps"
+        },
+        "terminal3": {
+            "enabled": true,
+            "file": "term3.umps"
+        },
+        "terminal4": {
+            "enabled": true,
+            "file": "term4.umps"
+        },
+        "terminal5": {
+            "enabled": true,
+            "file": "term5.umps"
+        },
+        "terminal6": {
+            "enabled": true,
+            "file": "term6.umps"
+        },
+        "terminal7": {
+            "enabled": true,
+            "file": "term7.umps"
         }
     },
     "execution-rom": "/usr/local/share/umps3/exec.rom.umps",
