@@ -24,19 +24,19 @@
         },
         "flash4": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/fibNine.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/palindromeTester.umps"
         },
         "flash5": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/terminalTest8.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/printerTest.umps"
         },
         "flash6": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/printerTest.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/strConcat.umps"
         },
         "flash7": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/fibEleven.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/terminalReader.umps"
         },
         "printer0": {
             "enabled": true,

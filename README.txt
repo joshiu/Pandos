@@ -1,10 +1,11 @@
 Phase 3 is fully operational. We can successfully run all 8 processes, 
 and can perform a read from terminal, write to terminal, and write to printer
 successfully. We did not include any optimizations, since it took a while to 
-debug all the issues we had. 
+debug all the issues we had. We can successfully run all the testers that were
+given to us (including ascii).
 
-We created 2 programs to run with our phase 3. The first is called factorial15, 
-which recursively computes 15!. We created this because our read from terminal 
+We created 2 programs to run with our phase 3. The first is called factorial10, 
+which recursively computes 10!. We created this because our read from terminal 
 was not fully functional, and we thought it'd be good to have something in case
 we didn't get it to work. This program is fully operational and outputs a message
 when we begin to calculate the factorial and when it finishes. 

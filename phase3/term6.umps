@@ -1,1 +1,8 @@
-printTest is ok
+Strcat Test starts
+Enter a string: hello
+
+Enter another string: world
+helloworld
+
+
+Strcat concluded
