@@ -383,7 +383,7 @@ void sys_13(support_t *supportInfo){
 
         deviceRegister ->devreg[devSema4Num].t_recv_command = CHARTRANSMIT;
         
-        status = SYSCALL(WAITIO, TERMINT, idNum-1, TRUE);
+        status = SYSCALL(WAITIO, TERMINT, idNum-1, 1);
 
         statusReg = getSTATUS();
         setSTATUS((statusReg|0x1));

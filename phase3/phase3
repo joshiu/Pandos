@@ -12,7 +12,7 @@
         },
         "flash1": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/fibEight.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/palindromeTester.umps"
         },
         "flash2": {
             "enabled": true,

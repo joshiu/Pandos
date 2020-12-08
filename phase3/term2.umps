@@ -1,2 +1,4 @@
 todTest starts
 todTest ok: time increasing
+todTest ok: one second delay
+todTest completed
