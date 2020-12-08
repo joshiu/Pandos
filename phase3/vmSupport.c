@@ -24,11 +24,6 @@ int swapSem; /*declares swap pool sema4*/
 
 /****************END OF GLOBALS*****************/
 
-void debug(state_t *a){
-    int j;
-    j =1;
-}
-
 
 /**
  * This method initilzates the global shared page.
@@ -58,9 +53,7 @@ void uTLB_RefillHandler(){
     /*End of Local Variables*/
 
     oldState = (state_t *)BIOSDATAPAGE;
-
-    debug(&currentProc->p_s.s_reg[0]);
-    
+   
     pageNumber = ((oldState ->s_entryHI) & GETPAGENUM) >> VPNBITS;
 
     pageNumber = pageNumber % MAXPAGE;

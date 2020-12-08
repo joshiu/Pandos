@@ -17,10 +17,7 @@
  * */
 
 /*********************FILE SPECIFIC METHODS******************************/
-void debugE(state_t *a){
-    int j;
-    j =1;
-}
+
 extern void passUpOrDie(int exceptNum);
 extern void programTrap();
 extern void copyState(state_t *source, state_t *copy);
@@ -53,7 +50,7 @@ void syscall()
     sysNum = ((state_t *)BIOSDATAPAGE)->s_a0;
 
     /*check if we are in kernel mode*/
-    if ((sysNum >= 1) && (sysNum <= 8) && (((state_t *)BIOSDATAPAGE)->s_status & USERPREVON) == 1)
+    if ((sysNum >= 1) && (sysNum <= 8) && ((((state_t *)BIOSDATAPAGE)->s_status & USERPREVON) == 1))
     {
         /*if the program is not in kernel, then make cause a not privileged instruction*/
 
@@ -159,8 +156,7 @@ int sys_1()
 
     insertProcQ(&readyQ, newPcb);
     insertChild(currentProc, newPcb);
-    debugE(&newPcb->p_supportStruct->sup_exceptState[PGFAULTEXCEPT]);
-    debugE(&newPcb->p_supportStruct->sup_exceptState[GENERALEXCEPT]);
+
     return OK; /*put 0 in v0 when we make a process*/
 }
 

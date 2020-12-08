@@ -15,10 +15,6 @@
  * Written by Umang Joshi and Amy Kelley
  * */
 
-void debuga(int a){
-    int j;
-    j =1;
-}
 
 /**********************GLOBAL VARIABLES*****************/
 
@@ -84,7 +80,5 @@ void test(){
     }
 
     SYSCALL(PASSERN, (int)&master, 0, 0);
-
-    debuga(999);
 
 }

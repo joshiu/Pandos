@@ -28,11 +28,6 @@ HIDDEN void sys_13(support_t *supportInfo);
 
 /**end of file specific methods**/
 
-void debugKill(int b){
-    int w;
-    w = 2;
-}
-
 
 /**
  * This is the generalExceptHandler for phase3 (or uProcs)
@@ -64,7 +59,6 @@ void userGeneralExceptHandler(){
  * */
 void uProgramTrap(support_t *supportInfo){
 
-    debugKill(2);
     killProc(NULL);
 }
 
@@ -166,7 +160,6 @@ void userSyscall(support_t *supportInfo){
     }
 
     default: {
-        debugKill(2);
         killProc(NULL);
         break;
     }
@@ -187,7 +180,6 @@ void userSyscall(support_t *supportInfo){
  * */
 void sys_9(){
     
-    debugKill(2);
     killProc(NULL);
 
 }
@@ -239,7 +231,6 @@ void sys_11(support_t *supportInfo){
     length = supportInfo->sup_exceptState[GENERALEXCEPT].s_a2;
 
     if(((int)letterToPrint < KUSEG) || (length<=0) || (length >MAXWORDLEN)){
-        debugKill(2);
         killProc(NULL);
     }
 
