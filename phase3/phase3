@@ -8,7 +8,7 @@
     "devices": {
         "flash0": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/timeOfDay.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/swapStress.umps"
         },
         "flash1": {
             "enabled": true,
@@ -16,7 +16,7 @@
         },
         "flash2": {
             "enabled": true,
-            "file": "/home/joshi/Documents/Pandos/testers/swapStress.umps"
+            "file": "/home/joshi/Documents/Pandos/testers/timeOfDay.umps"
         },
         "flash3": {
             "enabled": true,
@@ -37,6 +37,38 @@
         "flash7": {
             "enabled": true,
             "file": "/home/joshi/Documents/Pandos/testers/fibEleven.umps"
+        },
+        "printer0": {
+            "enabled": true,
+            "file": "print0.umps"
+        },
+        "printer1": {
+            "enabled": true,
+            "file": "print1.umps"
+        },
+        "printer2": {
+            "enabled": true,
+            "file": "print2.umps"
+        },
+        "printer3": {
+            "enabled": true,
+            "file": "print3.umps"
+        },
+        "printer4": {
+            "enabled": true,
+            "file": "print4.umps"
+        },
+        "printer5": {
+            "enabled": true,
+            "file": "print5.umps"
+        },
+        "printer6": {
+            "enabled": true,
+            "file": "print6.umps"
+        },
+        "printer7": {
+            "enabled": true,
+            "file": "print7.umps"
         },
         "terminal0": {
             "enabled": true,

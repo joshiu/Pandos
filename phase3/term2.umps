@@ -1,3 +1,2 @@
-swapTest starts
-swapTest ok: wrote to pages of seg kuseg
-swapTest ok: data survived swapper
+todTest starts
+todTest ok: time increasing

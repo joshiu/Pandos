@@ -99,7 +99,7 @@ void killProc(int *semAddr){
         /*if blocked, then unblock it*/    
         unblock(semAddr);
     }
-        
+
     SYSCALL(KILLPROCESS, 0, 0, 0);
 }
 
@@ -280,6 +280,7 @@ void sys_12(support_t *supportInfo){
     int error;
     char *letterToPrint;
     devregarea_t *deviceRegister;
+    unsigned int statusReg;
     /*end local variables*/
 
     idNum = supportInfo->sup_asid;
@@ -291,7 +292,6 @@ void sys_12(support_t *supportInfo){
     length = supportInfo->sup_exceptState[GENERALEXCEPT].s_a2;
 
     if(((int)letterToPrint < KUSEG) || (length<=0) || (length >MAXWORDLEN)){
-        debugKill(2);
         killProc(NULL);
     }
 
@@ -305,9 +305,15 @@ void sys_12(support_t *supportInfo){
         deviceRegister->devreg[devSema4Num].t_transm_command = *letterToPrint <<BYTELENGTH |CHARTRANSMIT;
         
         deviceRegister->devreg[devSema4Num].d_data0 = *letterToPrint;
+
+        statusReg = getSTATUS();
+        setSTATUS((statusReg & DISABLEALL));
         deviceRegister -> devreg[devSema4Num].d_command = CHARTRANSMIT;
         
         status = SYSCALL(WAITIO, TERMINT, idNum-1, 0);
+
+        statusReg = getSTATUS();
+        setSTATUS((statusReg|0x1));
 
         if((status & 0xFF) != CHARTRANSGOOD){
             error = TRUE;
@@ -348,6 +354,7 @@ void sys_13(support_t *supportInfo){
     int error;
     char *letterAddr;
     devregarea_t *deviceRegister;
+    unsigned int statusReg;
     /*end local variables*/
 
     idNum = supportInfo->sup_asid;
@@ -371,9 +378,15 @@ void sys_13(support_t *supportInfo){
 
     while((!done) && (!error)){
 
+        statusReg = getSTATUS();
+        setSTATUS((statusReg & DISABLEALL));
+
         deviceRegister ->devreg[devSema4Num].t_recv_command = CHARTRANSMIT;
         
         status = SYSCALL(WAITIO, TERMINT, idNum-1, TRUE);
+
+        statusReg = getSTATUS();
+        setSTATUS((statusReg|0x1));
 
         if((status & 0xFF) != CHARTRANSGOOD){
             error = TRUE;
